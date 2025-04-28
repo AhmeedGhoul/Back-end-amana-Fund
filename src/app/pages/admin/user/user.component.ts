@@ -3,52 +3,35 @@ import { MatDialog } from '@angular/material/dialog';
 import { User } from './user.model';
 import { UserService } from './user.service';
 import { PromotionDialogComponent } from './promotion-dialog/promotion-dialog.component';
-import {MatCard, MatCardContent, MatCardTitle} from "@angular/material/card";
-import {MatIcon} from "@angular/material/icon";
-import {MatButton, MatIconButton} from "@angular/material/button";
+import { AddUserDialogComponent } from './add-user-dialog/add-user-dialog.component';
 
-import {FormsModule} from "@angular/forms";
-import {MatFormField, MatLabel, MatOption, MatSelect} from "@angular/material/select";
-import {MatInput} from "@angular/material/input";
-import {AddUserDialogComponent} from "./add-user-dialog/add-user-dialog.component";
-import {
-  MatCell, MatCellDef,
-  MatColumnDef,
-  MatHeaderCell,
-  MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef,
-  MatTable,
-  MatTableDataSource
-} from "@angular/material/table";
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+// Material Modules (correct way)
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
 
 @Component({
   selector: 'app-user',
-  templateUrl: './user.component.html',
   standalone: true,
+  templateUrl: './user.component.html',
   imports: [
-    MatCardContent,
-    MatCard,
-    MatCardTitle,
-    MatIcon,
-    MatButton,
-    MatIconButton,
+    CommonModule,
     FormsModule,
-    MatSelect,
-    MatOption,
-    MatLabel,
-    MatFormField,
-    MatInput,
-    MatTable,
-    MatHeaderCell,
-    MatColumnDef,
-    MatCell,
-    MatHeaderCellDef,
-    MatCellDef,
-    MatHeaderRowDef,
-    MatRowDef,
-    MatHeaderRow,
-    MatRow
-  ],
-  styles: []
+    MatCardModule,
+    MatIconModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatTableModule,
+  ]
 })
 export class UserComponent implements OnInit {
   users: User[] = [];
@@ -59,7 +42,6 @@ export class UserComponent implements OnInit {
   ageFilter: number | null = null;
   enabledFilter: boolean | null = null;
   displayedColumns: string[] = ['name', 'email', 'phone', 'actions'];
-  dataSource = new MatTableDataSource<User>();
 
   constructor(private userService: UserService, private dialog: MatDialog) {}
 
@@ -70,8 +52,7 @@ export class UserComponent implements OnInit {
   loadUsers(): void {
     this.userService.getUsers(this.currentPage, this.pageSize).subscribe({
       next: (response) => {
-        // Filter users to only include those with accountDeleted === false
-        this.users = response.content.filter(user => !user.accountDeleted); // Use accountDeleted
+        this.users = response.content.filter(user => !user.accountDeleted);
         this.totalUsers = response.totalElements;
       },
       error: (err) => console.error('Error loading users:', err)
@@ -90,7 +71,6 @@ export class UserComponent implements OnInit {
       next: (response) => {
         this.users = response.content;
         this.totalUsers = response.totalElements;
-        this.dataSource.data = this.users;
       },
       error: (err) => console.error('Error applying filters:', err)
     });
@@ -104,8 +84,6 @@ export class UserComponent implements OnInit {
       error: (err) => console.error('Error generating report:', err)
     });
   }
-
-
 
   pageChanged(newPage: number): void {
     this.currentPage = newPage;
@@ -126,7 +104,8 @@ export class UserComponent implements OnInit {
           this.demoteUser(user, result.role);
         }
       }
-    });}
+    });
+  }
 
   promoteUser(user: User, role: string): void {
     const token = localStorage.getItem('authToken');
@@ -136,9 +115,7 @@ export class UserComponent implements OnInit {
     }
 
     this.userService.promoteUser(user.email, role, token).subscribe({
-      next: () => {
-        this.loadUsers();
-      },
+      next: () => this.loadUsers(),
       error: err => console.error('Promotion failed:', err)
     });
   }
@@ -151,9 +128,7 @@ export class UserComponent implements OnInit {
     }
 
     this.userService.demoteUser(user.email, role, token).subscribe({
-      next: () => {
-        this.loadUsers();
-      },
+      next: () => this.loadUsers(),
       error: err => console.error('Demotion failed:', err)
     });
   }
@@ -161,9 +136,7 @@ export class UserComponent implements OnInit {
   deleteUser(user: User): void {
     if (confirm(`Are you sure you want to delete ${user.firstName} ${user.lastName}?`)) {
       this.userService.deleteUser(user).subscribe({
-        next: () => {
-          this.loadUsers();
-        },
+        next: () => this.loadUsers(),
         error: (err) => {
           console.error('Error deleting user:', err);
           alert('Failed to delete user.');
@@ -172,8 +145,7 @@ export class UserComponent implements OnInit {
     }
   }
 
-
-  openAddUserDialog() {
+  openAddUserDialog(): void {
     const dialogRef = this.dialog.open(AddUserDialogComponent, {
       width: '500px',
       panelClass: 'custom-dialog'
@@ -181,11 +153,12 @@ export class UserComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.loadUsers(); // Refresh the users list after adding a new user
+        this.loadUsers();
       }
     });
   }
-  editUser(user: any) {
+
+  editUser(user: User): void {
     const dialogRef = this.dialog.open(AddUserDialogComponent, {
       width: '700px',
       panelClass: 'custom-dialog',
@@ -194,7 +167,7 @@ export class UserComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.loadUsers(); // Refresh your users list after editing
+        this.loadUsers();
       }
     });
   }

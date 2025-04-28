@@ -14,7 +14,7 @@ import {
   withComponentInputBinding,
   withInMemoryScrolling,
 } from '@angular/router';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideClientHydration } from '@angular/platform-browser';
 // import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 // import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -47,7 +47,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideHttpClient(withInterceptorsFromDi()),
     provideClientHydration(),
-    provideAnimationsAsync(),
+    provideAnimations(), // ✅ here
     importProvidersFrom(
       FormsModule,
       ReactiveFormsModule,
@@ -59,7 +59,7 @@ export const appConfig: ApplicationConfig = {
       //     provide: TranslateLoader,
       //     useFactory: HttpLoaderFactory,
       //     deps: [HttpClient],
-      //   }, 
+      //   },
       // })
     ),
   ],

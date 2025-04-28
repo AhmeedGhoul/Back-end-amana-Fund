@@ -6,7 +6,7 @@ import {
   EventEmitter,
 } from '@angular/core';
 import { NavItem } from './nav-item';
-import { Router } from '@angular/router';
+import {Router, RouterModule} from '@angular/router';
 import { NavService } from '../../../../services/nav.service';
 import { MaterialModule } from 'src/app/material.module';
 import { CommonModule } from '@angular/common';
@@ -15,7 +15,7 @@ import { TablerIconComponent, TablerIconsModule } from 'angular-tabler-icons';
 @Component({
   selector: 'app-nav-item',
   standalone: true,
-  imports: [MaterialModule, CommonModule, TablerIconsModule],
+  imports: [MaterialModule, CommonModule, TablerIconsModule,RouterModule ],
   templateUrl: './nav-item.component.html',
   styleUrls: [],
 })

@@ -57,7 +57,7 @@ export class FullComponent implements OnInit {
   }
 
   constructor(private breakpointObserver: BreakpointObserver, private navService: NavService) {
-    
+
     this.htmlElement = document.querySelector('html')!;
     this.htmlElement.classList.add('light-theme');
     this.layoutChangesSubscription = this.breakpointObserver
@@ -79,6 +79,9 @@ export class FullComponent implements OnInit {
 
   toggleCollapsed() {
     this.isContentWidthFixed = false;
+  }
+  trackItem(index: number, item: any) {
+    return item.id || index;
   }
 
   onSidenavClosedStart() {

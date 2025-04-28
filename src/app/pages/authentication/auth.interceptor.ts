@@ -5,18 +5,22 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Get token from local storage
     const token = localStorage.getItem('authToken');
 
-    // If token is available, add it to the headers
-    if (token) {
+    // Check if this is a public request (authentication or registration)
+    const isPublicRequest = req.url.includes('/api/v1/auth/authenticate') ||
+      req.url.includes('/api/v1/auth/forgot-password') ||
+      req.url.includes('/api/v1/auth/reset-password');
+
+
+    if (token && !isPublicRequest) {
       const clonedRequest = req.clone({
         headers: req.headers.set('Authorization', `Bearer ${token}`),
       });
       return next.handle(clonedRequest);
     }
 
-    // If token is not available, proceed without it
+    // Public API: don't attach token
     return next.handle(req);
   }
 }

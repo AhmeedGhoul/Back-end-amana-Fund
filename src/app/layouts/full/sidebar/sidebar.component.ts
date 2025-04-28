@@ -10,11 +10,12 @@ import { BrandingComponent } from './branding.component';
 import { TablerIconsModule } from 'angular-tabler-icons';
 import { MaterialModule } from 'src/app/material.module';
 import { RouterModule } from '@angular/router';
+import {NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [BrandingComponent, TablerIconsModule, MaterialModule, RouterModule],
+  imports: [TablerIconsModule, MaterialModule, RouterModule, BrandingComponent, NgIf],
   templateUrl: './sidebar.component.html',
 })
 export class SidebarComponent implements OnInit {

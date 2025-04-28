@@ -1,27 +1,28 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { User } from '../user.model';
-import {MatIcon} from "@angular/material/icon";
-import {MatFormField, MatLabel} from "@angular/material/form-field";
-import {MatCard} from "@angular/material/card";
-import {MatOption, MatSelect} from "@angular/material/select";
-import {NgForOf} from "@angular/common";
-import {MatButton, MatIconButton} from "@angular/material/button";
+
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCardModule } from '@angular/material/card';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatOptionModule } from '@angular/material/core';
+import { NgForOf, CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-promotion-dialog',
   templateUrl: './promotion-dialog.component.html',
   standalone: true,
   imports: [
-    MatIcon,
-    MatLabel,
-    MatCard,
-    MatFormField,
-    MatSelect,
-    MatOption,
-    NgForOf,
-    MatButton,
-    MatIconButton
+    CommonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatCardModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatButtonModule,
+    NgForOf
   ],
   styleUrls: ['./promotion-dialog.component.css']
 })

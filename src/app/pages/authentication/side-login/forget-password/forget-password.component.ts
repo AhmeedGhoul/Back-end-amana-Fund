@@ -1,34 +1,35 @@
 import { Component } from '@angular/core';
-import {FormGroup, FormControl, Validators, ReactiveFormsModule} from '@angular/forms';
-import {Router, RouterLink} from '@angular/router';
+import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../auth.service';
-import {MatCard, MatCardContent} from "@angular/material/card";
-import {NgIf} from "@angular/common";
-import {MatButton} from "@angular/material/button";
-import {MatInput} from "@angular/material/input";  // Adjust path if needed
+
+// Correct Material Module imports
+import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { NgIf } from '@angular/common';
+
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forget-password.component.html',
+  styleUrls: ['./forget-password.component.css'],
   standalone: true,
   imports: [
-    MatCardContent,
-    MatCard,
-    MatInputModule,
+    MatCardModule,
     MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
     RouterLink,
     ReactiveFormsModule,
-    NgIf,
-    MatButton,
-    MatInput
-  ],
-  styleUrls: ['./forget-password.component.css']
+    NgIf
+  ]
 })
 export class ForgotPasswordComponent {
   form = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email])
   });
+
   errorMessage: string = '';
   successMessage: string = '';
 
@@ -42,12 +43,15 @@ export class ForgotPasswordComponent {
       console.error('email not found');
       return;
     }
+
     this.authService.forgotPassword(email).subscribe({
-      next: (response) => {
+      next: () => {
         this.successMessage = 'Password reset link sent to your email.';
+        this.errorMessage = '';
       },
-      error: (error) => {
+      error: () => {
         this.errorMessage = 'Failed to send reset link.';
+        this.successMessage = '';
       }
     });
   }
