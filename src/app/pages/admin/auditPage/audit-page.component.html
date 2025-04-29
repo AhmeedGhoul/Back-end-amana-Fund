@@ -1,8 +1,13 @@
 <div class="page-container p-24 d-flex flex-column gap-24">
   <div class="section">
-    <app-activity-log (selectionChanged)="onActivitySelectionChanged($event)"></app-activity-log>  </div>
+    <app-activity-log (selectionChanged)="onActivitySelectionChanged($event)"></app-activity-log>
+  </div>
 
   <div class="section">
-    <app-audit [selectedLogs]="selectedLogs"></app-audit>
+    <app-audit [selectedLogs]="selectedLogs" (auditSelected)="onAuditSelectionChanged($event)"></app-audit>
+  </div>
+
+  <div class="section">
+    <app-fraud-case [selectedAudit]="selectedAudit"></app-fraud-case>
   </div>
 </div>

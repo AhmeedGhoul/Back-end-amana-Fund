@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import { AuditService } from './audit.service';
 import { Audit } from './audit.model';
 import { MatDialog } from '@angular/material/dialog';
@@ -53,11 +53,20 @@ export class AuditComponent implements OnInit {
   displayedColumns: string[] = ['dateAudit', 'statusAudit', 'output', 'reviewedDate', 'auditType', 'actions'];
 
   constructor(private auditService: AuditService, private dialog: MatDialog) {}
-
+  @Output() auditSelected = new EventEmitter<Audit>();
   ngOnInit(): void {
     this.loadAudits();
   }
+  selectedAuditRow: Audit | null = null;
 
+  onSelectAudit(audit: Audit): void {
+    this.selectedAuditRow = audit;
+    this.auditSelected.emit(audit); // Emit to parent
+  }
+
+  isAuditSelected(audit: Audit): boolean {
+    return this.selectedAuditRow?.idAudit === audit.idAudit;
+  }
   loadAudits(): void {
     this.auditService.getAllAudits(this.currentPage, this.pageSize).subscribe({
       next: (res) => {
@@ -155,5 +164,8 @@ export class AuditComponent implements OnInit {
 
   generateReport(): void {
     this.auditService.generateAuditReport().subscribe(() => alert('Audit report generated successfully!'));
+  }
+  selectAudit(audit: Audit): void { // 🆕
+    this.auditSelected.emit(audit);
   }
 }

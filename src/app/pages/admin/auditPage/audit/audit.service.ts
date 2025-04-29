@@ -66,11 +66,9 @@ return this.http.get<PagedResponse<Audit>>(`${this.apiUrl}/search`, { params, he
   }
 
   deleteAudit(audit: Audit): Observable<void> {
-    return this.http.request<void>(
-      'delete',
-      `${this.apiUrl}/DeleteAudit`,
-      { body: audit, headers: this.getAuthHeaders() }
-    );
+    return this.http.delete<void>(`${this.apiUrl}/DeleteAudit/${audit.idAudit}`, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   generateAuditReport(directoryPath?: string, fileName?: string): Observable<void> {

@@ -83,13 +83,12 @@ export class AddAuditDialogComponent implements OnInit {
       auditType: audit.auditType
     });
   }
-
   submit(): void {
     if (this.auditForm.invalid) return;
 
     const auditPayload = {
       ...this.auditForm.value,
-      activityLogs: this.selectedActivities
+      activityLogs: this.selectedActivities.map(activity => ({ activityId: activity.activityId }))
     };
 
     if (this.isEditMode) {
@@ -102,6 +101,7 @@ export class AddAuditDialogComponent implements OnInit {
       });
     }
   }
+
 
   close(): void {
     this.dialogRef.close(false);
