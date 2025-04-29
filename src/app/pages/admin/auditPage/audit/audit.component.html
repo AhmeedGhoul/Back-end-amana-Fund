@@ -1,0 +1,144 @@
+<mat-card class="cardWithShadow">
+  <mat-card-content class="p-24">
+
+    <!-- Header + Add Button -->
+    <div class="d-flex w-100 align-center mb-24">
+      <mat-card-title>Audit Management</mat-card-title>
+      <div class="m-l-auto">
+        <button mat-flat-button color="primary" (click)="openAddAuditDialog()">
+          <mat-icon>add</mat-icon> Add Audit
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar d-flex gap-16 mb-24 flex-wrap">
+      <button mat-button [matMenuTriggerFor]="dateMenu">
+        <mat-icon>calendar_today</mat-icon> Date Audit
+      </button>
+
+      <button mat-button [matMenuTriggerFor]="statusMenu">
+        <mat-icon>assignment_turned_in</mat-icon> Status
+      </button>
+
+      <button mat-button [matMenuTriggerFor]="typeMenu">
+        <mat-icon>category</mat-icon> Type
+      </button>
+
+      <mat-form-field appearance="outline" class="flex-grow-1">
+        <mat-label>Search Output</mat-label>
+        <input matInput [(ngModel)]="filters.output" (ngModelChange)="applyFilters()" placeholder="Output..." />
+      </mat-form-field>
+
+      <button mat-flat-button color="accent" (click)="generateReport()">
+        <mat-icon>download</mat-icon> Report
+      </button>
+    </div>
+
+    <!-- Menus -->
+    <mat-menu #dateMenu="matMenu" class="menu-panel">
+      <div class="tab-buttons d-flex">
+        <button mat-button [color]="activeTab === 'custom' ? 'primary' : undefined"
+                (click)="activeTab = 'preset'">Preset</button>
+        <button mat-button [color]="activeTab === 'custom' ? 'primary' : undefined"
+                (click)="activeTab = 'custom'">Custom</button>
+      </div>
+
+      <div *ngIf="activeTab === 'preset'" class="p-16">
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>Preset Range</mat-label>
+          <mat-select [(value)]="selectedPreset" (selectionChange)="applyPresetRange()">
+            <mat-option value="last7">Last 7 Days</mat-option>
+            <mat-option value="thisMonth">This Month</mat-option>
+            <mat-option value="lastMonth">Last Month</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div *ngIf="activeTab === 'custom'" class="p-16">
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>Start Date</mat-label>
+          <input matInput [matDatepicker]="pickerStart" [(ngModel)]="filters.startDate">
+          <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
+          <mat-datepicker #pickerStart></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>End Date</mat-label>
+          <input matInput [matDatepicker]="pickerEnd" [(ngModel)]="filters.endDate">
+          <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+          <mat-datepicker #pickerEnd></mat-datepicker>
+        </mat-form-field>
+
+        <button mat-flat-button color="primary" class="w-100 mt-2" (click)="applyFilters()">Apply</button>
+      </div>
+    </mat-menu>
+
+    <mat-menu #statusMenu="matMenu">
+      <mat-selection-list [(ngModel)]="filters.statusAudit" (ngModelChange)="applyFilters()">
+        <mat-list-option *ngFor="let status of statuses" [value]="status">{{ status }}</mat-list-option>
+      </mat-selection-list>
+    </mat-menu>
+
+    <mat-menu #typeMenu="matMenu">
+      <mat-selection-list [(ngModel)]="filters.auditType" (ngModelChange)="applyFilters()">
+        <mat-list-option *ngFor="let type of auditTypes" [value]="type">{{ type }}</mat-list-option>
+      </mat-selection-list>
+    </mat-menu>
+
+    <!-- Table -->
+    <div class="table-container mb-24">
+      <table mat-table [dataSource]="audits" class="mat-elevation-z8 full-width-table">
+
+        <ng-container matColumnDef="dateAudit">
+          <th mat-header-cell *matHeaderCellDef>Date Audit</th>
+          <td mat-cell *matCellDef="let audit">{{ audit.dateAudit | date:'medium' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="statusAudit">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let audit">{{ audit.statusAudit }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="output">
+          <th mat-header-cell *matHeaderCellDef>Output</th>
+          <td mat-cell *matCellDef="let audit">{{ audit.output }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="reviewedDate">
+          <th mat-header-cell *matHeaderCellDef>Reviewed</th>
+          <td mat-cell *matCellDef="let audit">{{ audit.reviewedDate ? (audit.reviewedDate | date:'medium') : '—' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="auditType">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let audit">{{ audit.auditType }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="centered">Actions</th>
+          <td mat-cell *matCellDef="let audit" class="centered">
+            <button mat-icon-button color="primary" (click)="editAudit(audit)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteAudit(audit)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-controls d-flex justify-between align-center">
+      <button mat-stroked-button (click)="pageChanged(currentPage - 1)" [disabled]="currentPage === 0">Previous</button>
+      <span class="page-info">Page {{ currentPage + 1 }}</span>
+      <button mat-stroked-button (click)="pageChanged(currentPage + 1)" [disabled]="(currentPage + 1) * pageSize >= totalAudits">Next</button>
+    </div>
+
+  </mat-card-content>
+</mat-card>

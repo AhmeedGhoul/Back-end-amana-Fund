@@ -45,7 +45,7 @@ export const navItems: NavItem[] = [
   {
     displayName: 'Audit',
     iconName: 'file-search', // changed from 'document' to a more fitting audit icon
-    route: '/ui-components/tables',
+    route: '/admin/audit',
   },
   {
     navCap: 'Auth',

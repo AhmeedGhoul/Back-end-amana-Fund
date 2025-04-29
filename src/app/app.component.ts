@@ -9,11 +9,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import {AuthInterceptor} from "./pages/authentication/auth.interceptor";
+import { MatNativeDateModule } from '@angular/material/core';
+
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
-    RouterModule,  // For routing
+    RouterModule,
+    MatNativeDateModule,// For routing
     HttpClientModule, // For HTTP requests
     MaterialModule,
     MatDialogModule,

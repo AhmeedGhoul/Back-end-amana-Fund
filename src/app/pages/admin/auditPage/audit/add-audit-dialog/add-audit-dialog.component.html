@@ -1,0 +1,98 @@
+<mat-card>
+  <mat-card-content>
+
+    <h2>{{ isEditMode ? 'Edit Audit' : 'Add New Audit' }}</h2>
+
+    <!-- 🆕 Selected Activities Section (shows if any) -->
+    <div *ngIf="selectedActivities.length > 0" class="mb-16">
+      <h3>Selected Activities:</h3>
+      <mat-card class="p-16" style="background: #f5f5f5;">
+        <table mat-table [dataSource]="selectedActivities" class="mat-elevation-z2 full-width-table small-table">
+
+          <ng-container matColumnDef="activityName">
+            <th mat-header-cell *matHeaderCellDef>Activity</th>
+            <td mat-cell *matCellDef="let activity">{{ activity.activityName }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="activityDescription">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let activity">{{ activity.activityDescription }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="activityDate">
+            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <td mat-cell *matCellDef="let activity">{{ activity.activityDate | date:'short' }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['activityName', 'activityDescription', 'activityDate']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['activityName', 'activityDescription', 'activityDate'];"></tr>
+
+        </table>
+      </mat-card>
+    </div>
+
+    <!-- 💬 Form Audit -->
+    <form [formGroup]="auditForm" (ngSubmit)="submit()" class="d-flex flex-column gap-16">
+
+      <mat-form-field appearance="fill">
+        <mat-label>Date Audit</mat-label>
+        <input matInput [matDatepicker]="dateAuditPicker" formControlName="dateAudit">
+        <mat-datepicker-toggle matSuffix [for]="dateAuditPicker"></mat-datepicker-toggle>
+        <mat-datepicker #dateAuditPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="statusAudit">
+          <mat-option *ngFor="let status of auditStatusOptions" [value]="status">
+            {{ status }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Output</mat-label>
+        <input matInput formControlName="output">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Reviewed Date</mat-label>
+        <input matInput [matDatepicker]="reviewedDatePicker" formControlName="reviewedDate">
+        <mat-datepicker-toggle matSuffix [for]="reviewedDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #reviewedDatePicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Audit Type</mat-label>
+        <mat-select formControlName="auditType">
+          <mat-option *ngFor="let type of auditTypeOptions" [value]="type">
+            {{ type }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="d-flex justify-between mt-16">
+        <button mat-flat-button color="primary" type="submit">
+          {{ isEditMode ? 'Update' : 'Create' }}
+        </button>
+        <button mat-flat-button color="warn" (click)="close()" type="button">
+          Cancel
+        </button>
+      </div>
+
+    </form>
+
+  </mat-card-content>
+</mat-card>
+
+<style scoped>
+  .gap-16 { gap: 16px; }
+  .mt-16 { margin-top: 16px; }
+  .mb-16 { margin-bottom: 16px; }
+  .mb-8 { margin-bottom: 8px; }
+  .d-flex { display: flex; }
+  .flex-column { flex-direction: column; }
+  .justify-between { justify-content: space-between; }
+  .full-width-table { width: 100%; }
+  .small-table th, .small-table td { padding: 6px 8px; font-size: 13px; }
+</style>

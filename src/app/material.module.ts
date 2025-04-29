@@ -41,6 +41,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { AuditComponent } from './pages/admin/auditPage/audit/audit.component';
+import { AddAuditDialogComponent } from './pages/admin/auditPage/audit/add-audit-dialog/add-audit-dialog.component';
+import { ActivityLogComponent } from './pages/admin/auditPage/activity-log/activity-log.component';
 
 @NgModule({
   declarations: [],

@@ -1,0 +1,8 @@
+<div class="page-container p-24 d-flex flex-column gap-24">
+  <div class="section">
+    <app-activity-log (selectionChanged)="onActivitySelectionChanged($event)"></app-activity-log>  </div>
+
+  <div class="section">
+    <app-audit [selectedLogs]="selectedLogs"></app-audit>
+  </div>
+</div>
