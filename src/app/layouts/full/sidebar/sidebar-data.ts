@@ -40,7 +40,7 @@ export const navItems: NavItem[] = [
   {
     displayName: 'Agencies',
     iconName: 'building', // changed from 'agency' to valid organization icon
-    route: '/ui-components/forms',
+    route: '/admin/agency',
   },
   {
     displayName: 'Audit',

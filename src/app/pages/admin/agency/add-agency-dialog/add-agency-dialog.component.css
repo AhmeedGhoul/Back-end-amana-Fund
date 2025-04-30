@@ -1,0 +1,9 @@
+.gap-16 { gap: 16px; }
+.mt-16 { margin-top: 16px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-8 { margin-bottom: 8px; }
+.d-flex { display: flex; }
+.flex-column { flex-direction: column; }
+.justify-between { justify-content: space-between; }
+.full-width-table { width: 100%; }
+.small-table th, .small-table td { padding: 6px 8px; font-size: 13px; }
