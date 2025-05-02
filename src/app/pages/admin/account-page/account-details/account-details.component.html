@@ -1,0 +1,155 @@
+<div class="account-details-container">
+  <div class="header-section">
+    <div class="title-section">
+      <h1 class="page-title">Account Management</h1>
+      <p class="page-subtitle">Manage and monitor all bank accounts</p>
+    </div>
+    
+    <div class="action-buttons">
+      <button mat-raised-button color="primary" class="action-button" (click)="addAccount()">
+        <mat-icon>add</mat-icon>
+        Add New Account
+      </button>
+      
+      <app-account-actions 
+        [accountId]="selectedAccount?.id ?? null"
+        [userId]="selectedAccount?.userId ?? null">
+      </app-account-actions>
+    </div>
+  </div>
+
+  <mat-card class="main-card">
+    <div class="filter-section">
+      <div class="filter-container">
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Account Type</mat-label>
+          <mat-select [(ngModel)]="selectedType" (selectionChange)="applyFilters()">
+            <mat-option [value]="null">All Types</mat-option>
+            <mat-option *ngFor="let type of accountTypes" [value]="type">
+              {{type}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search by RIB</mat-label>
+          <input matInput [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" placeholder="Enter RIB">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+        <!-- Opening Date Column -->
+        <ng-container matColumnDef="date_Opening">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> 
+            <div class="column-header">
+              <mat-icon>calendar_today</mat-icon>
+              Opening Date
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let element"> 
+            <div class="cell-content">
+              {{element.date_Opening | date:'mediumDate'}}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Account Type Column -->
+        <ng-container matColumnDef="accountType">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            <div class="column-header">
+              <mat-icon>account_balance</mat-icon>
+              Account Type
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <div class="cell-content">
+              <span class="account-type" [ngClass]="element.accountType.toLowerCase()">
+                {{element.accountType}}
+              </span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Amount Column -->
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            <div class="column-header">
+              <mat-icon>attach_money</mat-icon>
+              Amount
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <div class="cell-content amount">
+              {{element.amount | currency:'TND'}}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- RIB Column -->
+        <ng-container matColumnDef="rib">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            <div class="column-header">
+              <mat-icon>credit_card</mat-icon>
+              RIB
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <div class="cell-content">
+              {{element.rib}}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Interest Rate Column -->
+        <ng-container matColumnDef="interestRate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            <div class="column-header">
+              <mat-icon>trending_up</mat-icon>
+              Interest Rate
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <div class="cell-content">
+              <span class="interest-rate" [ngClass]="{'high-rate': element.interestRate > 5}">
+                {{element.interestRate | percent:'1.2-2'}}
+              </span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="column-header">
+              <mat-icon>settings</mat-icon>
+              Actions
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <div class="cell-content actions">
+              <button mat-icon-button (click)="editAccount(element)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button (click)="deleteAccount(element)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <mat-paginator
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        [pageSize]="10"
+        showFirstLastButtons
+        aria-label="Select page of accounts">
+      </mat-paginator>
+    </div>
+  </mat-card>
+</div>

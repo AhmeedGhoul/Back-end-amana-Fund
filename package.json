@@ -30,7 +30,9 @@
     "rxjs": "~7.5.0",
     "sass": "^1.57.1",
     "tslib": "^2.3.0",
-    "zone.js": "~0.13.0"
+    "zone.js": "~0.13.0",
+    "chart.js": "^4.4.1",
+    "ng2-charts": "^5.0.4"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^16.2.0",

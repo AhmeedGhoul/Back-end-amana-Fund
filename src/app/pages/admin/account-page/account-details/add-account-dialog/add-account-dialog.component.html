@@ -1,0 +1,70 @@
+<h2 mat-dialog-title class="dialog-title">Create New Account</h2>
+
+<mat-dialog-content class="dialog-content">
+  <form [formGroup]="accountForm" class="account-form">
+    <div class="form-section">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>User</mat-label>
+        <mat-select formControlName="userId" required>
+          <mat-option *ngFor="let user of users" [value]="user.id">
+            {{user.firstName}} {{user.lastName}} ({{user.email}})
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>person</mat-icon>
+        <mat-error *ngIf="accountForm.get('userId')?.hasError('required')">
+          User is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Account Type</mat-label>
+        <mat-select formControlName="accountType" required>
+          <mat-option value="Epargne">Epargne</mat-option>
+          <mat-option value="Epargne Zeket">Epargne Zeket</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>account_balance</mat-icon>
+        <mat-error *ngIf="accountForm.get('accountType')?.hasError('required')">
+          Account type is required
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-section">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Amount</mat-label>
+        <input matInput type="number" formControlName="amount" required>
+        <mat-icon matPrefix>attach_money</mat-icon>
+        <span matSuffix>TND</span>
+        <mat-error *ngIf="accountForm.get('amount')?.hasError('required')">
+          Amount is required
+        </mat-error>
+        <mat-error *ngIf="accountForm.get('amount')?.hasError('min')">
+          Amount must be greater than 0
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Interest Rate</mat-label>
+        <input matInput type="number" formControlName="interestRate">
+        <mat-icon matPrefix>trending_up</mat-icon>
+        <span matSuffix>%</span>
+      </mat-form-field>
+    </div>
+
+    <div class="form-section">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>RIB</mat-label>
+        <input matInput formControlName="rib">
+        <mat-icon matPrefix>credit_card</mat-icon>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-button mat-dialog-close class="cancel-button">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" 
+          [disabled]="!accountForm.valid" class="submit-button">
+    Create Account
+  </button>
+</mat-dialog-actions> 

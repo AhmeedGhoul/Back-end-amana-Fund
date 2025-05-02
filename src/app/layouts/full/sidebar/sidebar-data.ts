@@ -18,9 +18,9 @@ export const navItems: NavItem[] = [
     route: '/admin/user',
   },
   {
-    displayName: 'Accounts',
+    displayName: 'Account',
     iconName: 'wallet', // changed from 'account' to a more fitting icon
-    route: '/ui-components/chips',
+    route: '/admin/account',
   },
   {
     displayName: 'Contracts',
