@@ -1,7 +1,9 @@
 import { Routes } from '@angular/router';
 import { FullComponent } from './layouts/full/full.component';
-import {AuthGuard} from "./pages/authentication/guards/auth.guard";
-import {BlankComponent} from "./layouts/blank/blank.component";
+import { AuthGuard } from "./pages/authentication/guards/auth.guard";
+import { BlankComponent } from "./layouts/blank/blank.component";
+import { SinistresComponent } from './sinistres/sinistres.component';
+import { ContractComponent } from './contract/contract.component';
 
 export const routes: Routes = [
   {
@@ -17,21 +19,26 @@ export const routes: Routes = [
         path: 'dashboard',
         loadChildren: () =>
           import('./pages/pages.routes').then((m) => m.PagesRoutes),
-        canActivate: [AuthGuard],      // Guard attached here (this triggers it!)
-
+        canActivate: [AuthGuard],
       },
       {
         path: 'admin',
         loadChildren: () =>
           import('./pages/admin/admin.routes').then(
             (m) => m.UiComponentsRoutes
-
           ),
-        canActivate: [AuthGuard],      // Guard attached here (this triggers it!)
-
+        canActivate: [AuthGuard],
       },
-
-
+      {
+        path: 'sinistres',
+        component: SinistresComponent,
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'contracts',
+        component: ContractComponent,
+        canActivate: [AuthGuard],
+      },
     ],
   },
   {

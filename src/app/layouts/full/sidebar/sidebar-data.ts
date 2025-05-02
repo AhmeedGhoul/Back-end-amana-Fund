@@ -6,7 +6,7 @@ export const navItems: NavItem[] = [
   },
   {
     displayName: 'Dashboard',
-    iconName: 'layout-dashboard', // corrected
+    iconName: 'layout-dashboard',
     route: '/dashboard',
   },
   {
@@ -14,37 +14,37 @@ export const navItems: NavItem[] = [
   },
   {
     displayName: 'Users',
-    iconName: 'user', // valid
+    iconName: 'user',
     route: '/admin/user',
   },
   {
     displayName: 'Accounts',
-    iconName: 'wallet', // changed from 'account' to a more fitting icon
+    iconName: 'wallet',
     route: '/ui-components/chips',
   },
   {
     displayName: 'Contracts',
-    iconName: 'file-text', // changed from 'contract' to a valid icon
-    route: '/ui-components/lists',
+    iconName: 'file-text',
+    route: '/contracts', // Corrected route
   },
   {
     displayName: 'Credit Pools',
-    iconName: 'receipt', // changed from 'credit' to valid financial icon
+    iconName: 'receipt',
     route: '/ui-components/menu',
   },
   {
     displayName: 'Sinistres',
-    iconName: 'alert-triangle', // changed from 'danger' to valid warning icon
-    route: '/ui-components/tooltips',
+    iconName: 'alert-triangle',
+    route: '/sinistres', // Corrected route
   },
   {
     displayName: 'Agencies',
-    iconName: 'building', // changed from 'agency' to valid organization icon
-    route: '/ui-components/forms',
+    iconName: 'building',
+    route: '/agencies', // Corrected route
   },
   {
     displayName: 'Audit',
-    iconName: 'file-search', // changed from 'document' to a more fitting audit icon
+    iconName: 'file-search',
     route: '/admin/audit',
   },
   {

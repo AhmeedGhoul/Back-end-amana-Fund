@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'; // Import FormsModule and ReactiveFormsModule
+
 // Material Form Controls
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -10,6 +12,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatNativeDateModule } from '@angular/material/core'; // Import MatNativeDateModule
 // Material Navigation
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -46,11 +49,20 @@ import { AddAuditDialogComponent } from './pages/admin/auditPage/audit/add-audit
 import { ActivityLogComponent } from './pages/admin/auditPage/activity-log/activity-log.component';
 import { FraudCaseComponent } from './pages/admin/auditPage/fraud-case/fraud-case.component';
 import { AddFraudCaseDialogComponent } from './pages/admin/auditPage/fraud-case/add-fraud-case-dialog/add-fraud-case-dialog.component';
+import { SinistresComponent } from './sinistres/sinistres.component';
+import { ContractComponent, ConfirmationDialogComponent } from './contract/contract.component'; // Import ConfirmationDialogComponent
 
 @NgModule({
   declarations: [
+
+    SinistresComponent,
+    ContractComponent,
+    ConfirmationDialogComponent // Declare ConfirmationDialogComponent
   ],
-  exports: [
+  imports: [  // Add these imports
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
     MatAutocompleteModule,
     MatCheckboxModule,
     MatDatepickerModule,
@@ -86,6 +98,48 @@ import { AddFraudCaseDialogComponent } from './pages/admin/auditPage/fraud-case/
     MatPaginatorModule,
     MatSortModule,
     MatTableModule,
+    MatNativeDateModule
   ],
+  exports: [
+    CommonModule, // Export CommonModule
+    FormsModule, // Export FormsModule
+    ReactiveFormsModule, // Export ReactiveFormsModule
+    MatAutocompleteModule,
+    MatCheckboxModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatRadioModule,
+    MatSelectModule,
+    MatSliderModule,
+    MatSlideToggleModule,
+    MatMenuModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    MatCardModule,
+    MatDividerModule,
+    MatExpansionModule,
+    MatGridListModule,
+    MatListModule,
+    MatStepperModule,
+    MatTabsModule,
+    MatTreeModule,
+    MatButtonModule,
+    MatButtonToggleModule,
+    MatBadgeModule,
+    MatChipsModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
+    MatRippleModule,
+    MatBottomSheetModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    MatTooltipModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatTableModule,
+    MatNativeDateModule
+  ]
 })
-export class MaterialModule {}
+export class MaterialModule { }

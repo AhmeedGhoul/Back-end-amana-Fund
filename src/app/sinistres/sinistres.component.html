@@ -1,0 +1,94 @@
+<!-- Sinistres List as Table -->
+<div *ngIf="!selectedSinistre && !showForm">
+  <h2>Sinistres List</h2>
+
+  <!-- Search Form -->
+  <div>
+    <label for="claimAmountSearch">Claim Amount:</label>
+    <input type="number" id="claimAmountSearch" [(ngModel)]="searchClaimAmount" (input)="searchSinistres()">
+
+    <label for="settlementDateSearch">Settlement Date:</label>
+    <input type="date" id="settlementDateSearch" [(ngModel)]="searchSettlementDate" (input)="searchSinistres()">
+
+    <button (click)="clearSearch()">Clear Search</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Claim Amount</th>
+        <th>Reinsurance Share</th>
+        <th>Settlement Date</th>
+        <th>Settlement Amount</th>
+        <th>User First Name</th>
+        <th>User Last Name</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let sinistre of sinistresList">
+        <td>{{ sinistre.idSinistre }}</td>
+        <td>{{ sinistre.claimAmount }}</td>
+        <td>{{ sinistre.reinsuranceShaire }}</td>
+        <td>{{ sinistre.settlementDate | date:'short' }}</td>
+        <td>{{ sinistre.settlementAmount }}</td>
+        <td>{{ sinistre.user?.firstName || 'Non attribué' }}</td>
+        <td>{{ sinistre.user?.lastName || 'Non attribué' }}</td>
+        <td>
+          <button (click)="selectSinistre(sinistre)">Update</button>
+          <button (click)="deleteSinistre(sinistre.idSinistre)">Delete</button>
+          <button (click)="downloadPdf(sinistre.idSinistre)">Download PDF</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Pagination Controls -->
+  <div>
+    <button [disabled]="page === 0" (click)="onPageChange({ pageIndex: page - 1, pageSize: size })">Previous</button>
+    <span>Page: {{ page + 1 }} / {{ totalElements ? (totalElements + size - 1) / size : 1 | number:'1.0-0' }}</span>
+    <button [disabled]="(page + 1) * size >= totalElements" (click)="onPageChange({ pageIndex: page + 1, pageSize: size })">Next</button>
+  </div>
+
+  <button (click)="showAddSinistreForm()">Add New Sinistre</button>
+
+  <!-- Excel Download Section -->
+  <div>
+    <label for="userIdInput">User ID:</label>
+    <input type="number" id="userIdInput" [(ngModel)]="userId">
+
+    <button (click)="downloadExcelForUser()">Download Excel</button>
+  </div>
+
+  <!-- Indemnification Calculator -->
+<div class="indemnification-calculator">
+  <h2>Indemnification Calculator</h2>
+  <div class="form-group">
+    <label for="sinistreId">Sinistre ID:</label>
+    <input type="number" id="sinistreId" [(ngModel)]="sinistreId" />
+  </div>
+  <button (click)="calculateIndemnification()">Calculate</button>
+
+  <div *ngIf="indemnisationAmount !== null" class="result">
+    <h3>Indemnification Amount:</h3>
+    <p>{{ indemnisationAmount | number: '1.2-2' }} DT</p>
+    <canvas id="myChart" #myChart></canvas>
+  </div>
+
+  <div *ngIf="errorMessage" class="error">
+    <p>{{ errorMessage }}</p>
+  </div>
+</div>
+<!-- Add New or Update Sinistre Form -->
+<div *ngIf="showForm">
+  <h2>{{ selectedSinistre ? 'Update Sinistre' : 'Add New Sinistre' }}</h2>
+  <form [formGroup]="sinistreForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="claimAmount">Claim Amount:</label>
+      <input id="claimAmount" formControlName="claimAmount" type="number" required />
+    </div>
+
+    <!-- ... (rest of the form) ... -->
+  </form>
+</div>

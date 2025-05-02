@@ -1,0 +1,142 @@
+<!-- Search Form -->
+<div class="search-form">
+  <h2>Search Contracts</h2>
+  <div class="form-group">
+    <label for="searchIdContrat">Contract ID:</label>
+    <input id="searchIdContrat" type="number" [(ngModel)]="searchIdContrat" />
+  </div>
+
+  <div class="form-group">
+    <label for="searchName">Name:</label>
+    <input id="searchName" type="text" [(ngModel)]="searchName" />
+  </div>
+
+  <div class="form-group">
+    <label for="searchDate">Date:</label>
+    <input id="searchDate" type="date" [(ngModel)]="searchDate" />
+  </div>
+
+  <button (click)="searchContracts()">Search</button>
+  <button (click)="clearSearch()">Clear</button>
+</div>
+
+<!-- Contracts List as Table -->
+<div *ngIf="!selectedContract && !showForm">
+  <h2>Contracts List</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Date</th>
+        <th>Name</th>
+        <th>Contact</th>
+        <th>Coverage Limit</th>
+        <th>Premium</th>
+        <th>Sinistre ID</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let contract of contractsList">
+        <td>{{ contract.idContrat }}</td>
+        <td>{{ contract.date | date : 'shortDate' }}</td>
+        <td>{{ contract.name }}</td>
+        <td>{{ contract.contact }}</td>
+        <td>{{ contract.coverageLimit | number }}</td>
+        <td>{{ contract.premium | number }}</td>
+        <td>{{ contract.sinistre || 'N/A' }}</td>
+        <td>
+          <button (click)="selectContract(contract)">Update</button>
+          <button (click)="deleteContract(contract.idContrat)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <button (click)="showAddContractForm()">Add New Contract</button>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <button
+      (click)="onPageChange({ pageIndex: page - 1, pageSize: size })"
+      [disabled]="page === 0"
+    >
+      Previous
+    </button>
+    <span>
+      Page {{ page + 1 }} of
+      {{
+        totalElements > 0 ? (totalElements + size - 1) / size : 0 | number :
+        '1.0-0'
+      }}
+    </span>
+    <button
+      (click)="onPageChange({ pageIndex: page + 1, pageSize: size })"
+      [disabled]="(page + 1) * size >= totalElements"
+    >
+      Next
+    </button>
+    <label for="pageSize">Items per page:</label>
+    <select
+      id="pageSize"
+      [(ngModel)]="size"
+      (change)="onPageChange({ pageIndex: 0, pageSize: size })"
+    >
+      <option value="5">5</option>
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+    </select>
+  </div>
+</div>
+
+<!-- Add New or Update Contract Form -->
+<div *ngIf="showForm">
+  <h2>{{ selectedContract ? 'Update Contract' : 'Add New Contract' }}</h2>
+  <form [formGroup]="contractForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="date">Date:</label>
+      <input id="date" formControlName="date" type="date" required />
+    </div>
+
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input id="name" formControlName="name" type="text" required />
+    </div>
+
+    <div class="form-group">
+      <label for="contact">Contact:</label>
+      <input id="contact" formControlName="contact" type="text" required />
+    </div>
+
+    <div class="form-group">
+      <label for="coverageLimit">Coverage Limit:</label>
+      <input
+        id="coverageLimit"
+        formControlName="coverageLimit"
+        type="number"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="premium">Premium:</label>
+      <input id="premium" formControlName="premium" type="number" required />
+    </div>
+
+    <!-- Sinistre Dropdown -->
+    <div class="form-group">
+      <label for="sinistre">Sinistre:</label>
+      <select id="sinistre" formControlName="sinistre">
+        <option [ngValue]="null">Select a Sinistre</option>
+        <option *ngFor="let sinistre of sinistresList" [ngValue]="sinistre.idSinistre">
+          {{ sinistre.idSinistre }}
+        </option>
+      </select>
+    </div>
+
+    <button type="submit" [disabled]="contractForm.invalid">
+      {{ selectedContract ? 'Update Contract' : 'Add Contract' }}
+    </button>
+    <button type="button" (click)="cancelAddContract()">Cancel</button>
+  </form>
+</div>

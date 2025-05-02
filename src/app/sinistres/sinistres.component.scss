@@ -1,0 +1,112 @@
+/* General Styling */
+h2 {
+  color: #2c3e50;
+  font-size: 24px;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+/* Sinistres Table Styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+td button {
+  padding: 5px 10px;
+  background-color: #2ecc71;
+  border: none;
+  cursor: pointer;
+  color: white;
+}
+
+td button:hover {
+  background-color: #27ae60;
+}
+
+/* Form Styling */
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input[type="number"],
+input[type="date"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+}
+
+p {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+button[disabled] {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+/* Indemnification Calculator Styling */
+.indemnification-calculator {
+  margin-top: 20px;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.indemnification-calculator .form-group {
+  margin-bottom: 10px;
+}
+
+.indemnification-calculator .result {
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+.indemnification-calculator .error {
+  color: red;
+}
+
+/* Chart Styling */
+#myChart {
+  width: 100%;
+  max-width: 400px; /* Adjust as needed */
+  height: auto;
+  margin-top: 10px;
+}
