@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MaterialModule } from '../../../material.module';
+import {NotificationService} from "../../../notification/Notification.service";
+import {AppNotification} from "../../../notification/Notification.model";
 
 @Component({
   selector: 'app-two-factor-auth',
@@ -18,7 +20,7 @@ import { MaterialModule } from '../../../material.module';
   templateUrl: './two-factor-auth.component.html',
 })
 export class TwoFactorAuthComponent {
-  constructor(private http: HttpClient, private router: Router, private snackBar: MatSnackBar) {}
+  constructor(private http: HttpClient, private router: Router, private snackBar: MatSnackBar ,private notificationService: NotificationService) {}
 
   form = new FormGroup({
     token: new FormControl('', Validators.required),
@@ -29,7 +31,12 @@ export class TwoFactorAuthComponent {
     this.http.get<any>(`/api/v1/auth/F2A?token=${token}`).subscribe({
       next: (res) => {
         localStorage.setItem('authToken', res.token); // Save token
-        this.snackBar.open('2FA Verified Successfully!', 'Close', { duration: 3000 });
+        this.notificationService.getUnseen().subscribe((notifications: AppNotification[]) => {
+          notifications.forEach(n =>
+            this.snackBar.open(n.message, 'Dismiss', { duration: 5000 })
+          );
+        });
+
         this.router.navigate(['/dashboard']);
       },
       error: () => {

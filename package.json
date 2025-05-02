@@ -26,6 +26,7 @@
     "angular-tabler-icons": "^2.7.0",
     "apexcharts": "^3.49.0",
     "ng-apexcharts": "1.7.6",
+    "ng-recaptcha": "^13.2.1",
     "ngx-scrollbar": "^11.0.0",
     "rxjs": "~7.5.0",
     "sass": "^1.57.1",

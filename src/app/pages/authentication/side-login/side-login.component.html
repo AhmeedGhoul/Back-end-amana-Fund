@@ -44,8 +44,13 @@
               <a href="javascript:void(0)" (click)="forgotPassword()">Forgot Password?</a>
             </div>
             <div *ngIf="errorMessage" class="text-danger m-b-12">{{ errorMessage }}</div>
-
-            <button mat-flat-button color="primary" class="w-100" type="submit">
+            <div class="recaptcha-wrapper">
+            <re-captcha
+              siteKey="6Lcc6ysrAAAAAPqPZRYF8vypm3Ig8dVTGR7-XUEo"
+              (resolved)="onCaptchaResolved($event)">
+            </re-captcha>
+            </div>
+            <button mat-flat-button color="primary" class="w-100" type="submit" [disabled]="form.invalid || !captchaResponse">
               Sign In
             </button>
           </form>

@@ -4,7 +4,18 @@
   <a *ngIf="showToggle"
      href="javascript:void(0)"
      (click)="toggleMobileNav.emit()"
-     class="d-flex justify-content-center ng-star-inserted icon-40 align-items-center mat-body-1">
+     class="d-flex justify-content-center icon-40 align-items-center mat-body-1">
     <i-tabler name="x" class="icon-20 d-flex"></i-tabler>
   </a>
 </div>
+
+<!-- Render nav items only after roles are ready -->
+<ng-container *ngIf="rolesReady">
+  <mat-nav-list class="sidebar-list">
+    <app-nav-item
+      *ngFor="let item of filteredNavItems"
+      [item]="item"
+      (notify)="toggleMobileNav.emit()">
+    </app-nav-item>
+  </mat-nav-list>
+</ng-container>

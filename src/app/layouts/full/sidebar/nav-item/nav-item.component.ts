@@ -11,6 +11,7 @@ import { NavService } from '../../../../services/nav.service';
 import { MaterialModule } from 'src/app/material.module';
 import { CommonModule } from '@angular/common';
 import { TablerIconComponent, TablerIconsModule } from 'angular-tabler-icons';
+import { AuthService } from '../../../../pages/authentication/side-login/auth.service';
 
 @Component({
   selector: 'app-nav-item',
@@ -27,7 +28,7 @@ export class AppNavItemComponent implements OnChanges {
   @Input() item: NavItem | any;
   @Input() depth: any;
 
-  constructor(public navService: NavService, public router: Router) {
+  constructor(private authService: AuthService,public navService: NavService, public router: Router) {
     if (this.depth === undefined) {
       this.depth = 0;
     }
@@ -47,6 +48,12 @@ export class AppNavItemComponent implements OnChanges {
       behavior: 'smooth',
     });
   }
+  canAccess(item: NavItem): boolean {
+    const userRoles = this.authService.getCurrentUser()?.roles || [];
+    const normalized = userRoles.map(r => r.replace('ROLE_', ''));
+    return !item.roles || item.roles.some(role => normalized.includes(role));
+  }
+
 
   onSubItemSelected(item: NavItem) {
 

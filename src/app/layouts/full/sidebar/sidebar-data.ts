@@ -16,6 +16,7 @@ export const navItems: NavItem[] = [
     displayName: 'Users',
     iconName: 'user', // valid
     route: '/admin/user',
+    roles: ['ADMIN']
   },
   {
     displayName: 'Accounts',
@@ -46,6 +47,7 @@ export const navItems: NavItem[] = [
     displayName: 'Audit',
     iconName: 'file-search', // changed from 'document' to a more fitting audit icon
     route: '/admin/audit',
+    roles: ['AUDITOR']
   },
   {
     navCap: 'Auth',

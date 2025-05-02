@@ -21,3 +21,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .page-info {
   font-weight: 500;
 }
+.recaptcha-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0; /* spacing above and below */
+}

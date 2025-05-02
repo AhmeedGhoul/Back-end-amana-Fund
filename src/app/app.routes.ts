@@ -1,7 +1,9 @@
 import { Routes } from '@angular/router';
 import { FullComponent } from './layouts/full/full.component';
-import {AuthGuard} from "./pages/authentication/guards/auth.guard";
-import {BlankComponent} from "./layouts/blank/blank.component";
+import { BlankComponent } from './layouts/blank/blank.component';
+import { AuthGuard } from './pages/authentication/guards/auth.guard';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
+import {DefaultRedirectComponent} from "./pages/default-redirect-component/default-redirect-component.component";
 
 export const routes: Routes = [
   {
@@ -10,28 +12,24 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: '/dashboard',
-        pathMatch: 'full',
+        component: DefaultRedirectComponent // no redirectTo here
       },
       {
         path: 'dashboard',
         loadChildren: () =>
           import('./pages/pages.routes').then((m) => m.PagesRoutes),
-        canActivate: [AuthGuard],      // Guard attached here (this triggers it!)
-
+        canActivate: [AuthGuard],
       },
       {
         path: 'admin',
         loadChildren: () =>
-          import('./pages/admin/admin.routes').then(
-            (m) => m.UiComponentsRoutes
-
-          ),
-        canActivate: [AuthGuard],      // Guard attached here (this triggers it!)
-
+          import('./pages/admin/admin.routes').then((m) => m.AdminRoutes),
+        canActivate: [AuthGuard], // only logged in
       },
-
-
+      {
+        path: 'not-found',
+        component: NotFoundComponent,
+      },
     ],
   },
   {
@@ -41,14 +39,12 @@ export const routes: Routes = [
       {
         path: 'authentication',
         loadChildren: () =>
-          import('./pages/authentication/authentication.routes').then(
-            (m) => m.AuthenticationRoutes
-          ),
+          import('./pages/authentication/authentication.routes').then((m) => m.AuthenticationRoutes),
       },
     ],
   },
   {
     path: '**',
-    redirectTo: 'authentication/error',
+    redirectTo: 'not-found',
   },
 ];

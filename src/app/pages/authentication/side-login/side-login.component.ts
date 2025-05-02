@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from './auth.service'; // Adjust path if needed
 import { AuthRequest } from './auth.model';   // Adjust path if needed
 import { CommonModule } from '@angular/common';
+import { RecaptchaModule } from 'ng-recaptcha';
 
 @Component({
   selector: 'app-side-login',
@@ -23,6 +24,7 @@ import { CommonModule } from '@angular/common';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
+    RecaptchaModule,
   ],
   templateUrl: './side-login.component.html',
 })
@@ -60,4 +62,10 @@ export class AppSideLoginComponent {
       }
     });
   }
+  captchaResponse: string = '';
+
+  onCaptchaResolved(captcha: string | null): void {
+    this.captchaResponse = captcha || '';
+  }
+
 }

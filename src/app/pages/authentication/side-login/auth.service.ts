@@ -39,4 +39,18 @@ export class AuthService {
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
+  getCurrentUser(): { roles: string[] } {
+    const token = localStorage.getItem('authToken');
+    if (!token) return { roles: [] };
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return {
+        roles: payload.roles || payload.authorities || []
+      };
+    } catch (e) {
+      console.error('Failed to decode JWT', e);
+      return { roles: [] };
+    }
+  }
 }

@@ -46,9 +46,13 @@ import { AddAuditDialogComponent } from './pages/admin/auditPage/audit/add-audit
 import { ActivityLogComponent } from './pages/admin/auditPage/activity-log/activity-log.component';
 import { FraudCaseComponent } from './pages/admin/auditPage/fraud-case/fraud-case.component';
 import { AddFraudCaseDialogComponent } from './pages/admin/auditPage/fraud-case/add-fraud-case-dialog/add-fraud-case-dialog.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { LoaderComponent } from './pages/loader/loader.component';
 
 @NgModule({
   declarations: [
+
+    NotFoundComponent,
   ],
   exports: [
     MatAutocompleteModule,
