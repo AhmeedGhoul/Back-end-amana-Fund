@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatTable, MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatTable, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,6 +13,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { HttpClientModule } from '@angular/common/http';
+import { MatTableDataSource } from '@angular/material/table';
 import { Account, Page } from '@app/models/account.model';
 import { AddAccountDialogComponent } from './add-account-dialog/add-account-dialog.component';
 import { AccountActionsComponent } from './account-actions/account-actions.component';
@@ -61,7 +62,7 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
     'actions'
   ];
   
-  dataSource: Account[] = [];
+  dataSource: MatTableDataSource<Account> = new MatTableDataSource<Account>([]);
   accountTypes = ['EPARGNE', 'EPARGNE_ZEKET'];
   selectedType: string | null = null;
   searchTerm: string = '';
@@ -71,6 +72,14 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
   totalElements = 0;
   pageIndex = 0;
   pageSize = 10;
+
+  resetSearch() {
+    // Reset search term, RIB error, and reload all accounts
+    this.searchTerm = '';
+    this.ribError = false;
+    this.ribErrorMessage = '';
+    this.loadAccounts();
+  }
 
   validateRib(): boolean {
     // If search term is empty or just 'TN', reset and show all accounts
@@ -113,7 +122,7 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
         if (accounts.length === 0) {
           this.ribError = true;
           this.ribErrorMessage = 'RIB does not exist';
-          this.dataSource = []; // Clear data source
+          this.dataSource.data = []; // Clear data source
           this.totalElements = 0;
         } else {
           // Check if filtered accounts match the selected account type
@@ -124,12 +133,12 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
           if (filteredAccounts.length === 0) {
             this.ribError = true;
             this.ribErrorMessage = `No ${this.selectedAccountType} accounts found for this RIB`;
-            this.dataSource = [];
+            this.dataSource.data = [];
             this.totalElements = 0;
           } else {
             this.ribError = false;
             this.ribErrorMessage = '';
-            this.dataSource = new MatTableDataSource(filteredAccounts);
+            this.dataSource.data = filteredAccounts;
             this.totalElements = filteredAccounts.length;
           }
         }
@@ -143,7 +152,7 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
         } else {
           this.ribError = true;
           this.ribErrorMessage = err.message || 'Error validating RIB';
-          this.dataSource = []; // Clear data source
+          this.dataSource.data = []; // Clear data source
           this.totalElements = 0;
         }
       }
@@ -181,18 +190,9 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Setup pagination and sorting
-    if (this.paginator) {
-      this.paginator.page.subscribe(() => this.loadAccounts());
-    }
-    if (this.sort) {
-      this.sort.sortChange.subscribe(() => {
-        if (this.paginator) {
-          this.paginator.pageIndex = 0;
-        }
-        this.loadAccounts();
-      });
-    }
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+    this.loadAccounts();
   }
 
   loadAccounts(): void {
@@ -233,7 +233,7 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
       this.accountService.filterAccountsByType(backendAccountType).subscribe({
         next: (accounts: Account[]) => {
           console.log('Filtered accounts by type:', accounts);
-          this.dataSource = accounts.map(account => ({
+          this.dataSource.data = accounts.map(account => ({
             ...account,
             displayAccountType: this.getDisplayAccountType(account.accountType)
           }));
@@ -255,7 +255,7 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
           
           if (accounts.length > 0) {
             // If accounts found, update the datasource
-            this.dataSource = accounts.map(account => ({
+            this.dataSource.data = accounts.map(account => ({
               ...account,
               displayAccountType: this.getDisplayAccountType(account.accountType)
             }));
@@ -265,7 +265,7 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
             }
           } else {
             // Clear datasource if no accounts found
-            this.dataSource = [];
+            this.dataSource.data = [];
             this.totalElements = 0;
             if (this.table) {
               this.table.renderRows();
@@ -282,7 +282,7 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
           console.error('Account RIB filtering error:', err);
           
           // Clear datasource on error
-          this.dataSource = [];
+          this.dataSource.data = [];
           this.totalElements = 0;
           if (this.table) {
             this.table.renderRows();
@@ -311,7 +311,7 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
         next: (response: Page<Account>) => {
           console.log('Accounts retrieved successfully:', response);
           // Map backend enum to display type
-          this.dataSource = response.content.map(account => ({
+          this.dataSource.data = response.content.map(account => ({
             ...account,
             displayAccountType: this.getDisplayAccountType(account.accountType)
           }));
@@ -390,7 +390,7 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
     });
 
     // Reset data source to prevent empty view
-    this.dataSource = [];
+    this.dataSource.data = [];
     this.totalElements = 0;
     if (this.table) {
       this.table.renderRows();

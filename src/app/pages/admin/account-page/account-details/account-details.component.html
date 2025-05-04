@@ -167,20 +167,29 @@
       </table>
 
       <!-- Empty State View -->
-      <div *ngIf="dataSource.length === 0" class="empty-state">
-        <div class="empty-state-content">
-          <img *ngIf="ribError" src="assets/images/error-illustration.svg" alt="Error" class="empty-state-image">
-          <img *ngIf="!ribError" src="assets/images/no-data-illustration.svg" alt="No Data" class="empty-state-image">
-          
-          <h2 class="empty-state-title">
-            {{ ribError ? ribErrorMessage : 'No Accounts Found' }}
-          </h2>
-          
-          <p class="empty-state-description">
-            {{ ribError ? 'Please check the RIB and try again.' : 'There are no accounts to display.' }}
-          </p>
+      <div *ngIf="dataSource.data.length === 0" class="empty-state">
+        <div class="empty-state-container">
+          <div class="empty-state-content">
+            <div class="empty-state-icon">
+              <mat-icon class="error-icon">{{ ribError ? 'error_outline' : 'info_outline' }}</mat-icon>
+            </div>
+            <h2 class="empty-state-title">{{ ribError ? 'Invalid RIB' : 'No Accounts Found' }}</h2>
+            <p class="empty-state-description">
+              {{ ribError 
+                 ? 'The RIB you entered does not exist or is incorrect. Please verify the RIB and try again.' 
+                 : 'There are currently no accounts to display in this view.' 
+              }}
+            </p>
+            <div class="empty-state-actions">
+              <button mat-stroked-button color="primary" (click)="resetSearch()">
+                <mat-icon>refresh</mat-icon>
+                Reset Search
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+
     </div>
 
     <mat-paginator
