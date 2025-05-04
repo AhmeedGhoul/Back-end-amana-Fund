@@ -12,8 +12,7 @@
       </button>
       
       <app-account-actions 
-        [accountId]="selectedAccount?.id ?? null"
-        [userId]="selectedAccount?.userId ?? null">
+        [accountId]="selectedAccount?.id ?? null">
       </app-account-actions>
     </div>
   </div>
@@ -31,16 +30,38 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="search-field">
+        <mat-form-field appearance="outline" class="search-field" [class.mat-form-field-invalid]="ribError">
           <mat-label>Search by RIB</mat-label>
-          <input matInput [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" placeholder="Enter RIB">
-          <mat-icon matSuffix>search</mat-icon>
+          <input matInput 
+            [(ngModel)]="searchTerm" 
+            (input)="validateRib()"
+            (keyup.enter)="loadAccounts()"
+            placeholder="Enter RIB (e.g., TN000000001312374017)"
+            required
+            pattern="^TN\d{15}$">
+          <mat-icon matSuffix (click)="loadAccounts()">search</mat-icon>
+          <mat-error *ngIf="ribError">{{ ribErrorMessage }}</mat-error>
         </mat-form-field>
       </div>
     </div>
 
     <div class="table-container">
       <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+        <!-- Client Email Column -->
+        <ng-container matColumnDef="clientEmail">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            <div class="column-header">
+              <mat-icon>email</mat-icon>
+              Client Email
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <div class="cell-content">
+              {{element.clientEmail}}
+            </div>
+          </td>
+        </ng-container>
+
         <!-- Opening Date Column -->
         <ng-container matColumnDef="date_Opening">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> 
@@ -58,19 +79,20 @@
 
         <!-- Account Type Column -->
         <ng-container matColumnDef="accountType">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> 
             <div class="column-header">
               <mat-icon>account_balance</mat-icon>
               Account Type
             </div>
           </th>
-          <td mat-cell *matCellDef="let element">
+          <td mat-cell *matCellDef="let element"> 
             <div class="cell-content">
               <span class="account-type" [ngClass]="element.accountType.toLowerCase()">
-                {{element.accountType}}
+                {{element.displayAccountType || element.accountType}}
               </span>
             </div>
           </td>
+          <td mat-footer-cell *matFooterCellDef></td>
         </ng-container>
 
         <!-- Amount Column -->
@@ -144,12 +166,28 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
 
-      <mat-paginator
-        [pageSizeOptions]="[5, 10, 25, 100]"
-        [pageSize]="10"
-        showFirstLastButtons
-        aria-label="Select page of accounts">
-      </mat-paginator>
+      <!-- Empty State View -->
+      <div *ngIf="dataSource.length === 0" class="empty-state">
+        <div class="empty-state-content">
+          <img *ngIf="ribError" src="assets/images/error-illustration.svg" alt="Error" class="empty-state-image">
+          <img *ngIf="!ribError" src="assets/images/no-data-illustration.svg" alt="No Data" class="empty-state-image">
+          
+          <h2 class="empty-state-title">
+            {{ ribError ? ribErrorMessage : 'No Accounts Found' }}
+          </h2>
+          
+          <p class="empty-state-description">
+            {{ ribError ? 'Please check the RIB and try again.' : 'There are no accounts to display.' }}
+          </p>
+        </div>
+      </div>
     </div>
+
+    <mat-paginator
+      [pageSizeOptions]="pageSizeOptions"
+      [length]="totalElements"
+      showFirstLastButtons
+      aria-label="Select page of account records">
+    </mat-paginator>
   </mat-card>
 </div>

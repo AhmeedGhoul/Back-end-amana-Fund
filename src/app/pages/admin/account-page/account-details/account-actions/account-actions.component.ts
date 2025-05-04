@@ -22,69 +22,64 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class AccountActionsComponent {
   @Input() accountId: number | null = null;
-  @Input() userId: number | null = null;
 
   constructor(
     private accountService: AccountService,
     private snackBar: MatSnackBar
   ) {}
 
-  sendEmail(): void {
-    if (!this.accountId || !this.userId) {
-      this.snackBar.open('Please select an account first', 'Close', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
-      return;
-    }
+  // sendEmail(): void {
+  //   if (!this.accountId )
+  //     return;
+  //   }
 
-    this.accountService.sendAccountEmail(this.accountId, this.userId).subscribe({
-      next: () => {
-        this.snackBar.open('Email sent successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
-      },
-      error: (error: HttpErrorResponse) => {
-        this.snackBar.open('Failed to send email: ' + error.message, 'Close', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-      }
-    });
-  }
+  //   this.accountService.sendAccountEmail(this.accountId).subscribe({
+  //     next: () => {
+  //       this.snackBar.open('Email sent successfully', 'Close', {
+  //         duration: 3000,
+  //         panelClass: ['success-snackbar']
+  //       });
+  //     },
+  //     error: (error: HttpErrorResponse) => {
+  //       this.snackBar.open('Failed to send email: ' + error.message, 'Close', {
+  //         duration: 3000,
+  //         panelClass: ['error-snackbar']
+  //       });
+  //     }
+  //   });
+  // }
 
-  exportToExcel(): void {
-    if (!this.accountId) {
-      this.snackBar.open('Please select an account first', 'Close', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
-      return;
-    }
+  // exportToExcel(): void {
+  //   if (!this.accountId) {
+  //     this.snackBar.open('Please select an account first', 'Close', {
+  //       duration: 3000,
+  //       panelClass: ['error-snackbar']
+  //     });
+  //     return;
+  //   }
 
-    this.accountService.exportAccountToExcel(this.accountId).subscribe({
-      next: (response: Blob) => {
-        // Create a blob from the response
-        const blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  //   this.accountService.exportAccountToExcel(this.accountId).subscribe({
+  //     next: (response: Blob) => {
+  //       // Create a blob from the response
+  //       const blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         
-        // Create a link element and trigger download
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = `account_${this.accountId}_details.xlsx`;
-        link.click();
+  //       // Create a link element and trigger download
+  //       const link = document.createElement('a');
+  //       link.href = window.URL.createObjectURL(blob);
+  //       link.download = `account_${this.accountId}_details.xlsx`;
+  //       link.click();
         
-        this.snackBar.open('Excel file downloaded successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
-      },
-      error: (error: HttpErrorResponse) => {
-        this.snackBar.open('Failed to export to Excel: ' + error.message, 'Close', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-      }
-    });
-  }
+  //       this.snackBar.open('Excel file downloaded successfully', 'Close', {
+  //         duration: 3000,
+  //         panelClass: ['success-snackbar']
+  //       });
+  //     },
+  //     error: (error: HttpErrorResponse) => {
+  //       this.snackBar.open('Failed to export to Excel: ' + error.message, 'Close', {
+  //         duration: 3000,
+  //         panelClass: ['error-snackbar']
+  //       });
+  //     }
+  //   });
+  // }
 } 

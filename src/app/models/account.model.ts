@@ -1,9 +1,15 @@
 export interface Account {
-  id: number;
-  userId: number;
-  date_Opening: string;
-  accountType: string;
-  amount: number;
+  id?: number | null;
+  clientEmail: string;  // Changed from userId
+  date_Opening?: string | null;
+  accountType?: string | null;
+  amount?: number;
   rib: string;
-  interestRate: number;
-} 
+  interestRate?: number;
+  agentId?: number;     // New field
+}
+
+export interface Page<T> {
+  content: T[];
+  totalElements: number;
+}
