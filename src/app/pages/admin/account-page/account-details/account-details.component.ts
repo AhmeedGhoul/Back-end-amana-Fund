@@ -10,9 +10,12 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { HttpClientModule } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { Account, Page } from '@app/models/account.model';
 import { AddAccountDialogComponent } from './add-account-dialog/add-account-dialog.component';
@@ -39,6 +42,8 @@ import { HttpErrorResponse } from '@angular/common/http';
     MatSelectModule,
     MatCardModule,
     HttpClientModule,
+    RouterModule,
+    RouterLink,
     AccountActionsComponent
   ],
   templateUrl: './account-details.component.html',
@@ -174,18 +179,17 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
   constructor(
     private accountService: AccountService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {}
 
   openAccountDetails(account: Account) {
-    // Open a dialog to show account details
-    const dialogRef = this.dialog.open(AddAccountDialogComponent, {
-      width: '600px',
-      data: {
-        account: account,
-        readOnly: true // Prevent editing
-      }
-    });
+    // Navigate to full account details page
+    if (account.rib) {
+      this.router.navigate(['/admin/accounts/details', account.rib]);
+    } else {
+      this.snackBar.open('Cannot view account details: RIB is missing', 'Close', { duration: 3000 });
+    }
   }
 
   private getHeaders() {

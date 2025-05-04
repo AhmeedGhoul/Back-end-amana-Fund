@@ -1,0 +1,34 @@
+<div class="account-full-details-container">
+  <mat-card class="details-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>account_balance</mat-icon>
+        Account Full Details
+      </mat-card-title>
+      <mat-card-subtitle *ngIf="account">RIB: {{ account.rib }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner></mat-spinner>
+        <p>Loading account details...</p>
+      </div>
+
+      <div *ngIf="!loading" class="details-grid">
+        <div *ngFor="let detail of accountDetails" class="detail-item">
+          <div class="detail-label">{{ detail.attribute }}</div>
+          <div class="detail-value">{{ detail.value }}</div>
+        </div>
+      </div>
+
+
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-stroked-button color="primary" routerLink="/admin/account">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Accounts
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
