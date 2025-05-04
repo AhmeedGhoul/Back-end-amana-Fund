@@ -93,6 +93,204 @@ export class AccountService {
     );
   }
 
+  getAccountByRib(rib: string): Observable<Account> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+
+    // Trim and validate RIB before sending
+    const trimmedRib = rib.trim();
+    if (!trimmedRib) {
+      return throwError(() => new Error('RIB cannot be empty'));
+    }
+
+    return this.http.get<Account>(`${this.apiUrl}/by-rib/${trimmedRib}`, { headers }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error fetching account by RIB:', {
+          status: error.status,
+          message: error.message,
+          errorBody: error.error
+        });
+        return throwError(() => error);
+      })
+    );
+  }
+
+  updateAccount(account: Account): Observable<Account> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+
+    // Deep clone the account to avoid modifying the original object
+    const accountToUpdate = JSON.parse(JSON.stringify(account));
+
+    // Validate required fields
+    const requiredFields = ['id', 'rib'];
+    const missingFields = requiredFields.filter(field => 
+      !accountToUpdate[field] || accountToUpdate[field] === null
+    );
+
+    if (missingFields.length > 0) {
+      console.error('Missing required fields:', missingFields);
+      return throwError(() => new Error(`Missing required fields: ${missingFields.join(', ')}`));
+    }
+
+    // Specific fields to keep
+    const fieldsToKeep = [
+      'id', 'date_Opening', 'accountType', 'rib', 'amount', 'clientEmail', 
+      'agent', 'zakatTransactions', 'zakatTransactionDates', 
+      'nissabReachedDate', 'interestRate', 'eligibleForZakat'
+    ];
+
+    // Filter account to only include specified fields
+    const filteredAccount: any = {};
+    fieldsToKeep.forEach(field => {
+      if (accountToUpdate.hasOwnProperty(field)) {
+        // Special handling for nested objects
+        if (field === 'agent' && accountToUpdate[field]) {
+          // Ensure only specific agent fields are included
+          const agentFieldsToKeep = [
+            'id', 'firstName', 'lastName', 'email', 'phoneNumber'
+          ];
+          filteredAccount[field] = {};
+          agentFieldsToKeep.forEach(agentField => {
+            if (accountToUpdate[field][agentField] !== undefined) {
+              filteredAccount[field][agentField] = accountToUpdate[field][agentField];
+            }
+          });
+        } else if (accountToUpdate[field] !== null && accountToUpdate[field] !== undefined) {
+          filteredAccount[field] = accountToUpdate[field];
+        }
+      }
+    });
+
+    // Validate data types and formats
+    const validationErrors: string[] = [];
+    
+    // Validate amount
+    if (filteredAccount.amount !== undefined) {
+      if (typeof filteredAccount.amount !== 'number' || filteredAccount.amount < 0) {
+        validationErrors.push('Amount must be a non-negative number');
+      }
+    }
+
+    // Validate email
+    if (filteredAccount.clientEmail) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(filteredAccount.clientEmail)) {
+        validationErrors.push('Invalid email format');
+      }
+    }
+
+    // If validation errors exist, throw an error
+    if (validationErrors.length > 0) {
+      console.error('Validation Errors:', validationErrors);
+      return throwError(() => new Error(`Validation failed: ${validationErrors.join(', ')}`));
+    }
+
+    // Log the filtered and validated account data before sending
+    console.log('Validated Account Update Request:', {
+      filteredAccount: JSON.stringify(filteredAccount, null, 2),
+      originalAccount: JSON.stringify(accountToUpdate, null, 2)
+    });
+
+    return this.http.put<Account>(`${this.apiUrl}/updateaccount`, filteredAccount, { 
+      headers, 
+      observe: 'response' // Get full response to inspect headers and status
+    }).pipe(
+      map(response => {
+        // Log successful response details
+        console.log('Update Account Response:', {
+          status: response.status,
+          headers: response.headers.keys(),
+          body: response.body
+        });
+        
+        // Ensure non-null Account is returned
+        if (!response.body) {
+          throw new Error('No account data returned');
+        }
+        return response.body;
+      }),
+      catchError((error: HttpErrorResponse) => {
+        // Comprehensive error logging
+        console.error('Detailed Account Update Error:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          errorBody: error.error,
+          headers: error.headers?.keys(),
+          url: error.url,
+          requestBody: filteredAccount
+        });
+
+        // Detailed error handling based on status
+        let errorMessage = 'Failed to update account';
+        let detailedErrorInfo = 'No additional details';
+
+        // Try to extract detailed error information
+        try {
+          // Check for different possible error response formats
+          if (error.error instanceof ErrorEvent) {
+            // Client-side error
+            detailedErrorInfo = error.error.message;
+          } else if (typeof error.error === 'string') {
+            // Might be a string error message
+            detailedErrorInfo = error.error;
+          } else if (error.error && typeof error.error === 'object') {
+            // Try to extract message from different possible keys
+            detailedErrorInfo = error.error.message || 
+                                error.error.error || 
+                                error.error.detail || 
+                                JSON.stringify(error.error);
+          }
+        } catch (e) {
+          console.warn('Error extracting detailed error info:', e);
+        }
+
+        // Specific error handling based on status
+        switch (error.status) {
+          case 400:
+            errorMessage = 'Invalid account data';
+            break;
+          case 401:
+            errorMessage = 'Unauthorized';
+            break;
+          case 403:
+            errorMessage = 'Forbidden';
+            break;
+          case 404:
+            errorMessage = 'Account not found';
+            break;
+          case 500:
+            errorMessage = 'Server error';
+            break;
+          case 0:
+            errorMessage = 'Network error';
+            break;
+        }
+
+        // Combine error message with detailed info
+        if (detailedErrorInfo !== 'No additional details') {
+          errorMessage += `: ${detailedErrorInfo}`;
+        }
+
+        console.error('Full Error Details:', {
+          errorMessage,
+          detailedErrorInfo,
+          originalError: error
+        });
+
+        // Rethrow error with detailed message
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
   filterAccountsByRib(rib: string): Observable<Account[]> {
     const token = localStorage.getItem('authToken');
     const headers = new HttpHeaders({

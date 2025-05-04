@@ -1,4 +1,4 @@
-<div class="account-full-details-container">
+<div class="account-full-details-container" style="max-width: 800px; margin: 0 auto; padding: 20px;">
   <mat-card class="details-card">
     <mat-card-header>
       <mat-card-title>
@@ -17,10 +17,28 @@
       <div *ngIf="!loading" class="details-grid">
         <div *ngFor="let detail of accountDetails" class="detail-item">
           <div class="detail-label">{{ detail.attribute }}</div>
-          <div class="detail-value">{{ detail.value }}</div>
+          <div class="detail-value">
+            <ng-container *ngIf="!isEditMode || !isEditableField(detail.attribute)">
+              {{ detail.value }}
+            </ng-container>
+            <ng-container *ngIf="isEditMode && isEditableField(detail.attribute)">
+              <input 
+                *ngIf="detail.attribute === 'Amount'"
+                [(ngModel)]="editableAccount.amount"
+                type="number"
+                class="edit-input"
+              >
+            <input 
+                *ngIf="detail.attribute === 'Client Email'"
+                [(ngModel)]="editableAccount.clientEmail"
+                type="email"
+                class="edit-input"
+              >
+
+            </ng-container>
+          </div>
         </div>
       </div>
-
 
     </mat-card-content>
 
@@ -29,6 +47,33 @@
         <mat-icon>arrow_back</mat-icon>
         Back to Accounts
       </button>
+      <button 
+        *ngIf="!isEditMode" 
+        mat-raised-button 
+        color="accent" 
+        (click)="toggleEditMode()"
+      >
+        <mat-icon>edit</mat-icon>
+        Edit Account
+      </button>
+      <ng-container *ngIf="isEditMode">
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="saveAccountChanges()"
+        >
+          <mat-icon>save</mat-icon>
+          Save Changes
+        </button>
+        <button 
+          mat-stroked-button 
+          color="warn" 
+          (click)="cancelEditMode()"
+        >
+          <mat-icon>cancel</mat-icon>
+          Cancel
+        </button>
+      </ng-container>
     </mat-card-actions>
   </mat-card>
 </div>
