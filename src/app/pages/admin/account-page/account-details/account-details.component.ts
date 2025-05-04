@@ -53,12 +53,9 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
   ribErrorMessage = '';
 
   displayedColumns: string[] = [
-    'date_Opening',
-    'accountType',
-    'clientEmail',
-    'amount',
     'rib',
-    'interestRate',
+    'accountType',
+    'amount',
     'actions'
   ];
   
@@ -179,6 +176,17 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {}
+
+  openAccountDetails(account: Account) {
+    // Open a dialog to show account details
+    const dialogRef = this.dialog.open(AddAccountDialogComponent, {
+      width: '600px',
+      data: {
+        account: account,
+        readOnly: true // Prevent editing
+      }
+    });
+  }
 
   private getHeaders() {
     // Implement headers retrieval logic

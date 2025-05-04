@@ -80,15 +80,28 @@
           class="cancel-button">
     Cancel
   </button>
-  <button mat-raised-button 
-          color="primary" 
-          (click)="onSubmit()" 
-          [disabled]="accountForm.invalid || isSubmitting"
-          class="submit-button">
-    <span *ngIf="!isSubmitting">Create Account</span>
-    <span *ngIf="isSubmitting" class="loading-state">
-      <mat-spinner diameter="20" color="accent"></mat-spinner>
-      Processing...
-    </span>
-  </button>
+  
+  <ng-container *ngIf="!isReadOnly">
+    <button mat-raised-button 
+            color="primary" 
+            (click)="onSubmit()" 
+            [disabled]="accountForm.invalid || isSubmitting"
+            class="submit-button">
+      <span *ngIf="!isSubmitting">
+        <mat-icon>save</mat-icon>
+        Create Account
+      </span>
+      <span *ngIf="isSubmitting" class="loading-state">
+        <mat-spinner diameter="20" color="accent"></mat-spinner>
+        Processing...
+      </span>
+    </button>
+  </ng-container>
+  
+  <ng-container *ngIf="isReadOnly">
+    <button mat-stroked-button color="primary" type="button" (click)="dialogRef.close()">
+      <mat-icon>close</mat-icon>
+      Close
+    </button>
+  </ng-container>
 </mat-dialog-actions>

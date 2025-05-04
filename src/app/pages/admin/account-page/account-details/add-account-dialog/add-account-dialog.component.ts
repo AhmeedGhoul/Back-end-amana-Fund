@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AccountService } from '../../../../../services/account.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Account } from '@app/models/account.model';
 
 @Component({
   selector: 'app-add-account-dialog',
@@ -36,24 +37,37 @@ export class AddAccountDialogComponent implements OnInit {
   accountTypes = ['EPARGNE', 'EPARGNE_ZEKET'];
   isSubmitting = false;
 
+  isReadOnly = false;
+
   constructor(
     private fb: FormBuilder,
     private accountService: AccountService,
-    private dialogRef: MatDialogRef<AddAccountDialogComponent>,
-    private snackBar: MatSnackBar
+    public dialogRef: MatDialogRef<AddAccountDialogComponent>,
+    private snackBar: MatSnackBar,
+    @Inject(MAT_DIALOG_DATA) public data: { account?: Account, readOnly?: boolean }
   ) {
+    this.isReadOnly = data?.readOnly || false;
+
     this.accountForm = this.fb.group({
-      clientEmail: ['', [Validators.required, Validators.email]], // Added clientEmail field
-      accountType: ['', Validators.required],
-      amount: [0, [Validators.required, Validators.min(0), Validators.max(1000000)]], // Allow 0, set reasonable max
+      clientEmail: [{ value: '', disabled: this.isReadOnly }, [Validators.required, Validators.email]],
+      accountType: [{ value: '', disabled: this.isReadOnly }, Validators.required],
+      amount: [{ value: 0, disabled: this.isReadOnly }, [Validators.required, Validators.min(0), Validators.max(1000000)]],
       interestRate: new FormControl({ value: '', disabled: true }),
       _databaseInterestRate: new FormControl({ value: 0, disabled: true }),
       rib: new FormControl({ value: '', disabled: true })
     });
+
+    // If an account is passed in read-only mode, populate the form
+    if (this.isReadOnly && data.account) {
+      this.populateFormWithAccount(data.account);
+    }
   }
 
   ngOnInit(): void {
-    this.setupAccountTypeListener();
+    // Only set up account type listener if not in read-only mode
+    if (!this.isReadOnly) {
+      this.setupAccountTypeListener();
+    }
   }
 
   private setupAccountTypeListener(): void {
@@ -87,7 +101,30 @@ export class AddAccountDialogComponent implements OnInit {
     return 'TN' + Math.random().toString().slice(2, 20).padEnd(20, '0');
   }
 
+  private populateFormWithAccount(account: Account): void {
+    // Map backend account type to display type
+    const displayAccountTypeMap: { [key: string]: string } = {
+      'EPARGNE': 'Épargne',
+      'EPARGNE_ZEKET': 'Épargne Zeket'
+    };
+
+    // Calculate display interest rate, defaulting to 0 if undefined
+    const displayInterestRate = account.interestRate != null ? account.interestRate * 100 : 0;
+
+    this.accountForm.patchValue({
+      clientEmail: account.clientEmail || '',
+      accountType: account.accountType || '',
+      amount: account.amount || 0,
+      interestRate: displayInterestRate,
+      _databaseInterestRate: account.interestRate || 0,
+      rib: account.rib || ''
+    });
+  }
+
   onSubmit(): void {
+    // Prevent submission in read-only mode
+    if (this.isReadOnly) return;
+
     if (this.accountForm.invalid || this.isSubmitting) return;
   
     this.isSubmitting = true;
