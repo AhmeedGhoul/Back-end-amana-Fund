@@ -1,50 +1,63 @@
 import { Component, OnInit } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { DatePipe, CurrencyPipe } from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
 import { AccountService } from '@app/services/account.service';
 import { Account } from '@app/models/account.model';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AccountPayment } from '@app/models/account-payment.model';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { AccountPaymentDialogComponent } from '../account-payment-dialog/account-payment-dialog.component';
 
 @Component({
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatTableModule,
+        MatCardModule,
+        MatIconModule,
+        MatProgressSpinnerModule,
+        MatInputModule,
+        MatFormFieldModule,
+        MatButtonModule,
+        MatSnackBarModule,
+        RouterModule,
+        DatePipe,
+        CurrencyPipe
+    ],
   selector: 'app-account-full-details',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatTableModule,
-    MatCardModule,
-    RouterModule,
-    MatProgressSpinnerModule,
-    MatIconModule,
-    MatButtonModule,
-    MatInputModule,
-    MatSnackBarModule
-  ],
   templateUrl: './account-full-details.component.html',
-  styleUrls: ['./account-full-details.component.css']
+  styleUrls: ['./account-full-details.component.scss']
 })
 export class AccountFullDetailsComponent implements OnInit {
   account: Account | null = null;
-  loading = true;
+  accountDetails: { attribute: string; value: string }[] = [];
   isEditMode = false;
   editableAccount: Partial<Account> = {};
-  accountDetails: { attribute: string, value: string }[] = [];
+  loading = true;
+  accountPayments: AccountPayment[] = [];
+
   displayedColumns: string[] = [
-    'attribute',
-    'value'
+    'paymentDate',
+    'amount',
+    'agencyName'
   ];
 
   constructor(
     private route: ActivatedRoute,
     private accountService: AccountService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -60,12 +73,45 @@ export class AccountFullDetailsComponent implements OnInit {
       next: (account: Account) => {
         this.account = account;
         this.prepareAccountDetails();
+        this.fetchAccountPayments(rib);
         this.loading = false;
       },
       error: (error: Error) => {
         console.error('Error fetching account details', error);
         this.loading = false;
         this.snackBar.open('Failed to load account details', 'Close', { duration: 3000, panelClass: 'error-snackbar' });
+      }
+    });
+  }
+
+  fetchAccountPayments(rib: string): void {
+    this.accountService.getAccountPaymentsByRib(rib).subscribe({
+      next: (payments: AccountPayment[]) => {
+        this.accountPayments = payments;
+      },
+      error: (error: Error) => {
+        console.error('Error fetching account payments', error);
+        this.snackBar.open('Failed to load account payments', 'Close', { duration: 3000, panelClass: 'error-snackbar' });
+      }
+    });
+  }
+
+  openPaymentDialog(): void {
+    const accountRib = this.account?.rib;
+    if (!accountRib) {
+      this.snackBar.open('No account RIB available', 'Close', { duration: 3000, panelClass: 'error-snackbar' });
+      return;
+    }
+
+    const dialogRef = this.dialog.open(AccountPaymentDialogComponent, {
+      width: '400px',
+      data: { rib: accountRib }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Refresh account details and payments
+        this.fetchAccountDetails(accountRib);
       }
     });
   }

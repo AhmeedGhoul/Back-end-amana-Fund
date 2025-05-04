@@ -5,6 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 import { User } from '../models/user.model';
 import { AuthService } from '@app/pages/authentication/side-login/auth.service';
 import { Account, Page } from '../models/account.model';
+import { AccountPayment } from '../models/account-payment.model';
 
 @Injectable({
   providedIn: 'root'
@@ -364,7 +365,6 @@ export class AccountService {
     return this.http.delete<void>(`${this.apiUrl}/${accountId}`, { headers });
   }
 
-  // Keep the rest of your existing methods
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.userApiUrl}/dispuser`);
   }
@@ -395,5 +395,74 @@ export class AccountService {
     return this.http.get(`${this.apiUrl}/${accountId}/export-excel`, { 
       responseType: 'blob' 
     });
+  }
+
+  createAccountPayment(accountPayment: AccountPayment): Observable<AccountPayment> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+
+    // Validate required fields
+    const requiredFields = ['amount', 'agencyName', 'rib'];
+    for (const field of requiredFields) {
+      if (!accountPayment[field] || accountPayment[field] === null) {
+        throw new Error(`Missing required field: ${field}`);
+      }
+    }
+
+    // Set payment date to current date if not provided
+    if (!accountPayment.paymentDate) {
+      accountPayment.paymentDate = new Date().toISOString();
+    }
+
+    return this.http.post<AccountPayment>(`http://localhost:8088/api/v1/account-payments/addaccountpayment`, accountPayment, { headers }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error creating account payment:', {
+          status: error.status,
+          message: error.message,
+          errorBody: error.error
+        });
+        let errorMessage = `Failed to create account payment`;
+        if (error.error instanceof ErrorEvent) {
+          errorMessage += ` - Client Error: ${error.error.message}`;
+        } else if (error.error && error.error.message) {
+          errorMessage += ` - Server Error: ${error.error.message}`;
+        }
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+  getAccountPaymentsByRib(rib: string): Observable<AccountPayment[]> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+
+    // Trim and validate RIB before sending
+    const trimmedRib = rib.trim();
+    if (!trimmedRib) {
+      return throwError(() => new Error('RIB cannot be empty'));
+    }
+
+    return this.http.get<AccountPayment[]>(`${this.apiUrl}/account-payments/by-rib/${trimmedRib}`, { headers }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error fetching account payments by RIB:', {
+          status: error.status,
+          message: error.message,
+          errorBody: error.error
+        });
+        let errorMessage = `Failed to retrieve account payments for RIB: ${trimmedRib}`;
+        if (error.error instanceof ErrorEvent) {
+          errorMessage += ` - Client Error: ${error.error.message}`;
+        } else if (error.error && error.error.message) {
+          errorMessage += ` - Server Error: ${error.error.message}`;
+        }
+        return throwError(() => new Error(errorMessage));
+      })
+    );
   }
 }

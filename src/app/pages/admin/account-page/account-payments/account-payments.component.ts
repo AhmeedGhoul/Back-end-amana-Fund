@@ -131,16 +131,19 @@ export class AccountPaymentsComponent implements OnInit {
 
   deletePayment(payment: AccountPayment): void {
     if (confirm('Are you sure you want to delete this payment?')) {
-      this.accountPaymentService.deleteAccountPayment(payment.id).subscribe({
-        next: () => {
-          this.snackBar.open('Payment deleted successfully', 'Close', { duration: 3000 });
-          this.loadPayments();
-        },
-        error: (error: any) => {
-          console.error('Error deleting payment:', error);
-          this.snackBar.open('Error deleting payment', 'Close', { duration: 3000 });
-        }
-      });
+      if (payment.id != null) {
+        this.accountPaymentService.deleteAccountPayment(payment.id).subscribe({
+          next: () => {
+            this.snackBar.open('Payment deleted successfully', 'Close', { duration: 3000 });
+            this.loadPayments();
+          },
+          error: (error) => {
+            this.snackBar.open(`Error deleting payment: ${error.message}`, 'Close', { duration: 3000 });
+          }
+        });
+      } else {
+        this.snackBar.open('Cannot delete payment: Invalid ID', 'Close', { duration: 3000 });
+      }
     }
   }
 

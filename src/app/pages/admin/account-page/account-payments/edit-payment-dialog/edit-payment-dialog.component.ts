@@ -46,22 +46,23 @@ export class EditPaymentDialogComponent {
 
   onSubmit(): void {
     if (this.paymentForm.valid) {
-      const formData: AccountPayment = {
-        ...this.data,
-        ...this.paymentForm.value
-      };
-      this.accountPaymentService.updateAccountPayment(this.data.id, formData).subscribe({
-        next: (response: AccountPayment) => {
-          this.dialogRef.close(response);
-        },
-        error: (error: any) => {
-          console.error('Error updating payment:', error);
-        }
-      });
+      const formData = this.paymentForm.value;
+      if (this.data.id != null) {
+        this.accountPaymentService.updateAccountPayment(this.data.id, formData).subscribe({
+          next: (response: AccountPayment) => {
+            this.dialogRef.close(response);
+          },
+          error: (error) => {
+            console.error('Error updating payment:', error);
+          }
+        });
+      } else {
+        console.error('Cannot update payment: Invalid ID');
+      }
     }
   }
 
   onCancel(): void {
     this.dialogRef.close();
   }
-} 
+}
