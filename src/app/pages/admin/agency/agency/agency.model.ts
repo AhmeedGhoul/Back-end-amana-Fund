@@ -1,11 +1,10 @@
 export interface Agency {
-  id_agency?: number;
+  id_agency: number;
   governorate: string;
   address: string;
   city: string;
   phoneNumber: string;
   email: string;
-  user?: any; // Adjust the type for User if you have a specific model
   latitude?: number;
   longitude?: number;
 }

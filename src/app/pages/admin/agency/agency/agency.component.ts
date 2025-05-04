@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import { AgencyService } from './agency.service';
 import { Agency } from './agency.model';
 import { MatDialog } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { MaterialModule } from '../../../material.module';
+import { MaterialModule } from '../../../../material.module';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AddAgencyDialogComponent } from './add-agency-dialog/add-agency-dialog.component';
@@ -117,5 +117,19 @@ export class AgencyComponent implements OnInit {
 
   generateReport(): void {
     this.agencyService.generateAgencyReport().subscribe(() => alert('Agency report generated successfully!'));
+  }
+
+  @Output() selectionChanged = new EventEmitter<Agency>();
+  selectedAgency: Agency | null = null;
+
+  selectAgency(agency: Agency) {
+    this.selectionChanged.emit(agency);  // Emits selected agency
+  }
+  onAgencySelectionChanged(agency: Agency) {
+    this.selectedAgency = agency;
+  }
+
+  onRequestSelectionChanged(request: any) {
+    console.log('Selected request:', request);
   }
 }

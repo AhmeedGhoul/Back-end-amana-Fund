@@ -15,7 +15,7 @@ export class AgencyService {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
-    return this.http.get<any>(`${this.apiUrl}`, { params });
+    return this.http.get<any>(`${this.apiUrl}/getall_agency`, { params });
   }
 
   searchAgencies(filters: any, page: number, size: number): Observable<any> {
@@ -32,15 +32,16 @@ export class AgencyService {
   }
 
   createAgency(agency: Agency): Observable<Agency> {
-    return this.http.post<Agency>(`${this.apiUrl}`, agency);
+    return this.http.post<Agency>(`${this.apiUrl}/add_agency`, agency);  // Ensure correct API endpoint
   }
 
+
   updateAgency(agency: Agency): Observable<Agency> {
-    return this.http.put<Agency>(`${this.apiUrl}/${agency.id_agency}`, agency);
+    return this.http.put<Agency>(`${this.apiUrl}/update_agency`, agency);
   }
 
   deleteAgency(agency: Agency): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${agency.id_agency}`);
+    return this.http.delete<void>(`${this.apiUrl}/remove_agency/${agency.id_agency}`);
   }
 
   generateAgencyReport(): Observable<any> {

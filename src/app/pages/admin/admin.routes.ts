@@ -1,7 +1,8 @@
 import { Routes } from '@angular/router';
 import {UserComponent} from "./user/user.component";
 import {AuditPageComponent} from "./auditPage/audit-page.component";
-import {AgencyComponent} from "./agency/agency.component";
+import {AgencyComponent} from "./agency/agency/agency.component";
+import {AgencyPageComponent} from "./agency/agency-page.component";
 
 
 
@@ -19,7 +20,7 @@ export const UiComponentsRoutes: Routes = [
       },
       {
         path: 'agency',
-        component: AgencyComponent,
+        component: AgencyPageComponent,
       }
     ],
   },

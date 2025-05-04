@@ -66,7 +66,6 @@ export class AddAgencyDialogComponent implements OnInit {
       email: agency.email,
       latitude: agency.latitude,
       longitude: agency.longitude,
-      user: agency.user // Make sure this matches your form control name if different
     });
   }
 

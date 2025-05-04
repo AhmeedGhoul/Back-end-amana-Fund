@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {CommonModule, NgIf} from '@angular/common';
 // Material Form Controls
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -46,9 +46,13 @@ import { AddAuditDialogComponent } from './pages/admin/auditPage/audit/add-audit
 import { ActivityLogComponent } from './pages/admin/auditPage/activity-log/activity-log.component';
 import { FraudCaseComponent } from './pages/admin/auditPage/fraud-case/fraud-case.component';
 import { AddFraudCaseDialogComponent } from './pages/admin/auditPage/fraud-case/add-fraud-case-dialog/add-fraud-case-dialog.component';
+import { RequestComponent } from './pages/admin/agency/request/request.component';
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import { AddRequestDialogComponent } from './pages/admin/agency/request/add-request-dialog/add-request-dialog.component';
 
 @NgModule({
   declarations: [
+
   ],
   exports: [
     MatAutocompleteModule,
@@ -87,5 +91,10 @@ import { AddFraudCaseDialogComponent } from './pages/admin/auditPage/fraud-case/
     MatSortModule,
     MatTableModule,
   ],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    NgIf
+  ]
 })
 export class MaterialModule {}

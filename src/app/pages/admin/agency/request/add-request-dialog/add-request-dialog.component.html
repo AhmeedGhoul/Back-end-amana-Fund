@@ -1,0 +1,25 @@
+<mat-dialog-content>
+  <form [formGroup]="requestForm" (ngSubmit)="submit()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date of Request</mat-label>
+      <input matInput formControlName="date_Request" type="date" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Document</mat-label>
+      <input matInput formControlName="document" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Product</mat-label>
+      <mat-select formControlName="product">
+        <mat-option *ngFor="let product of products" [value]="product">{{ product }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="dialog-actions">
+      <button mat-button (click)="onNoClick()">Cancel</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="requestForm.invalid">Add Request</button>
+    </div>
+  </form>
+</mat-dialog-content>
