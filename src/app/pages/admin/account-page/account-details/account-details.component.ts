@@ -262,28 +262,34 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
     } else if (this.searchTerm) {
       // If RIB search term is present, use RIB filtering
       this.accountService.filterAccountsByRib(this.searchTerm).subscribe({
-        next: (accounts: Account[]) => {
+        next: (accounts: any) => {
           console.log('Filtered accounts by RIB:', accounts);
-          
-          if (accounts.length > 0) {
-            // If accounts found, update the datasource
-            this.dataSource.data = accounts.map(account => ({
+          let accountArray: Account[] = [];
+          if (Array.isArray(accounts)) {
+            accountArray = accounts;
+          } else if (accounts && typeof accounts === 'object') {
+            accountArray = [accounts];
+          }
+
+          if (accountArray.length > 0) {
+            this.dataSource.data = accountArray.map(account => ({
               ...account,
               displayAccountType: this.getDisplayAccountType(account.accountType)
             }));
-            this.totalElements = accounts.length;
+            this.totalElements = accountArray.length;
             if (this.table) {
               this.table.renderRows();
             }
+            this.ribError = false;
+            this.ribErrorMessage = '';
           } else {
-            // Clear datasource if no accounts found
             this.dataSource.data = [];
             this.totalElements = 0;
             if (this.table) {
               this.table.renderRows();
             }
-            
-            // Show a message if no accounts found
+            this.ribError = true;
+            this.ribErrorMessage = `The RIB you entered does not exist or is incorrect. Please verify the RIB and try again.`;
             this.snackBar.open(`No account found with RIB: ${this.searchTerm}`, 'Close', {
               duration: 3000,
               panelClass: ['warning-snackbar']

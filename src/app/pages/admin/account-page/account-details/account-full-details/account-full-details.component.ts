@@ -8,38 +8,93 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
-import { AccountService } from '@app/services/account.service';
-import { Account } from '@app/models/account.model';
-import { AccountPayment } from '@app/models/account-payment.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { AccountService, PaymentStatisticsDTO } from '@app/services/account.service';
+import { Account } from '@app/models/account.model';
+import { ChartType, ChartData } from 'chart.js';
+import { NgChartsModule } from 'ng2-charts';
+import { AccountPayment } from '@app/models/account-payment.model';
 import { AccountPaymentDialogComponent } from '../account-payment-dialog/account-payment-dialog.component';
 
 @Component({
-    standalone: true,
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        MatTableModule,
-        MatCardModule,
-        MatIconModule,
-        MatProgressSpinnerModule,
-        MatInputModule,
-        MatFormFieldModule,
-        MatButtonModule,
-        MatSnackBarModule,
-        RouterModule,
-        DatePipe,
-        CurrencyPipe
-    ],
   selector: 'app-account-full-details',
   templateUrl: './account-full-details.component.html',
-  styleUrls: ['./account-full-details.component.scss']
+  styleUrls: ['./account-full-details.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NgChartsModule,
+    MatCardModule,
+    MatIconModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatTableModule,
+    MatSnackBarModule,
+    RouterModule,
+    DatePipe,
+    CurrencyPipe,
+    AccountPaymentDialogComponent
+  ]
 })
 export class AccountFullDetailsComponent implements OnInit {
+  paymentStats: PaymentStatisticsDTO[] = [];
+  statsChartData: ChartData = { labels: [], datasets: [] };
+  statsChartType: ChartType = 'line';
+  statsChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top' as const,
+      },
+      tooltip: {
+        enabled: true,
+        mode: 'index' as const,
+        intersect: false,
+      },
+      title: {
+        display: true,
+        text: 'Payment Statistics (Analytics)',
+      },
+    },
+    scales: {
+      x: {
+        display: true,
+        title: {
+          display: true,
+          text: 'Period',
+        },
+        grid: {
+          display: true,
+        },
+      },
+      y: {
+        display: true,
+        title: {
+          display: true,
+          text: 'Amount',
+        },
+        grid: {
+          display: true,
+        },
+      },
+    },
+  };
+
+  chartTypes: { value: ChartType, label: string }[] = [
+    { value: 'bar', label: 'Bar' },
+    { value: 'line', label: 'Line' }
+  ];
+
   account: Account | null = null;
   accountDetails: { attribute: string; value: string }[] = [];
   isEditMode = false;
@@ -64,8 +119,41 @@ export class AccountFullDetailsComponent implements OnInit {
     this.route.params.subscribe(params => {
       const rib = params['rib'];
       this.fetchAccountDetails(rib);
+      this.fetchPaymentStatistics(rib);
     });
   }
+
+  periodType: string = 'monthly';
+
+  onPeriodTypeChange(): void {
+    if (this.account && this.account.rib) {
+      this.fetchPaymentStatistics(this.account.rib);
+    }
+  }
+
+  fetchPaymentStatistics(rib: string): void {
+    this.accountService.getPaymentStatistics(rib, this.periodType).subscribe({
+      next: (stats: PaymentStatisticsDTO[]) => {
+        this.paymentStats = stats;
+        this.statsChartData = {
+          labels: stats.map(s => s.period),
+          datasets: [{
+            label: 'Payments by Month',
+            data: stats.map(s => s.totalAmount),
+            backgroundColor: '#42A5F5'
+          }]
+        };
+        console.log('statsChartData', this.statsChartData); // Debug chart data
+        if (!stats.length) {
+          console.warn('No payment statistics returned from API.');
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load payment statistics', err);
+      }
+    });
+  }
+
 
   fetchAccountDetails(rib: string): void {
     this.loading = true;

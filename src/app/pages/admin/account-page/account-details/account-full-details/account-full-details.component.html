@@ -8,6 +8,42 @@
       <mat-card-subtitle *ngIf="account">RIB: {{ account?.rib }}</mat-card-subtitle>
     </mat-card-header>
 
+    <!-- Payment Statistics Chart -->
+    <div class="stats-chart-section">
+      <div style="margin-bottom: 12px; display: flex; justify-content: flex-end; gap: 16px;">
+        <mat-form-field appearance="fill" style="width: 200px;" class="period-type-dropdown">
+          <mat-label>Period Type</mat-label>
+          <mat-select [(ngModel)]="periodType" (selectionChange)="onPeriodTypeChange()">
+            <mat-option value="daily">Day</mat-option>
+            <mat-option value="monthly">Month</mat-option>
+            <mat-option value="yearly">Year</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="chart-type-dropdown chart-type-dropdown--small">
+          <mat-label>Chart Type</mat-label>
+          <mat-select [(ngModel)]="statsChartType">
+            <mat-option *ngFor="let type of chartTypes" [value]="type.value">{{ type.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <h3 class="section-title">
+        <mat-icon>bar_chart</mat-icon>
+        <span class="period-type-label">Payment Trends by {{ periodType | titlecase }}</span>
+      </h3>
+      <div *ngIf="statsChartData.labels?.length; else noStats" style="display: block; max-width: 600px; margin: 0 auto;">
+        <canvas baseChart
+          [data]="statsChartData"
+          [type]="statsChartType"
+          [options]="statsChartOptions">
+        </canvas>
+      </div>
+      <ng-template #noStats>
+        <div class="no-stats-msg" style="text-align:center; color: #888; margin: 16px 0;">
+          <mat-icon>info</mat-icon> No payment statistics available for this account.
+        </div>
+      </ng-template>
+    </div>
+
     <mat-card-content>
       <div *ngIf="loading" class="loading-container">
         <mat-spinner></mat-spinner>

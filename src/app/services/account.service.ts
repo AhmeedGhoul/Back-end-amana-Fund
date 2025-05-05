@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
+
+export interface PaymentStatisticsDTO {
+  period: string;
+  totalAmount: number;
+}
+
 import { catchError, map } from 'rxjs/operators';
 import { User } from '../models/user.model';
 import { AuthService } from '@app/pages/authentication/side-login/auth.service';
@@ -12,12 +18,25 @@ import { AccountPayment } from '../models/account-payment.model';
 })
 export class AccountService {
   private apiUrl = 'http://localhost:8088/api/v1/Account';
+  private paymentapiUrl = 'http://localhost:8088/api/v1/account-payments';
   private userApiUrl = 'http://localhost:8088/api/v1/User';
 
   constructor(
     private http: HttpClient,
     private authService: AuthService
   ) {}
+
+  getPaymentStatistics(rib: string, periodType: string = 'monthly'): Observable<PaymentStatisticsDTO[]> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+    const params = new HttpParams()
+      .set('rib', rib)
+      .set('periodType', periodType);
+    return this.http.get<PaymentStatisticsDTO[]>(`${this.paymentapiUrl}/payment-statistics`, { headers, params });
+  }
 
   getAccounts(params: any): Observable<Page<Account>> {
     const token = localStorage.getItem('authToken');
@@ -98,7 +117,7 @@ export class AccountService {
     const token = localStorage.getItem('authToken');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.get<Account[]>(`${this.apiUrl}/rib/${rib}`, { headers }).pipe(
+    return this.http.get<Account[]>(`${this.apiUrl}/by-rib/${rib}`, { headers }).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error('Error fetching accounts by RIB:', error);
         return throwError(() => new Error('Failed to fetch accounts by RIB'));

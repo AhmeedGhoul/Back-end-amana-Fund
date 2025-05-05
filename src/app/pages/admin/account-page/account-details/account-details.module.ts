@@ -11,11 +11,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
 import { AccountFullDetailsComponent } from './account-full-details/account-full-details.component';
 import { AccountPaymentDialogComponent } from './account-payment-dialog/account-payment-dialog.component';
+import { NgChartsModule } from 'ng2-charts';
 
 @NgModule({
   imports: [
@@ -32,6 +34,19 @@ import { AccountPaymentDialogComponent } from './account-payment-dialog/account-
     MatDialogModule,
     MatTableModule,
     MatFormFieldModule,
+    MatSelectModule,
+    NgChartsModule,
+    MatDatepickerModule,
+    MatButtonModule,
+    MatInputModule,
+    MatSnackBarModule,
+    MatProgressSpinnerModule,
+    MatIconModule,
+    MatDialogModule,
+    MatTableModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    NgChartsModule,
     MatDatepickerModule,
     MatNativeDateModule
   ],
