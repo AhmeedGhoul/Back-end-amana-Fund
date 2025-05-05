@@ -120,7 +120,7 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
 
   validateRibExistence(rib: string) {
     this.accountService.filterAccountsByRib(rib).subscribe({
-      next: (accounts) => {
+      next: (accounts: Account[]) => {
         if (accounts.length === 0) {
           this.ribError = true;
           this.ribErrorMessage = 'RIB does not exist';
@@ -129,7 +129,7 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
         } else {
           // Check if filtered accounts match the selected account type
           const filteredAccounts = this.selectedAccountType 
-            ? accounts.filter(account => account.accountType === this.selectedAccountType)
+            ? accounts.filter((account: Account) => account.accountType === this.selectedAccountType)
             : accounts;
 
           if (filteredAccounts.length === 0) {
@@ -145,7 +145,7 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
           }
         }
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         console.error('RIB validation error:', err);
         // If error is due to server issues, allow proceeding
         if (err.status === 500 || err.status === 0) {

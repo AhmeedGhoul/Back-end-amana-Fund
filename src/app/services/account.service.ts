@@ -94,6 +94,18 @@ export class AccountService {
     );
   }
 
+  filterAccountsByRib(rib: string): Observable<Account[]> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.get<Account[]>(`${this.apiUrl}/rib/${rib}`, { headers }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error fetching accounts by RIB:', error);
+        return throwError(() => new Error('Failed to fetch accounts by RIB'));
+      })
+    );
+  }
+
   getAccountByRib(rib: string): Observable<Account> {
     const token = localStorage.getItem('authToken');
     const headers = new HttpHeaders({
@@ -130,14 +142,14 @@ export class AccountService {
     const accountToUpdate = JSON.parse(JSON.stringify(account));
 
     // Validate required fields
-    const requiredFields = ['id', 'rib'];
-    const missingFields = requiredFields.filter(field => 
+    const requiredAccountUpdateFields = ['id', 'rib'];
+    const missingUpdateFields = requiredAccountUpdateFields.filter(field => 
       !accountToUpdate[field] || accountToUpdate[field] === null
     );
 
-    if (missingFields.length > 0) {
-      console.error('Missing required fields:', missingFields);
-      return throwError(() => new Error(`Missing required fields: ${missingFields.join(', ')}`));
+    if (missingUpdateFields.length > 0) {
+      console.error('Missing required fields:', missingUpdateFields);
+      return throwError(() => new Error(`Missing required fields: ${missingUpdateFields.join(', ')}`));
     }
 
     // Specific fields to keep
@@ -199,196 +211,64 @@ export class AccountService {
       originalAccount: JSON.stringify(accountToUpdate, null, 2)
     });
 
-    return this.http.put<Account>(`${this.apiUrl}/updateaccount`, filteredAccount, { 
-      headers, 
-      observe: 'response' // Get full response to inspect headers and status
-    }).pipe(
-      map(response => {
-        // Log successful response details
-        console.log('Update Account Response:', {
-          status: response.status,
-          headers: response.headers.keys(),
-          body: response.body
-        });
-        
-        // Ensure non-null Account is returned
-        if (!response.body) {
-          throw new Error('No account data returned');
-        }
-        return response.body;
-      }),
+    // Use the RIB in the URL for update
+    const updateUrl = `${this.apiUrl}/updateaccount/${filteredAccount.rib}`;
+
+    return this.http.put<Account>(updateUrl, filteredAccount, { headers }).pipe(
       catchError((error: HttpErrorResponse) => {
-        // Comprehensive error logging
         console.error('Detailed Account Update Error:', {
           status: error.status,
           statusText: error.statusText,
           message: error.message,
           errorBody: error.error,
-          headers: error.headers?.keys(),
-          url: error.url,
-          requestBody: filteredAccount
         });
-
-        // Detailed error handling based on status
-        let errorMessage = 'Failed to update account';
-        let detailedErrorInfo = 'No additional details';
-
-        // Try to extract detailed error information
-        try {
-          // Check for different possible error response formats
-          if (error.error instanceof ErrorEvent) {
-            // Client-side error
-            detailedErrorInfo = error.error.message;
-          } else if (typeof error.error === 'string') {
-            // Might be a string error message
-            detailedErrorInfo = error.error;
-          } else if (error.error && typeof error.error === 'object') {
-            // Try to extract message from different possible keys
-            detailedErrorInfo = error.error.message || 
-                                error.error.error || 
-                                error.error.detail || 
-                                JSON.stringify(error.error);
-          }
-        } catch (e) {
-          console.warn('Error extracting detailed error info:', e);
-        }
-
-        // Specific error handling based on status
-        switch (error.status) {
-          case 400:
-            errorMessage = 'Invalid account data';
-            break;
-          case 401:
-            errorMessage = 'Unauthorized';
-            break;
-          case 403:
-            errorMessage = 'Forbidden';
-            break;
-          case 404:
-            errorMessage = 'Account not found';
-            break;
-          case 500:
-            errorMessage = 'Server error';
-            break;
-          case 0:
-            errorMessage = 'Network error';
-            break;
-        }
-
-        // Combine error message with detailed info
-        if (detailedErrorInfo !== 'No additional details') {
-          errorMessage += `: ${detailedErrorInfo}`;
-        }
-
-        console.error('Full Error Details:', {
-          errorMessage,
-          detailedErrorInfo,
-          originalError: error
-        });
-
-        // Rethrow error with detailed message
-        return throwError(() => new Error(errorMessage));
+        return throwError(() => new Error(`Failed to update account: ${error.message}`));
       })
     );
   }
 
-  filterAccountsByRib(rib: string): Observable<Account[]> {
+  createAccount(account: Account): Observable<Account> {
     const token = localStorage.getItem('authToken');
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
 
-    // Trim and validate RIB before sending
-    const trimmedRib = rib.trim();
-    if (!trimmedRib) {
-      return throwError(() => new Error('RIB cannot be empty'));
+    // Validate required fields
+    const requiredFields = ['accountType', 'clientEmail'];
+    let missingFields = requiredFields.filter(field => 
+      !account.hasOwnProperty(field) || account[field as keyof Account] === null
+    );
+
+    if (missingFields.length > 0) {
+      return throwError(() => new Error(`Missing required fields: ${missingFields.join(', ')}`));
     }
 
-    return this.http.get<Account>(`${this.apiUrl}/by-rib/${trimmedRib}`, { headers }).pipe(
-      map((account: Account | null) => {
-        if (account) {
-          console.log('Account found by RIB:', account);
-          return [account];
-        } else {
-          console.warn('No account found for RIB:', trimmedRib);
-          return [];
-        }
-      }),
+    // Set default values for optional fields
+    const accountToCreate = {
+      ...account,
+      date_Opening: account.date_Opening || new Date().toISOString(),
+      amount: account.amount || 0,
+      interestRate: account.interestRate || 0,
+      eligibleForZakat: account.eligibleForZakat || false
+    };
+
+    return this.http.post<Account>(`${this.apiUrl}/addaccount`, accountToCreate, { headers }).pipe(
       catchError((error: HttpErrorResponse) => {
-        // More comprehensive error logging
-        console.error('Detailed Account RIB filtering error:', {
+        console.error('Error creating account:', {
           status: error.status,
-          statusText: error.statusText,
           message: error.message,
-          errorBody: error.error,
-          requestRib: trimmedRib,
-          headers: error.headers?.keys(),
-          url: error.url
+          errorBody: error.error
         });
-        
-        // Detailed error handling
-        let errorMessage = `Failed to find account with RIB: ${trimmedRib}`;
-        
-        // Check for specific error details
+        let errorMessage = `Failed to create account`;
         if (error.error instanceof ErrorEvent) {
-          // Client-side error
           errorMessage += ` - Client Error: ${error.error.message}`;
         } else if (error.error && error.error.message) {
-          // Server-side error with message
           errorMessage += ` - Server Error: ${error.error.message}`;
         }
-        
-        // Specific handling for different status codes
-        switch (error.status) {
-          case 404:
-            console.warn(`No account found for RIB: ${trimmedRib}`);
-            return of([]); // Return empty array for 404
-          case 500:
-            console.error(`Internal Server Error for RIB: ${trimmedRib}`);
-            break;
-          case 0:
-            errorMessage += ' - Network Error or Server Unreachable';
-            break;
-        }
-        
-        // Rethrow error with detailed message
         return throwError(() => new Error(errorMessage));
       })
     );
-  }
-
-  deleteAccount(accountId: number): Observable<void> {
-    const token = localStorage.getItem('authToken');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    
-    return this.http.delete<void>(`${this.apiUrl}/${accountId}`, { headers });
-  }
-
-  getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(`${this.userApiUrl}/dispuser`);
-  }
-
-  createAccount(data: any): Observable<any> {
-    const token = localStorage.getItem('authToken');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    
-    return this.http.post(`${this.apiUrl}/addaccount`, data, { headers }).pipe(
-      catchError(error => {
-        console.error('Full error response:', {
-          status: error.status,
-          message: error.error?.message,
-          details: error.error,
-          headers: error.headers,
-          url: error.url
-        });
-        return throwError(() => error);
-      })
-    );
-  }
-
-  sendAccountEmail(accountId: number, userId: number): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/${accountId}/send-email`, { userId });
   }
 
   exportAccountToExcel(accountId: number): Observable<Blob> {
@@ -431,9 +311,9 @@ export class AccountService {
           errorMessage += ` - Server Error: ${error.error.message}`;
         }
         return throwError(() => new Error(errorMessage));
-      })
-    );
-  }
+    })
+  );
+}
 
   getAccountPaymentsByRib(rib: string): Observable<AccountPayment[]> {
     const token = localStorage.getItem('authToken');
@@ -448,20 +328,57 @@ export class AccountService {
       return throwError(() => new Error('RIB cannot be empty'));
     }
 
-    return this.http.get<AccountPayment[]>(`${this.apiUrl}/account-payments/by-rib/${trimmedRib}`, { headers }).pipe(
+    return this.http.get<AccountPayment[]>(`${this.apiUrl}/account-payments/by-rib/${trimmedRib}`, { 
+      headers,
+      observe: 'response'  // Get full response to inspect headers and status
+    }).pipe(
+      map(response => {
+        // Log successful response details
+        console.log('Account Payments Response:', {
+          status: response.status,
+          headers: response.headers.keys(),
+          body: response.body
+        });
+        
+        // Ensure non-null AccountPayment array is returned
+        if (!response.body) {
+          console.warn('No account payments data returned');
+          return [];  // Return empty array instead of throwing an error
+        }
+        return response.body;
+      }),
       catchError((error: HttpErrorResponse) => {
-        console.error('Error fetching account payments by RIB:', {
+        console.error('Error fetching account payments:', {
           status: error.status,
           message: error.message,
           errorBody: error.error
         });
-        let errorMessage = `Failed to retrieve account payments for RIB: ${trimmedRib}`;
+        let errorMessage = `Failed to fetch account payments`;
         if (error.error instanceof ErrorEvent) {
           errorMessage += ` - Client Error: ${error.error.message}`;
         } else if (error.error && error.error.message) {
           errorMessage += ` - Server Error: ${error.error.message}`;
         }
         return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+  deleteAccount(accountId: number): Observable<boolean> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+
+    return this.http.delete<boolean>(`${this.apiUrl}/${accountId}`, { headers }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error deleting account:', {
+          status: error.status,
+          message: error.message,
+          errorBody: error.error
+        });
+        return throwError(() => error);
       })
     );
   }

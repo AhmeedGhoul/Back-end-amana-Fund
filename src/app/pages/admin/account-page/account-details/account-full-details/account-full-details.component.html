@@ -1,4 +1,4 @@
-<div class="account-full-details-container" style="max-width: 800px; margin: 0 auto; padding: 20px;">
+<div class="account-full-details-container">
   <mat-card class="details-card">
     <mat-card-header>
       <mat-card-title>
@@ -40,9 +40,34 @@
         </div>
       </div>
 
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button mat-stroked-button color="primary" routerLink="/admin/account">
+          <mat-icon>arrow_back</mat-icon>
+          Back to Accounts
+        </button>
+        <button 
+          *ngIf="!isEditMode" 
+          mat-raised-button 
+          color="accent" 
+          (click)="toggleEditMode()"
+        >
+          <mat-icon>edit</mat-icon>
+          Edit Account
+        </button>
+        <button mat-raised-button class="create-payment-btn" (click)="openPaymentDialog()">
+          <mat-icon>add_circle_outline</mat-icon>
+          Create Payment
+        </button>
+      </div>
+
       <!-- Account Payments Section -->
       <div class="payments-section" *ngIf="accountPayments.length > 0">
-        <h3>Account Payments</h3>
+        <h3 class="section-title">
+          <mat-icon>payments</mat-icon>
+          <span>Account Payments</span>
+        </h3>
+        <div class="table-responsive">
         <table mat-table [dataSource]="accountPayments" class="payments-table">
       <!-- Payment Date Column -->
       <ng-container matColumnDef="paymentDate">
@@ -68,30 +93,14 @@
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns" class="payment-row"></tr>
+        </table>
+      </div>
       </div>
     </mat-card-content>
 
     <mat-card-actions>
-      <button mat-stroked-button color="primary" routerLink="/admin/account">
-        <mat-icon>arrow_back</mat-icon>
-        Back to Accounts
-      </button>
-      <button 
-        *ngIf="!isEditMode" 
-        mat-raised-button 
-        color="accent" 
-        (click)="toggleEditMode()"
-      >
-        <mat-icon>edit</mat-icon>
-        Edit Account
-      </button>
-      <button mat-raised-button class="create-payment-btn" (click)="openPaymentDialog()">
-        <mat-icon>add_circle_outline</mat-icon>
-        Create Payment
-      </button>
       <ng-container *ngIf="isEditMode">
         <button 
           mat-raised-button 

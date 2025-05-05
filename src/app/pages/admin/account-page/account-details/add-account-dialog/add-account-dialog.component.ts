@@ -144,7 +144,7 @@ export class AddAccountDialogComponent implements OnInit {
     
 
     this.accountService.createAccount(payload).subscribe({
-      next: (response) => {
+      next: (response: Account) => {
         this.dialogRef.close(response);
         this.snackBar.open('Account created successfully!', 'Close', { 
           duration: 3000,

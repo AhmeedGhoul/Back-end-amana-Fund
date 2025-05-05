@@ -73,25 +73,12 @@ export class AccountFullDetailsComponent implements OnInit {
       next: (account: Account) => {
         this.account = account;
         this.prepareAccountDetails();
-        this.fetchAccountPayments(rib);
         this.loading = false;
       },
       error: (error: Error) => {
         console.error('Error fetching account details', error);
         this.loading = false;
         this.snackBar.open('Failed to load account details', 'Close', { duration: 3000, panelClass: 'error-snackbar' });
-      }
-    });
-  }
-
-  fetchAccountPayments(rib: string): void {
-    this.accountService.getAccountPaymentsByRib(rib).subscribe({
-      next: (payments: AccountPayment[]) => {
-        this.accountPayments = payments;
-      },
-      error: (error: Error) => {
-        console.error('Error fetching account payments', error);
-        this.snackBar.open('Failed to load account payments', 'Close', { duration: 3000, panelClass: 'error-snackbar' });
       }
     });
   }
@@ -110,8 +97,13 @@ export class AccountFullDetailsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Refresh account details and payments
+        // Refetch account details to update amount
         this.fetchAccountDetails(accountRib);
+
+        // Add the new payment to the list
+        if (result && typeof result === 'object' && 'amount' in result && 'paymentDate' in result) {
+          this.accountPayments = [...this.accountPayments, result as AccountPayment];
+        }
       }
     });
   }
@@ -149,13 +141,18 @@ export class AccountFullDetailsComponent implements OnInit {
   saveAccountChanges(): void {
     if (!this.account) return;
 
+    // Calculate the payment amount if it has changed
+    const oldAmount = this.account.amount ?? 0;
+    const newAmount = this.editableAccount.amount ?? this.account.amount ?? 0;
+    const amountDifference = newAmount - oldAmount;
+
     // Prepare the account object for update
     const updatedAccount: Account = {
       id: this.account.id,
       date_Opening: this.account.date_Opening,
       accountType: this.account.accountType,
       rib: this.account.rib,
-      amount: this.editableAccount.amount ?? this.account.amount,
+      amount: newAmount,
       clientEmail: this.editableAccount.clientEmail ?? this.account.clientEmail,
       
       // Preserve existing attributes
@@ -175,6 +172,17 @@ export class AccountFullDetailsComponent implements OnInit {
         this.prepareAccountDetails();
         this.isEditMode = false;
         this.snackBar.open('Account updated successfully', 'Close', { duration: 3000 });
+
+        // If there's a payment difference, add it to the account payments
+        if (amountDifference !== 0) {
+          const newPayment: AccountPayment = {
+            amount: amountDifference,
+            paymentDate: new Date().toISOString(),
+            agencyName: 'system',
+            rib: this.account.rib || '' // Provide a default empty string
+          };
+          this.accountPayments = [...this.accountPayments, newPayment];
+        }
       },
       error: (error: any) => {
         console.error('Full error object:', error);
