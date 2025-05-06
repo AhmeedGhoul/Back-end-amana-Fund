@@ -48,7 +48,11 @@ export class EditPaymentDialogComponent {
     if (this.paymentForm.valid) {
       const formData = this.paymentForm.value;
       if (this.data.id != null) {
-        this.accountPaymentService.updateAccountPayment(this.data.id, formData).subscribe({
+        const updatedPayment: AccountPayment = {
+          ...this.data,
+          ...formData
+        };
+        this.accountPaymentService.updateAccountPayment(updatedPayment).subscribe({
           next: (response: AccountPayment) => {
             this.dialogRef.close(response);
           },

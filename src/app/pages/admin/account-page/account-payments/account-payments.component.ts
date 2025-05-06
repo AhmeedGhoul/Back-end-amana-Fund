@@ -47,7 +47,7 @@ export class AccountPaymentsComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  displayedColumns: string[] = ['id', 'paymentDate', 'amount', 'agencyName', 'rib', 'actions'];
+  displayedColumns: string[] = ['paymentDate', 'amount', 'agencyName', 'rib', 'actions'];
   dataSource: AccountPayment[] = [];
   searchTerm: string = '';
   selectedPayment: AccountPayment | null = null;
@@ -55,6 +55,7 @@ export class AccountPaymentsComponent implements OnInit {
   totalItems = 0;
   pageSize = 10;
   currentPage = 0;
+  loading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -89,17 +90,34 @@ export class AccountPaymentsComponent implements OnInit {
   }
 
   loadPayments(): void {
+    this.loading = true;
     this.accountPaymentService.getAccountPaymentsPaged(this.currentPage, this.pageSize).subscribe({
       next: (response: any) => {
-        this.dataSource = response.content;
-        this.totalItems = response.totalElements;
-        if (this.table) {
-          this.table.renderRows();
+        if (response && response.content) {
+          this.dataSource = response.content;
+          this.totalItems = response.totalElements;
+        } else {
+          this.dataSource = [];
+          this.totalItems = 0;
+          this.snackBar.open('No payments found.', 'Close', { duration: 3000 });
         }
+        this.loading = false;
       },
-      error: (error: any) => {
-        console.error('Error loading payments:', error);
-        this.snackBar.open('Error loading payments', 'Close', { duration: 3000 });
+      error: (error) => {
+        console.error('Detailed error loading payments:', error);
+        this.loading = false;
+        this.dataSource = [];
+        this.totalItems = 0;
+        
+        let errorMessage = 'Failed to load payments.';
+        if (error.message) {
+          errorMessage += ` ${error.message}`;
+        }
+        
+        this.snackBar.open(errorMessage, 'Close', { 
+          duration: 5000,
+          panelClass: ['error-snackbar'] 
+        });
       }
     });
   }
@@ -150,33 +168,58 @@ export class AccountPaymentsComponent implements OnInit {
   applyFilters(): void {
     const { agencyName, startDate, endDate } = this.filterForm.value;
     
-    if (agencyName) {
-      this.accountPaymentService.getAccountPaymentsByAgency(agencyName).subscribe({
-        next: (payments: AccountPayment[]) => {
-          this.dataSource = payments;
+    // Validate inputs
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      if (isNaN(start.getTime()) || isNaN(end.getTime()) || start > end) {
+        this.snackBar.open('Invalid date range', 'Close', { duration: 3000, panelClass: 'error-snackbar' });
+        return;
+      }
+    }
+
+    // Combined filtering logic
+    const params: any = {};
+    if (agencyName?.trim()) params.agencyName = agencyName.trim();
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+
+    if (Object.keys(params).length > 0) {
+      // If any filter is applied
+      this.loading = true;
+      
+      // Combine filtering methods
+      this.accountPaymentService.getAccountPayments().subscribe({
+        next: (allPayments: AccountPayment[]) => {
+          this.dataSource = allPayments.filter(payment => {
+            const paymentDate = payment.paymentDate ? new Date(payment.paymentDate) : null;
+            
+            const matchesAgency = !params.agencyName || 
+              payment.agencyName.toLowerCase().includes(params.agencyName.toLowerCase());
+            
+            const matchesDateRange = (!params.startDate || !paymentDate || paymentDate >= new Date(params.startDate)) && 
+                                     (!params.endDate || !paymentDate || paymentDate <= new Date(params.endDate));
+            
+            return matchesAgency && matchesDateRange;
+          });
+
+          this.loading = false;
+          if (this.dataSource.length === 0) {
+            this.snackBar.open('No payments found matching the filters', 'Close', { duration: 3000 });
+          }
+
           if (this.table) {
             this.table.renderRows();
           }
         },
         error: (error: any) => {
-          console.error('Error filtering by agency:', error);
-          this.snackBar.open('Error filtering by agency', 'Close', { duration: 3000 });
-        }
-      });
-    } else if (startDate && endDate) {
-      this.accountPaymentService.getAccountPaymentsByDateRange(startDate, endDate).subscribe({
-        next: (payments: AccountPayment[]) => {
-          this.dataSource = payments;
-          if (this.table) {
-            this.table.renderRows();
-          }
-        },
-        error: (error: any) => {
-          console.error('Error filtering by date range:', error);
-          this.snackBar.open('Error filtering by date range', 'Close', { duration: 3000 });
+          this.loading = false;
+          console.error('Error filtering payments:', error);
+          this.snackBar.open('Failed to filter payments', 'Close', { duration: 3000, panelClass: 'error-snackbar' });
         }
       });
     } else {
+      // If no filters, load default payments
       this.loadPayments();
     }
   }
