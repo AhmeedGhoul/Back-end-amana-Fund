@@ -48,7 +48,6 @@ import { AccountPaymentDialogComponent } from '../account-payment-dialog/account
 export class AccountFullDetailsComponent implements OnInit {
   paymentStats: PaymentStatisticsDTO[] = [];
   statsChartData: ChartData = { labels: [], datasets: [] };
-  statsChartType: ChartType = 'line';
   statsChartOptions = {
     responsive: true,
     plugins: {
@@ -90,10 +89,7 @@ export class AccountFullDetailsComponent implements OnInit {
     },
   };
 
-  chartTypes: { value: ChartType, label: string }[] = [
-    { value: 'bar', label: 'Bar' },
-    { value: 'line', label: 'Line' }
-  ];
+  // Removed chartTypes array and statsChartType property
 
   account: Account | null = null;
   accountDetails: { attribute: string; value: string }[] = [];
@@ -101,7 +97,6 @@ export class AccountFullDetailsComponent implements OnInit {
   editableAccount: Partial<Account> = {};
   loading = true;
   accountPayments: AccountPayment[] = [];
-
   displayedColumns: string[] = [
     'paymentDate',
     'amount',
@@ -161,12 +156,32 @@ export class AccountFullDetailsComponent implements OnInit {
       next: (account: Account) => {
         this.account = account;
         this.prepareAccountDetails();
-        this.loading = false;
+        this.fetchAccountPayments(rib);
       },
       error: (error: Error) => {
         console.error('Error fetching account details', error);
         this.loading = false;
         this.snackBar.open('Failed to load account details', 'Close', { duration: 3000, panelClass: 'error-snackbar' });
+      }
+    });
+  }
+
+  fetchAccountPayments(rib: string): void {
+    this.accountService.getAccountPaymentsByRib(rib).subscribe({
+      next: (payments: AccountPayment[]) => {
+        this.accountPayments = payments;
+        this.loading = false;
+        console.log('Account Payments:', payments);
+      },
+      error: (error: any) => {
+        console.error('Detailed Error fetching account payments', {
+          errorMessage: error.message,
+          errorObject: error,
+          rib: rib
+        });
+        this.loading = false;
+        const errorMsg = error.error?.message || error.message || 'Failed to load account payments';
+        this.snackBar.open(errorMsg, 'Close', { duration: 5000, panelClass: 'error-snackbar' });
       }
     });
   }

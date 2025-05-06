@@ -347,7 +347,7 @@ export class AccountService {
       return throwError(() => new Error('RIB cannot be empty'));
     }
 
-    return this.http.get<AccountPayment[]>(`${this.apiUrl}/account-payments/by-rib/${trimmedRib}`, { 
+    return this.http.get<AccountPayment[]>(`${this.paymentapiUrl}/by-rib/${trimmedRib}`, { 
       headers,
       observe: 'response'  // Get full response to inspect headers and status
     }).pipe(
