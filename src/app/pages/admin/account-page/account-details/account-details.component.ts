@@ -183,6 +183,33 @@ export class AccountDetailsComponent implements OnInit, AfterViewInit {
     private router: Router
   ) {}
 
+  exportToExcel(): void {
+    const params: Record<string, string> = {};
+    if (this.selectedType) {
+      params['accountType'] = this.selectedType;
+    }
+    if (this.searchTerm) {
+      params['rib'] = this.searchTerm;
+    }
+
+    this.accountService.exportAccountsToExcel(params).subscribe({
+      next: (blob: Blob) => {
+        const downloadLink = document.createElement('a');
+        const url = window.URL.createObjectURL(blob);
+        downloadLink.href = url;
+        downloadLink.download = 'accounts_export.xlsx';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (error: Error) => {
+        this.snackBar.open('Failed to export accounts', 'Close', { duration: 3000 });
+        console.error('Export error:', error);
+      }
+    });
+  }
+
   openAccountDetails(account: Account) {
     // Navigate to full account details page
     if (account.rib) {

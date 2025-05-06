@@ -150,6 +150,54 @@ export class AccountService {
     );
   }
 
+  /**
+   * Send account details via email
+   * @param identifier RIB (string) or Account ID (number)
+   * @returns Observable of email sending result
+   */
+  sendAccountEmail(identifier: string | number): Observable<any> {
+    // Retrieve authentication token
+    const token = localStorage.getItem('authToken');
+    
+    // Prepare authorization headers
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+
+    // Select appropriate endpoint based on identifier type
+    const endpoint = typeof identifier === 'string' 
+      ? `${this.apiUrl}/send-email` 
+      : `${this.apiUrl}/${identifier}/send-email`;
+
+    // Prepare request body
+    const body = typeof identifier === 'string' 
+      ? { rib: identifier } 
+      : {};
+
+    // Send email and handle potential errors
+    return this.http.post(endpoint, body, { headers }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        // Log detailed error information
+        console.error('Email Sending Error:', {
+          status: error.status,
+          message: error.message,
+          details: error.error
+        });
+
+        // Generate user-friendly error message
+        const errorMessage = error.error instanceof ErrorEvent
+          ? `Client Error: ${error.error.message}`
+          : error.error?.message
+            ? `Server Error: ${error.error.message}`
+            : 'Failed to send account email';
+
+        // Throw error for further handling
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
   updateAccount(account: Account): Observable<Account> {
     const token = localStorage.getItem('authToken');
     const headers = new HttpHeaders({
@@ -166,36 +214,93 @@ export class AccountService {
       !accountToUpdate[field] || accountToUpdate[field] === null
     );
 
+    // Validate required update fields
     if (missingUpdateFields.length > 0) {
-      console.error('Missing required fields:', missingUpdateFields);
-      return throwError(() => new Error(`Missing required fields: ${missingUpdateFields.join(', ')}`));
+      const missingFieldsMessage = `Missing required account update fields: ${missingUpdateFields.join(', ')}`;
+      console.error(missingFieldsMessage);
+      return throwError(() => new Error(missingFieldsMessage));
     }
 
-    // Specific fields to keep
-    const fieldsToKeep = [
-      'id', 'date_Opening', 'accountType', 'rib', 'amount', 'clientEmail', 
-      'agent', 'zakatTransactions', 'zakatTransactionDates', 
-      'nissabReachedDate', 'interestRate', 'eligibleForZakat'
-    ];
+    /**
+     * Defines the allowed fields for account updates
+     * Ensures only specific, safe fields can be modified
+     */
+    const ALLOWED_ACCOUNT_FIELDS = Object.freeze([
+      'id',           // Unique identifier
+      'date_Opening', // Account creation date
+      'accountType',  // Type of account
+      'rib',          // Unique bank identifier
+      'amount',       // Account balance
+      'clientEmail',  // Contact email
+      'agent',        // Associated agent
+      'zakatTransactions',      // Zakat-related transactions
+      'zakatTransactionDates',  // Dates of Zakat transactions
+      'nissabReachedDate',      // Zakat threshold date
+      'interestRate',           // Account interest rate
+      'eligibleForZakat'        // Zakat eligibility flag
+    ]);
 
-    // Filter account to only include specified fields
-    const filteredAccount: any = {};
-    fieldsToKeep.forEach(field => {
-      if (accountToUpdate.hasOwnProperty(field)) {
-        // Special handling for nested objects
-        if (field === 'agent' && accountToUpdate[field]) {
-          // Ensure only specific agent fields are included
-          const agentFieldsToKeep = [
-            'id', 'firstName', 'lastName', 'email', 'phoneNumber'
-          ];
-          filteredAccount[field] = {};
-          agentFieldsToKeep.forEach(agentField => {
-            if (accountToUpdate[field][agentField] !== undefined) {
-              filteredAccount[field][agentField] = accountToUpdate[field][agentField];
+    /**
+     * Defines the allowed fields for nested agent object
+     */
+    const ALLOWED_AGENT_FIELDS = Object.freeze([
+      'id',           // Agent unique identifier
+      'firstName',    // Agent's first name
+      'lastName',     // Agent's last name
+      'email',        // Agent's contact email
+      'phoneNumber'   // Agent's phone number
+    ]);
+
+    /**
+     * Create a filtered account object with only allowed fields
+     */
+    const filteredAccount: Account = {} as Account;
+
+    // Type-safe field mapping to ensure type safety
+    const fieldMapping: { [K in keyof Account]?: keyof Account } = {
+      id: 'id',
+      date_Opening: 'date_Opening',
+      accountType: 'accountType',
+      rib: 'rib',
+      amount: 'amount',
+      clientEmail: 'clientEmail',
+      agent: 'agent',
+      zakatTransactions: 'zakatTransactions',
+      zakatTransactionDates: 'zakatTransactionDates',
+      nissabReachedDate: 'nissabReachedDate',
+      interestRate: 'interestRate',
+      eligibleForZakat: 'eligibleForZakat'
+    };
+
+    // Iterate through allowed fields and safely copy values
+    (Object.keys(fieldMapping) as Array<keyof Account>).forEach(field => {
+      // Check if the field exists in the original account
+      if (Object.prototype.hasOwnProperty.call(accountToUpdate, field)) {
+        const fieldValue = accountToUpdate[field];
+
+        // Special handling for nested agent object
+        if (field === 'agent' && fieldValue) {
+          const agentFieldMapping = {
+            id: 'id',
+            firstName: 'firstName',
+            lastName: 'lastName',
+            email: 'email',
+            phoneNumber: 'phoneNumber'
+          };
+
+          filteredAccount.agent = {} as any;
+          
+          // Safely copy only allowed agent fields
+          (Object.keys(agentFieldMapping) as Array<keyof typeof agentFieldMapping>).forEach(agentField => {
+            const agentFieldValue = fieldValue[agentField];
+            if (agentFieldValue !== undefined) {
+              filteredAccount.agent[agentField] = agentFieldValue;
             }
           });
-        } else if (accountToUpdate[field] !== null && accountToUpdate[field] !== undefined) {
-          filteredAccount[field] = accountToUpdate[field];
+        } 
+        // Copy non-null and non-undefined values for other fields
+        else if (fieldValue !== null && fieldValue !== undefined) {
+          filteredAccount[field] = fieldValue;
         }
       }
     });
@@ -244,6 +349,23 @@ export class AccountService {
         return throwError(() => new Error(`Failed to update account: ${error.message}`));
       })
     );
+  }
+
+  exportAccountsToExcel(params?: Record<string, string>): Observable<Blob> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/octet-stream'
+    });
+
+    // Prepare query parameters
+    const queryParams = new HttpParams({ fromObject: params });
+
+    return this.http.get(`${this.apiUrl}/export-excel`, {
+      headers: headers,
+      params: queryParams,
+      responseType: 'blob'
+    });
   }
 
   createAccount(account: Account): Observable<Account> {

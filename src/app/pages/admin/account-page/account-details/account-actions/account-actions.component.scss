@@ -47,8 +47,47 @@
   .email-button {
     background: linear-gradient(135deg, #1976d2, #2196f3);
     color: white;
+    position: relative;
+    overflow: hidden;
+    min-width: 180px;
+    height: 48px;
+
+    .button-content {
+      position: relative;
+      z-index: 2;
+      
+      .button-icon {
+        color: white;
+        transition: transform 0.2s ease;
+      }
+
+      .button-text {
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: all 0.5s ease;
+      z-index: 1;
+    }
 
     &:hover {
+      &::before {
+        left: 100%;
+      }
+
+      .button-icon {
+        transform: scale(1.1) rotate(10deg);
+      }
+
       background: linear-gradient(135deg, #1565c0, #1e88e5);
     }
   }

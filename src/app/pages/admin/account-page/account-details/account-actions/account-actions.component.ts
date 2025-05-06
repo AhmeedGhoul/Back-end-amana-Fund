@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AccountService } from '../../../../../services/account.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-account-actions',
@@ -27,6 +28,61 @@ export class AccountActionsComponent {
     private accountService: AccountService,
     private snackBar: MatSnackBar
   ) {}
+
+  sendAccountEmail(): void {
+    if (!this.accountId) {
+      this.snackBar.open('No account selected for email', 'Close', { duration: 3000 });
+      return;
+    }
+
+    this.accountService.sendAccountEmail(this.accountId).pipe(
+      catchError((error: HttpErrorResponse) => {
+        this.snackBar.open(`Failed to send email: ${error.message}`, 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+        console.error('Email sending error:', error);
+        throw error;
+      })
+    ).subscribe(() => {
+      this.snackBar.open('Account details sent successfully', 'Close', { 
+        duration: 3000,
+        panelClass: ['success-snackbar']
+      });
+    });
+  }
+
+  exportToExcel(): void {
+    if (!this.accountId) {
+      this.snackBar.open('No account selected for export', 'Close', { duration: 3000 });
+      return;
+    }
+
+    this.accountService.exportAccountToExcel(this.accountId).subscribe({
+      next: (blob: Blob) => {
+        const downloadLink = document.createElement('a');
+        const url = window.URL.createObjectURL(blob);
+        downloadLink.href = url;
+        downloadLink.download = `account_${this.accountId}_export.xlsx`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        window.URL.revokeObjectURL(url);
+
+        this.snackBar.open('Account exported successfully', 'Close', { 
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      },
+      error: (error: HttpErrorResponse) => {
+        this.snackBar.open('Failed to export account: ' + error.message, 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+        console.error('Export error:', error);
+      }
+    });
+  }
 
   // sendEmail(): void {
   //   if (!this.accountId )

@@ -1,19 +1,31 @@
 <div class="account-full-details-container">
   <mat-card class="details-card">
-    <mat-card-header>
+    <mat-card-header class="position-relative">
       <mat-card-title>
         <mat-icon>account_balance</mat-icon>
         Account Full Details
       </mat-card-title>
-      <mat-card-subtitle *ngIf="account">RIB: {{ account?.rib }}</mat-card-subtitle>
+      <mat-card-subtitle *ngIf="account">RIB: {{ account.rib }}</mat-card-subtitle>
+      <div class="email-action-container">
+        <button 
+          mat-raised-button 
+          class="professional-email-button" 
+          (click)="sendAccountEmail()"
+          aria-label="Send Account Details via Email"
+        >
+          <mat-icon class="button-icon">send</mat-icon>
+          <span class="button-text">Email Account Details</span>
+          <div matRipple class="button-ripple"></div>
+        </button>
+      </div>
     </mat-card-header>
 
     <!-- Payment Statistics Chart -->
     <div class="stats-chart-section">
       <div style="margin-bottom: 12px; display: flex; justify-content: flex-end; gap: 16px;">
         <mat-form-field appearance="outline" class="period-type-dropdown custom-dropdown">
-          <mat-label>Period Type</mat-label>
-          <mat-select [(ngModel)]="periodType" (selectionChange)="onPeriodTypeChange()">
+          <label for="periodTypeSelect">Period Type</label>
+          <mat-select id="periodTypeSelect" [(ngModel)]="periodType" (selectionChange)="onPeriodTypeChange()">
             <mat-option value="daily">Day</mat-option>
             <mat-option value="monthly">Month</mat-option>
             <mat-option value="yearly">Year</mat-option>

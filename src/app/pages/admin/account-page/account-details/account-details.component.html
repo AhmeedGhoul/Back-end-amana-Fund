@@ -10,6 +10,13 @@
         <mat-icon>add</mat-icon>
         Add New Account
       </button>
+
+      <button mat-raised-button color="accent" class="action-button export-button" (click)="exportToExcel()">
+        <div class="button-content">
+          <mat-icon class="button-icon">download</mat-icon>
+          <span class="button-text">Export to Excel</span>
+        </div>
+      </button>
       
       <app-account-actions 
         [accountId]="selectedAccount?.id ?? null">

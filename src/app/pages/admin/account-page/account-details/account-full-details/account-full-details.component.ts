@@ -11,7 +11,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatRippleModule } from '@angular/material/core';
+import { MatSnackBarModule, MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { AccountService, PaymentStatisticsDTO } from '@app/services/account.service';
 import { Account } from '@app/models/account.model';
@@ -39,6 +40,7 @@ import { AccountPaymentDialogComponent } from '../account-payment-dialog/account
     MatSelectModule,
     MatTableModule,
     MatSnackBarModule,
+    MatRippleModule,
     RouterModule,
     DatePipe,
     CurrencyPipe,
@@ -314,5 +316,25 @@ export class AccountFullDetailsComponent implements OnInit {
   cancelEditMode(): void {
     this.isEditMode = false;
     this.editableAccount = {};
+  }
+
+  sendAccountEmail(): void {
+    if (!this.account || !this.account.rib) {
+      this.snackBar.open('No account selected', 'Close', { duration: 3000 } as MatSnackBarConfig);
+      return;
+    }
+
+    this.accountService.sendAccountEmail(this.account.rib).subscribe({
+      next: () => {
+        this.snackBar.open('Account details sent via email', 'Close', { duration: 3000 } as MatSnackBarConfig);
+      },
+      error: (error) => {
+        console.error('Error sending account email:', error);
+        this.snackBar.open('Failed to send account details', 'Close', { 
+          duration: 5000,
+          panelClass: 'error-snackbar'
+        } as MatSnackBarConfig);
+      }
+    });
   }
 }
