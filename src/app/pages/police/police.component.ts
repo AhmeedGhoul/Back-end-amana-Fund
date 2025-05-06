@@ -1,0 +1,87 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatCardModule } from '@angular/material/card';
+import { PoliceService } from '../../../app/services/police.service';
+import { Police } from './police.model';
+
+@Component({
+  selector: 'app-police',
+  templateUrl: './police.component.html',
+  styleUrls: ['./police.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatTableModule,
+    MatProgressSpinnerModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatCardModule,
+    CurrencyPipe
+  ]
+})
+export class PoliceComponent implements OnInit {
+  policeList: Police[] = [];
+  loading = true;
+  error = '';
+  displayedColumns: string[] = ['id', 'active', 'start', 'end', 'amount', 'frequency', 'renewalDate', 'userId', 'actions'];
+
+  constructor(
+    private policeService: PoliceService,
+    private snackBar: MatSnackBar
+  ) {}
+
+  ngOnInit(): void {
+    this.loadPolice();
+  }
+
+  loadPolice(): void {
+    this.policeService.getAllPolice().subscribe({
+      next: (police) => {
+        this.policeList = police;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Error loading police data: ' + err.message;
+        this.loading = false;
+        this.showSnackBar('Error loading police data', 'error');
+      }
+    });
+  }
+
+  formatDate(date: Date): string {
+    return new Date(date).toLocaleDateString();
+  }
+
+  deletePolice(id: number): void {
+    if (confirm('Are you sure you want to delete this police?')) {
+      this.loading = true;
+      this.policeService.removePolice(id).subscribe({
+        next: () => {
+          this.showSnackBar('Police deleted successfully', 'success');
+          this.loadPolice();
+        },
+        error: (error: any) => {
+          this.loading = false;
+          this.showSnackBar('Error deleting police: ' + error.message, 'error');
+        }
+      });
+    }
+  }
+
+  showSnackBar(message: string, type: 'success' | 'error'): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: type === 'success' ? ['success-snackbar'] : ['error-snackbar']
+    });
+  }
+}

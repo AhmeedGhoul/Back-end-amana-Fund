@@ -1,8 +1,7 @@
 import { Routes } from '@angular/router';
 import {UserComponent} from "./user/user.component";
 import {AuditPageComponent} from "./auditPage/audit-page.component";
-
-
+import {PoliceComponent} from "../police/police.component";
 
 export const UiComponentsRoutes: Routes = [
   {
@@ -15,6 +14,10 @@ export const UiComponentsRoutes: Routes = [
       {
         path: 'audit',
         component: AuditPageComponent,
+      },
+      {
+        path: 'police',
+        component: PoliceComponent,
       }
     ],
   },

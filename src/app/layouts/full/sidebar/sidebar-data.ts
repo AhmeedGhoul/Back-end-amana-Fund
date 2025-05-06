@@ -28,6 +28,11 @@ export const navItems: NavItem[] = [
     route: '/ui-components/lists',
   },
   {
+    displayName: 'Policies',
+    iconName: 'receipt', // changed from 'account' to a more fitting icon
+    route: '/admin/police',
+  },
+  {
     displayName: 'Credit Pools',
     iconName: 'receipt', // changed from 'credit' to valid financial icon
     route: '/ui-components/menu',
