@@ -6,11 +6,12 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSortModule } from '@angular/material/sort';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule, Sort } from '@angular/material/sort';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
 import { PoliceService } from '../../../app/services/police.service';
 import { Police } from './police.model';
+import { PaginationParams, PaginatedResponse } from './pagination.model';
 
 @Component({
   selector: 'app-police',
@@ -34,6 +35,14 @@ export class PoliceComponent implements OnInit {
   loading = true;
   error = '';
   displayedColumns: string[] = ['id', 'active', 'start', 'end', 'amount', 'frequency', 'renewalDate', 'userId', 'actions'];
+  paginationParams: PaginationParams = {
+    page: 0,
+    size: 5,
+    sortBy: 'start',
+    direction: 'asc'
+  };
+  totalElements = 0;
+  totalPages = 0;
 
   constructor(
     private policeService: PoliceService,
@@ -45,9 +54,12 @@ export class PoliceComponent implements OnInit {
   }
 
   loadPolice(): void {
-    this.policeService.getAllPolice().subscribe({
-      next: (police) => {
-        this.policeList = police;
+    this.loading = true;
+    this.policeService.getPaginatedPolice(this.paginationParams).subscribe({
+      next: (response: PaginatedResponse<Police>) => {
+        this.policeList = response.content;
+        this.totalElements = response.totalElements;
+        this.totalPages = response.totalPages;
         this.loading = false;
       },
       error: (err) => {
@@ -56,6 +68,18 @@ export class PoliceComponent implements OnInit {
         this.showSnackBar('Error loading police data', 'error');
       }
     });
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.paginationParams.page = event.pageIndex;
+    this.paginationParams.size = event.pageSize;
+    this.loadPolice();
+  }
+
+  onSortChange(event: Sort): void {
+    this.paginationParams.sortBy = event.active as 'start' | 'end';
+    this.paginationParams.direction = event.direction as 'asc' | 'desc';
+    this.loadPolice();
   }
 
   formatDate(date: Date): string {

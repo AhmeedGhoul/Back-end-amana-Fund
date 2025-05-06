@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Police } from '../pages/police/police.model';
+import { PaginationParams, PaginatedResponse } from '../pages/police/pagination.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,15 +16,22 @@ export class PoliceService {
     return this.http.get<Police[]>(`${this.apiUrl}/getall_police`);
   }
 
-  getPaginatedPolice(page: number = 0, size: number = 5, sortBy: string = 'start', direction: string = 'asc'):
-    Observable<any> {
-    const params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', size.toString())
-      .set('sortBy', sortBy)
-      .set('direction', direction);
+  getPaginatedPolice(params: PaginationParams): Observable<PaginatedResponse<Police>> {
+    const { page, size, sortBy, direction } = params;
+    
+    // Validate sort field
+    if (!['start', 'end'].includes(sortBy)) {
+      throw new Error('Invalid sort field. Choose between "start" or "end".');
+    }
 
-    return this.http.get(`${this.apiUrl}/paginated`, { params });
+    const paramsObj = {
+      page: page.toString(),
+      size: size.toString(),
+      sortBy,
+      direction
+    };
+
+    return this.http.get<PaginatedResponse<Police>>(`${this.apiUrl}/paginated`, { params: paramsObj });
   }
 
   searchPolice(params: { start?: Date; amount?: number; id?: number; }): Observable<any> {
