@@ -38,4 +38,14 @@ export class PoliceService {
   removePolice(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/removepolice/${id}`);
   }
+
+  generatePDF(id: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${id}/contract`, {
+      responseType: 'blob'
+    });
+  }
+
+  deactivatePolice(id: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}/deactivate`, {});
+  }
 }

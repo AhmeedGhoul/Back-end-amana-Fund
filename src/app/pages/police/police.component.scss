@@ -120,46 +120,69 @@
 .actions-cell {
   text-align: right;
   padding-right: 24px !important;
+}
 
-  .delete-button {
-    background-color: #f44336;
-    color: white;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
+.delete-button,
+.pdf-button,
+.deactivate-button {
+  cursor: pointer;
+  background-color: #f44336;
+  color: white;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  margin-left: 8px;
 
-    &:hover {
-      background-color: #d32f2f;
-      transform: scale(1.1);
-      box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
-    }
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
 
-    .mat-icon {
-      font-size: 24px;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
+  .mat-icon {
+    font-size: 24px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2) 50%, transparent);
-      transform: rotate(45deg) translateX(-100%);
-      transition: transform 0.3s ease;
-    }
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2) 50%, transparent);
+    transform: rotate(45deg) translateX(-100%);
+    transition: transform 0.3s ease;
+  }
 
-    &:hover::before {
-      transform: rotate(45deg) translateX(0);
-    }
+  &:hover::before {
+    transform: rotate(45deg) translateX(0);
+  }
+}
+
+.pdf-button {
+  cursor: pointer;
+  background-color: #2196f3;
+  color: white;
+
+  &:hover {
+    background-color: #1976d2;
+  }
+}
+
+.deactivate-button {
+  cursor: pointer;
+  background-color: #ffd700;
+  color: #2c3e50;
+
+  &:hover {
+    background-color: #ffed4a;
   }
 }
 

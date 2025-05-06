@@ -78,6 +78,49 @@ export class PoliceComponent implements OnInit {
     }
   }
 
+  generatePDF(id: number): void {
+    this.loading = true;
+    this.policeService.generatePDF(id).subscribe({
+      next: (response: Blob) => {
+        const url = window.URL.createObjectURL(response);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `police_${id}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        this.loading = false;
+      },
+      error: (error: any) => {
+        this.loading = false;
+        this.showSnackBar('Error generating PDF: ' + error.message, 'error');
+      }
+    });
+  }
+
+  deactivatePolice(id: number): void {
+    if (confirm('Are you sure you want to change the status of this policy?')) {
+      this.loading = true;
+      this.policeService.deactivatePolice(id).subscribe({
+        next: () => {
+          this.snackBar.open('Police deactivated successfully', 'Close', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+          this.loadPolice();
+        },
+        error: (error: any) => {
+          this.loading = false;
+          this.snackBar.open('Error deactivating police: ' + error.message, 'Close', {
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      });
+    }
+  }
+
   showSnackBar(message: string, type: 'success' | 'error'): void {
     this.snackBar.open(message, 'Close', {
       duration: 3000,

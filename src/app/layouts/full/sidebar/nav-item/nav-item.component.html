@@ -13,4 +13,11 @@
    class="menu-list-item">
   <i-tabler class="routeIcon" [name]="item.iconName" matListItemIcon></i-tabler>
   <span class="hide-menu">{{ item.displayName }}</span>
+  <span *ngIf="item.children" class="ml-auto">
+    <i-tabler name="chevron-down" class="arrow-icon" [ngClass]="{ 'rotate': expanded }"></i-tabler>
+  </span>
 </a>
+
+<mat-nav-list *ngIf="expanded && item.children" class="sub-menu">
+  <app-nav-item *ngFor="let child of item.children" [item]="child" [depth]="depth + 1"></app-nav-item>
+</mat-nav-list>
