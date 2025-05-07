@@ -1,196 +1,180 @@
+/* Base Container */
 .container {
+  max-width: 1200px;
+  margin: auto;
   padding: 2rem;
-  background-color: #f9f9f9; /* Softer background color */
+  background-color: #f4f9ff;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  max-width: 100%;
+  box-shadow: 0 4px 16px rgba(0, 123, 255, 0.1);
+  animation: fadeIn 0.6s ease;
 }
 
-.section-title {
-  font-size: 1.8rem; /* Increased font size */
-  margin-bottom: 1.5rem; /* More space below */
-  color: #333;
-  font-weight: 700;
-  border-bottom: 2px solid #007bff; /* Distinctive border color */
-  padding-bottom: 0.5rem;
+/* Section Titles */
+h2, h3, h4 {
+  color: #1f4e79;
+  font-weight: 600;
+  margin-bottom: 1rem;
 }
 
-.search-form,
-.excel-download,
-.indemnification-calculator {
-  margin-bottom: 2rem;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.input-field,
-.input-small {
-  padding: 0.5rem 0.8rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem; /* Slightly larger font */
-  min-width: 150px;
-}
-
-.input-small {
-  width: 120px;
-}
-
-.btn {
-  padding: 0.5rem 1rem;
+/* Card Styling */
+.card {
+  background-color: #ffffff;
+  border-radius: 12px;
   border: none;
+  box-shadow: 0 4px 16px rgba(0, 123, 255, 0.05);
+  animation: slideUp 0.4s ease-in-out;
+}
+
+/* Table Styling */
+.table {
   border-radius: 6px;
-  font-size: 0.95rem; /* Slightly larger font */
-  cursor: pointer;
-  transition: background 0.2s ease;
+  overflow: hidden;
+}
+
+.table thead {
+  background-color: #d0e7ff;
+  color: #0b3558;
+}
+
+.table tbody tr:hover {
+  background-color: #e6f3ff;
+  transition: background-color 0.3s ease;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+}
+
+/* Buttons */
+.btn {
+  border: none;
+  padding: 0.45rem 1rem;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .btn:hover {
-  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
+/* Button Color Variants */
 .btn-primary {
   background-color: #007bff;
-  color: white;
+  color: #fff;
+}
+.btn-primary:hover {
+  background-color: #0069d9;
 }
 
-.btn-secondary {
-  background-color: #6c757d;
-  color: white;
+.btn-success {
+  background-color: #28a745;
+  color: #fff;
 }
-
-.btn-outline-primary {
-  background-color: white;
-  color: #007bff;
-  border: 1px solid #007bff;
-}
-
-.btn-outline-secondary {
-  background-color: white;
-  color: #6c757d;
-  border: 1px solid #6c757d;
+.btn-success:hover {
+  background-color: #218838;
 }
 
 .btn-danger {
   background-color: #dc3545;
+  color: #fff;
+}
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+.btn-warning:hover {
+  background-color: #e0a800;
+}
+
+.btn-outline-secondary {
+  border: 2px solid #6c757d;
+  color: #6c757d;
+}
+.btn-outline-secondary:hover {
+  background-color: #6c757d;
   color: white;
 }
 
-.sinistres-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 1.5rem;
+.btn-outline-dark {
+  border: 2px solid #343a40;
+  color: #343a40;
+}
+.btn-outline-dark:hover {
+  background-color: #343a40;
+  color: white;
 }
 
-.sinistres-table th,
-.sinistres-table td {
-  padding: 0.75rem;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-  font-size: 0.95rem;
+.btn-info {
+  background-color: #17a2b8;
+  color: #fff;
+}
+.btn-info:hover {
+  background-color: #138496;
 }
 
-.sinistres-table th {
-  background-color: #f8f9fa;
-  font-weight: 600;
-}
-
-.pagination-controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 300px;
-  margin-bottom: 2rem;
-}
-
-.form-container {
-  padding: 2rem;
-  border-radius: 12px;
-  background-color: #fefefe;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.form-group {
-  margin-bottom: 1rem;
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  font-weight: 500;
-  margin-bottom: 0.4rem;
-}
-
-.form-group input {
+/* Forms */
+input, select {
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 6px;
-  font-size: 0.95rem;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
 }
 
-.result {
-  margin-top: 1rem;
-  font-size: 1.1rem;
-  color: #155724;
-  background-color: #d4edda;
-  border: 1px solid #c3e6cb;
+input:focus, select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Search Form */
+.search-form {
+  background-color: #e9f3ff;
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  animation: slideUp 0.4s ease;
 }
 
-.error {
+/* Chart & Risk */
+.chart-wrapper {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.05);
+}
+
+.risk-message, .alert-info {
+  background-color: #e3f2fd;
+  color: #0c5460;
+  border: 1px solid #b8daff;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+}
+
+/* Pagination */
+.pagination-controls {
   margin-top: 1rem;
-  color: #721c24;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  padding: 1rem;
-  border-radius: 8px;
+  font-weight: 500;
+  color: #495057;
 }
 
-.actions {
-  margin-top: 1rem;
+.d-flex button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.mt-4 {
-  margin-top: 1.5rem;
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
 }
 
-.mt-5 {
-  margin-top: 2.5rem;
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-
-/* Ensure the canvas is responsive */
-canvas {
-  max-width: 100%; /* Make sure the chart resizes with the container */
-  height: auto; /* Adjust height automatically */
-}
-
-/* Hide chart on larger screens */
-.hidden-chart {
-  display: none; /* Initially hidden */
-}
-
-/* Show chart on small screens */
-@media (max-width: 768px) {
-  .hidden-chart {
-    display: block; /* Show chart on small screens */
-  }
-}
-
-/* Optional: Center the chart */
-.chart-container {
-  padding: 20px;
-  width: 100%; /* Full width of the container */
-  max-width: 600px; /* Limit maximum width */
-  margin: 0 auto; /* Center the chart */
-}
-
-/* Style for risk message */
-.risk-message {
-  margin-top: 1rem;
-  font-weight: bold;
-  color: #dc3545; /* Red color for emphasis */
-}
-

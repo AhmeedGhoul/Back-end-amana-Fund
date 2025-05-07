@@ -8,8 +8,8 @@ import { Sinistres } from './sinistres.model';
   providedIn: 'root',
 })
 export class ContractService {
-  private contractApiUrl = 'http://localhost:8088/api/v1/Contract';
-  private apiUrl = 'http://localhost:8088/api/v1/Sinitre';
+  private contractApiUrl = 'api/v1/Contract';
+  private apiUrl = 'api/v1/Sinitre';
 
   constructor(private http: HttpClient) {}
 

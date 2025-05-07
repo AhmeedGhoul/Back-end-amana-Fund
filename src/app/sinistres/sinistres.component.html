@@ -1,139 +1,158 @@
-<div *ngIf="!selectedSinistre && !showForm" class="container">
-  <h2 class="section-title">Sinistres Management</h2>
+<div *ngIf="!selectedSinistre && !showForm" class="container mt-4">
+  <div class="card shadow-sm p-4 mb-4">
+    <h3 class="mb-3">Sinistres Management</h3>
 
-  <!-- Search Filters -->
-  <div class="search-form">
-    <label for="claimAmountSearch">Claim Amount:</label>
-    <input
-      type="number"
-      id="claimAmountSearch"
-      [(ngModel)]="searchClaimAmount"
-      (input)="searchSinistres()"
-      class="input-field"
-      placeholder="Enter amount"
-    />
+    <!-- Search Filters -->
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label for="claimAmountSearch" class="form-label">Claim Amount</label>
+        <input
+          id="claimAmountSearch"
+          type="number"
+          [(ngModel)]="searchClaimAmount"
+          (input)="searchSinistres()"
+          class="form-control"
+          placeholder="Enter amount"
+        />
+      </div>
 
-    <label for="settlementDateSearch">Settlement Date:</label>
-    <input
-      type="date"
-      id="settlementDateSearch"
-      [(ngModel)]="searchSettlementDate"
-      (input)="searchSinistres()"
-      class="input-field"
-    />
+      <div class="col-md-4">
+        <label for="settlementDateSearch" class="form-label">Settlement Date</label>
+        <input
+          id="settlementDateSearch"
+          type="date"
+          [(ngModel)]="searchSettlementDate"
+          (input)="searchSinistres()"
+          class="form-control"
+        />
+      </div>
 
-    <button (click)="clearSearch()" class="btn btn-secondary">Clear</button>
-  </div>
-
-  <!-- Sinistres Table -->
-  <table class="sinistres-table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Claim Amount</th>
-        <th>Reinsurance Share</th>
-        <th>Settlement Date</th>
-        <th>Settlement Amount</th>
-        <th>User First Name</th>
-        <th>User Last Name</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let sinistre of sinistresList">
-        <td>{{ sinistre.idSinistre }}</td>
-        <td>{{ sinistre.claimAmount | number: '1.2-2' }} DT</td>
-        <td>{{ sinistre.reinsuranceShaire | percent }}</td>
-        <td>{{ sinistre.settlementDate | date:'shortDate' }}</td>
-        <td>{{ sinistre.settlementAmount | number: '1.2-2' }} DT</td>
-        <td>{{ sinistre.user?.firstName || 'N/A' }}</td>
-        <td>{{ sinistre.user?.lastName || 'N/A' }}</td>
-        <td>
-          <button (click)="selectSinistre(sinistre)" class="btn btn-outline-primary">Edit</button>
-          <button (click)="deleteSinistre(sinistre.idSinistre)" class="btn btn-danger">Delete</button>
-          <button (click)="downloadPdf(sinistre.idSinistre)" class="btn btn-outline-secondary">PDF</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <!-- Pagination -->
-  <div class="pagination-controls">
-    <button
-      [disabled]="page === 0"
-      (click)="onPageChange({ pageIndex: page - 1, pageSize: size })"
-      class="btn"
-    >
-      Previous
-    </button>
-    <span>
-      Page: {{ page + 1 }} / {{ totalElements ? (totalElements + size - 1) / size : 1 | number:'1.0-0' }}
-    </span>
-    <button
-      [disabled]="(page + 1) * size >= totalElements"
-      (click)="onPageChange({ pageIndex: page + 1, pageSize: size })"
-      class="btn"
-    >
-      Next
-    </button>
-  </div>
-
-  <!-- Add Sinistre -->
-  <div class="actions">
-    <button (click)="showAddSinistreForm()" class="btn btn-primary">Add New Sinistre</button>
-  </div>
-
-  <!-- Excel Download by User -->
-  <div class="excel-download mt-4">
-    <label for="userIdInput">User ID:</label>
-    <input type="number" id="userIdInput" [(ngModel)]="userId" class="input-small" />
-    <button (click)="downloadExcelForUser()" class="btn">Download Excel</button>
-  </div>
-
-  <div class="fonds-reserve-container">
-    <button (click)="fetchFondsDeReserve()" class="btn btn-info">Get Fonds de Reserve</button>
-    <div *ngIf="fondsDeReserve !== null">
-      <h3>Fonds de Reserve: {{ fondsDeReserve }}</h3>
+      <div class="col-md-4 d-flex gap-2">
+        <button (click)="clearSearch()" class="btn btn-outline-secondary w-100">Clear</button>
+      </div>
     </div>
   </div>
 
-  <!-- Chart Container -->
-  <div class="chart-container">
-    <h2>Évaluation du Risque</h2>
-    <input type="number" [(ngModel)]="userId" placeholder="Enter User ID" />
-    <button (click)="evaluateRisk()" class="btn btn-warning">Evaluate Risk</button>
-    <div *ngIf="risqueMessage">
-      <p class="risk-message">{{ risqueMessage }}</p>
+  <!-- Table -->
+  <div class="card shadow-sm p-4 mb-4">
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Claim Amount</th>
+            <th>Reinsurance Share</th>
+            <th>Settlement Date</th>
+            <th>Settlement Amount</th>
+            <th>User First Name</th>
+            <th>User Last Name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let sinistre of sinistresList">
+            <td>{{ sinistre.idSinistre }}</td>
+            <td>{{ sinistre.claimAmount | number: '1.2-2' }} DT</td>
+            <td>{{ sinistre.reinsuranceShaire | percent }}</td>
+            <td>{{ sinistre.settlementDate | date:'shortDate' }}</td>
+            <td>{{ sinistre.settlementAmount | number: '1.2-2' }} DT</td>
+            <td>{{ sinistre.user?.firstName || 'N/A' }}</td>
+            <td>{{ sinistre.user?.lastName || 'N/A' }}</td>
+            <td class="text-nowrap">
+              <button (click)="selectSinistre(sinistre)" class="btn btn-sm btn-primary me-1">Edit</button>
+              <button (click)="deleteSinistre(sinistre.idSinistre)" class="btn btn-sm btn-danger me-1">Delete</button>
+              <button (click)="downloadPdf(sinistre.idSinistre)" class="btn btn-sm btn-outline-secondary">PDF</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <!-- Chart Canvas -->
-    <div class="chart-wrapper">
-      <canvas #myChart class="hidden-chart"></canvas> <!-- Hidden on larger screens -->
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <div>
+        <button
+          [disabled]="page === 0"
+          (click)="onPageChange({ pageIndex: page - 1, pageSize: size })"
+          class="btn btn-outline-secondary me-2"
+        >
+          Previous
+        </button>
+        <button
+          [disabled]="(page + 1) * size >= totalElements"
+          (click)="onPageChange({ pageIndex: page + 1, pageSize: size })"
+          class="btn btn-outline-secondary"
+        >
+          Next
+        </button>
+      </div>
+      <div>
+        Page {{ page + 1 }} / {{ totalElements ? (totalElements + size - 1) / size : 1 | number:'1.0-0' }}
+      </div>
     </div>
   </div>
 
-  <!-- Add/Update Form -->
+  <!-- Actions -->
+  <div class="d-flex flex-wrap gap-3">
+    <button (click)="showAddSinistreForm()" class="btn btn-success">Add New Sinistre</button>
 
+    <!-- Excel Download -->
+    <div class="d-flex align-items-center gap-2">
+      <label for="userIdInput" class="form-label m-0">User ID:</label>
+      <input id="userIdInput" type="number" [(ngModel)]="userId" class="form-control w-auto" />
+      <button (click)="downloadExcelForUser()" class="btn btn-outline-dark">Download Excel</button>
+    </div>
+
+    <!-- Fonds de Réserve -->
+    <button (click)="fetchFondsDeReserve()" class="btn btn-info">Get Fonds de Réserve</button>
+    <div *ngIf="fondsDeReserve !== null" class="ms-2">
+      <strong>Fonds de Réserve: {{ fondsDeReserve }}</strong>
+    </div>
+  </div>
+
+  <!-- Risk Evaluation -->
+  <div class="card shadow-sm p-4 mt-4">
+    <h4 class="mb-3">Évaluation du Risque</h4>
+    <div class="d-flex gap-3 align-items-end">
+      <input type="number" [(ngModel)]="userId" class="form-control w-auto" placeholder="Enter User ID" />
+      <button (click)="evaluateRisk()" class="btn btn-warning">Evaluate Risk</button>
+    </div>
+    <div *ngIf="risqueMessage" class="mt-3">
+      <p class="alert alert-info">{{ risqueMessage }}</p>
+    </div>
+    <div class="chart-wrapper mt-3">
+      <canvas #myChart class="w-100" style="max-height: 300px;"></canvas>
+    </div>
+  </div>
 </div>
-<div *ngIf="showForm" class="form-container">
-  <h2>{{ selectedSinistre ? 'Update Sinistre' : 'Add New Sinistre' }}</h2>
-  <form [formGroup]="sinistreForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="claimAmount">Claim Amount:</label>
-      <input id="claimAmount" formControlName="claimAmount" type="number" required />
-    </div>
-    <div class="form-group">
-      <label for="reinsuranceShaire">Reinsurance Share:</label>
-      <input id="reinsuranceShaire" formControlName="reinsuranceShaire" type="number" required />
-    </div>
-    <div class="form-group">
-      <label for="settlementDate">Settlement Date:</label>
-      <input id="settlementDate" formControlName="settlementDate" type="date" required />
-    </div>
-    <div class="form-group">
-      <label for="settlementAmount">Settlement Amount:</label>
-      <input id="settlementAmount" formControlName="settlementAmount" type="number" required />
-    </div>
-    <button type="submit" class="btn btn-success">Submit</button>
-  </form>
+
+<!-- Add/Update Form -->
+<div *ngIf="showForm" class="container mt-4">
+  <div class="card shadow-sm p-4">
+    <h3 class="mb-3">{{ selectedSinistre ? 'Update Sinistre' : 'Add New Sinistre' }}</h3>
+    <form [formGroup]="sinistreForm" (ngSubmit)="onSubmit()">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label for="claimAmount" class="form-label">Claim Amount</label>
+          <input id="claimAmount" formControlName="claimAmount" type="number" class="form-control" required />
+        </div>
+        <div class="col-md-6">
+          <label for="reinsuranceShaire" class="form-label">Reinsurance Share</label>
+          <input id="reinsuranceShaire" formControlName="reinsuranceShaire" type="number" class="form-control" required />
+        </div>
+        <div class="col-md-6">
+          <label for="settlementDate" class="form-label">Settlement Date</label>
+          <input id="settlementDate" formControlName="settlementDate" type="date" class="form-control" required />
+        </div>
+        <div class="col-md-6">
+          <label for="settlementAmount" class="form-label">Settlement Amount</label>
+          <input id="settlementAmount" formControlName="settlementAmount" type="number" class="form-control" required />
+        </div>
+      </div>
+      <div class="mt-4 d-flex justify-content-end gap-2">
+        <button type="submit" class="btn btn-success">Submit</button>
+        <button type="button" (click)="cancelAddSinistre()" class="btn btn-secondary">Cancel</button>
+      </div>
+    </form>
+  </div>
 </div>
