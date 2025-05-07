@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams,HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Police } from '../pages/police/police.model';
 import { PaginationParams, PaginatedResponse } from '../pages/police/pagination.model';
+
 
 @Injectable({
   providedIn: 'root'
@@ -34,13 +35,10 @@ export class PoliceService {
     return this.http.get<PaginatedResponse<Police>>(`${this.apiUrl}/paginated`, { params: paramsObj });
   }
 
-  searchPolice(params: { amount?: number; id?: number; }): Observable<any> {
-    const httpParams = new HttpParams()
-      .set('amount', params.amount?.toString() || '')
-      .set('id', params.id?.toString() || '');
-
-    return this.http.get(`${this.apiUrl}/search`, { params: httpParams });
+  searchPolice(amount: number): Observable<Police[]> {
+    return this.http.get<Police[]>(`${this.apiUrl}/search?amount=${amount}`);
   }
+  
 
   removePolice(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/removepolice/${id}`);

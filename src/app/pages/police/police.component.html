@@ -6,8 +6,8 @@
       <!-- Search and Select Container -->
       <div style="display: flex; align-items: center; gap: 1rem;">
         <form>
-          <input class="search-input" placeholder="Enter search value" />
-      </form>
+          <input class="search-input" [(ngModel)]="searchValue" name="search" placeholder="Enter amount" (keyup.enter)="search()" />
+        </form>
       </div>
 
       <!-- Add Button -->

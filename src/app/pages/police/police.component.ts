@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Subject, takeUntil, debounceTime } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
@@ -37,6 +38,8 @@ import {MatSelectModule} from '@angular/material/select';
   ]
 })
 export class PoliceComponent implements OnInit {
+  private destroy$ = new Subject<void>();
+  private search$ = new Subject<void>();
   police : Police = {
     idPolice: 0,
     active: false,
@@ -69,6 +72,35 @@ export class PoliceComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPolice();
+    this.setupDynamicSearch();
+  }
+
+  private setupDynamicSearch(): void {
+    this.search$.pipe(
+      debounceTime(300),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.search();
+    });
+
+    // Listen for input changes
+    const input = document.querySelector('input.search-input') as HTMLInputElement;
+    if (input) {
+      input.addEventListener('input', (event) => {
+        const target = event.target as HTMLInputElement;
+        this.searchValue = target.value;
+        if (this.searchValue.trim()) {
+          this.search$.next();
+        } else {
+          this.loadPolice();
+        }
+      });
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadPolice(): void {
@@ -164,66 +196,47 @@ export class PoliceComponent implements OnInit {
   }
 
   search(): void {
-    if (!this.searchValue.trim()) {
-      this.snackBar.open('Please enter a search value', 'Close', {
+    const trimmedValue = this.searchValue.trim();
+    const amount = parseFloat(trimmedValue);
+    
+    if (!trimmedValue) {
+      this.loadPolice(); // reloads full list
+      return;
+    }    
+    if (!trimmedValue || isNaN(amount)) {
+      this.snackBar.open('Please enter a valid amount', 'Close', {
         duration: 3000,
         panelClass: ['error-snackbar']
       });
       return;
     }
-
+  
     this.loading = true;
     this.error = '';
-
-    let amount: number | undefined;
-    let id: number | undefined;
-
-    if (this.searchCriteria === 'amount') {
-      amount = parseFloat(this.searchValue);
-      if (isNaN(amount)) {
-        this.snackBar.open('Please enter a valid number for amount search', 'Close', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-        this.loading = false;
-        return;
-      }
-    } else if (this.searchCriteria === 'id') {
-      id = parseInt(this.searchValue);
-      if (isNaN(id)) {
-        this.snackBar.open('Please enter a valid number for ID search', 'Close', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-        this.loading = false;
-        return;
-      }
-    }
-
-    this.policeService.searchPolice({ amount, id })
-      .subscribe({
-        next: (response) => {
-          if (response.status === 204) {
-            this.policeList = [];
-            this.snackBar.open('No results found', 'Close', {
-              duration: 3000,
-              panelClass: ['error-snackbar']
-            });
-          } else {
-            this.policeList = response.body || [];
-          }
-          this.loading = false;
-        },
-        error: (error) => {
-          this.error = 'Error loading police data';
-          this.loading = false;
-          this.snackBar.open('Error occurred while searching', 'Close', {
+  
+    this.policeService.searchPolice(amount).subscribe({
+      next: (policeList) => {
+        if (policeList.length === 0) {
+          this.snackBar.open('No results found', 'Close', {
             duration: 3000,
-            panelClass: ['error-snackbar']
+            panelClass: ['info-snackbar']
           });
         }
-      });
+        this.policeList = policeList;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Search error:', error);
+        this.error = 'Error loading police data';
+        this.loading = false;
+        this.snackBar.open('Error occurred while searching: ' + error.message, 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
   }
+  
 
   showSnackBar(message: string, type: 'success' | 'error'): void {
     this.snackBar.open(message, 'Close', {
