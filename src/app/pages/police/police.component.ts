@@ -153,6 +153,10 @@ export class PoliceComponent implements OnInit {
       });
     }
   }
+  editPolice(id: number): void
+  {
+    
+  }
 
   generatePDF(id: number): void {
     this.loading = true;
