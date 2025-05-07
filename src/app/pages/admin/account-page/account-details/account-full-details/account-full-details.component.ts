@@ -1,14 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource, MatTable } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { DatePipe, CurrencyPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatRippleModule } from '@angular/material/core';
@@ -39,15 +40,15 @@ import { AccountPaymentDialogComponent } from '../account-payment-dialog/account
     MatFormFieldModule,
     MatSelectModule,
     MatTableModule,
+    MatSortModule,
     MatSnackBarModule,
     MatRippleModule,
     RouterModule,
     DatePipe,
-    CurrencyPipe,
     AccountPaymentDialogComponent
   ]
 })
-export class AccountFullDetailsComponent implements OnInit {
+export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
   paymentStats: PaymentStatisticsDTO[] = [];
   statsChartData: ChartData = { labels: [], datasets: [] };
   statsChartOptions = {
@@ -96,9 +97,21 @@ export class AccountFullDetailsComponent implements OnInit {
   account: Account | null = null;
   accountDetails: { attribute: string; value: string }[] = [];
   isEditMode = false;
+  @ViewChild(MatTable) table!: MatTable<Account>;
+  @ViewChild(MatSort) sort!: MatSort;
+
+  // Debugging method to log sort state
+  logSortState() {
+    console.log('Sort Configuration:', {
+      active: this.sort?.active,
+      direction: this.sort?.direction,
+      sortChange: this.sort ? 'Defined' : 'Undefined'
+    });
+  }
   editableAccount: Partial<Account> = {};
   loading = true;
   accountPayments: AccountPayment[] = [];
+  accountPaymentsDataSource: MatTableDataSource<AccountPayment> = new MatTableDataSource<AccountPayment>([]);
   displayedColumns: string[] = [
     'paymentDate',
     'amount',
@@ -117,6 +130,65 @@ export class AccountFullDetailsComponent implements OnInit {
       const rib = params['rib'];
       this.fetchAccountDetails(rib);
       this.fetchPaymentStatistics(rib);
+    });
+  }
+
+  ngAfterViewInit(): void {
+    // Ensure sort is properly configured
+    Promise.resolve().then(() => {
+      try {
+        // Create sort if not initialized
+        if (!this.sort) {
+          console.warn('Sort not initialized, creating new MatSort');
+          this.sort = new MatSort();
+        }
+
+        // Create data source if not initialized
+        if (!this.accountPaymentsDataSource) {
+          console.warn('AccountPaymentsDataSource not initialized, creating empty data source');
+          this.accountPaymentsDataSource = new MatTableDataSource<AccountPayment>([]);
+        }
+
+        // Configure sort
+        this.sort.active = 'paymentDate';
+        this.sort.direction = 'desc';
+
+        // Set custom sorting accessor
+        this.accountPaymentsDataSource.sortingDataAccessor = (item: AccountPayment, property: string) => {
+          try {
+            switch (property) {
+              case 'paymentDate': 
+                return item.paymentDate ? new Date(item.paymentDate).getTime() : 0;
+              case 'amount': 
+                return item.amount ?? 0;
+              default: 
+                return item[property as keyof AccountPayment] ?? '';
+            }
+          } catch (accessorError) {
+            console.error('Error in sorting accessor:', { 
+              property, 
+              item, 
+              error: accessorError 
+            });
+            return 0;
+          }
+        };
+
+        // Bind sort to data source
+        this.accountPaymentsDataSource.sort = this.sort;
+
+        console.log('Sort configured successfully in ngAfterViewInit', {
+          sortActive: this.sort.active,
+          sortDirection: this.sort.direction,
+          dataSourceLength: this.accountPaymentsDataSource.data.length
+        });
+      } catch (error) {
+        console.error('Comprehensive error in ngAfterViewInit sort configuration:', {
+          error,
+          sort: this.sort,
+          dataSource: this.accountPaymentsDataSource
+        });
+      }
     });
   }
 
@@ -171,9 +243,44 @@ export class AccountFullDetailsComponent implements OnInit {
   fetchAccountPayments(rib: string): void {
     this.accountService.getAccountPaymentsByRib(rib).subscribe({
       next: (payments: AccountPayment[]) => {
-        this.accountPayments = payments;
+        // Sort payments by date in descending order before processing
+        const sortedPayments = payments.sort((a, b) => {
+          const dateA = a.paymentDate ? new Date(a.paymentDate).getTime() : 0;
+          const dateB = b.paymentDate ? new Date(b.paymentDate).getTime() : 0;
+          return dateB - dateA; // Descending order
+        });
+        
+        // Preserve original type while ensuring data integrity
+        const processedPayments = sortedPayments.map(payment => ({
+          ...payment,
+          paymentDate: payment.paymentDate || new Date().toISOString(),
+          amount: payment.amount ?? 0,
+          agencyName: payment.agencyName || 'Unknown'
+        }));
+
+        this.accountPayments = processedPayments;
+        this.accountPaymentsDataSource = new MatTableDataSource<AccountPayment>(processedPayments);
+        
+        // Configure sorting accessor for custom sorting
+        this.accountPaymentsDataSource.sortingDataAccessor = (item: AccountPayment, property: string) => {
+          switch(property) {
+            case 'paymentDate': 
+              return item.paymentDate ? new Date(item.paymentDate).getTime() : 0;
+            case 'amount': 
+              return item.amount ?? 0;
+            case 'agencyName': 
+              return item.agencyName?.toLowerCase() ?? '';
+            default: 
+              return item[property] ?? '';
+          }
+        };
+
+        // Configure sort with a slight delay to ensure view is ready
+        setTimeout(() => {
+          this.configureSort();
+        }, 0);
+
         this.loading = false;
-        console.log('Account Payments:', payments);
       },
       error: (error: any) => {
         console.error('Detailed Error fetching account payments', {
@@ -184,6 +291,66 @@ export class AccountFullDetailsComponent implements OnInit {
         this.loading = false;
         const errorMsg = error.error?.message || error.message || 'Failed to load account payments';
         this.snackBar.open(errorMsg, 'Close', { duration: 5000, panelClass: 'error-snackbar' });
+      }
+    });
+  }
+
+  // Method to configure sort
+  private configureSort(): void {
+    // Ensure sort is configured
+    Promise.resolve().then(() => {
+      try {
+        // Create sort if not initialized
+        if (!this.sort) {
+          console.warn('Sort not initialized in configureSort, creating new MatSort');
+          this.sort = new MatSort();
+        }
+
+        // Create data source if not initialized
+        if (!this.accountPaymentsDataSource) {
+          console.warn('AccountPaymentsDataSource not initialized in configureSort, creating empty data source');
+          this.accountPaymentsDataSource = new MatTableDataSource<AccountPayment>([]);
+        }
+
+        // Configure sort
+        this.sort.active = 'paymentDate';
+        this.sort.direction = 'desc';
+
+        // Set custom sorting accessor
+        this.accountPaymentsDataSource.sortingDataAccessor = (item: AccountPayment, property: string) => {
+          try {
+            switch (property) {
+              case 'paymentDate': 
+                return item.paymentDate ? new Date(item.paymentDate).getTime() : 0;
+              case 'amount': 
+                return item.amount ?? 0;
+              default: 
+                return item[property as keyof AccountPayment] ?? '';
+            }
+          } catch (accessorError) {
+            console.error('Error in sorting accessor:', { 
+              property, 
+              item, 
+              error: accessorError 
+            });
+            return 0;
+          }
+        };
+
+        // Bind sort to data source
+        this.accountPaymentsDataSource.sort = this.sort;
+
+        console.log('Sort configured successfully in configureSort', {
+          sortActive: this.sort.active,
+          sortDirection: this.sort.direction,
+          dataSourceLength: this.accountPaymentsDataSource.data.length
+        });
+      } catch (error) {
+        console.error('Comprehensive error in configureSort:', {
+          error,
+          sort: this.sort,
+          dataSource: this.accountPaymentsDataSource
+        });
       }
     });
   }
