@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Contract } from './contract.model';
 import { Sinistres } from './sinistres.model';
@@ -13,32 +13,41 @@ export class ContractService {
 
   constructor(private http: HttpClient) {}
 
+  // Helper method to get headers with Authorization token
+  private getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('authToken');
+    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  }
+
   getContracts(): Observable<Contract[]> {
-    return this.http.get<Contract[]>(`${this.contractApiUrl}/Reassurance/all`);
+    return this.http.get<Contract[]>(`${this.contractApiUrl}/Reassurance/all`, { headers: this.getHeaders() });
   }
 
   addContract(newContract: Contract): Observable<Contract> {
     return this.http.post<Contract>(
       `${this.contractApiUrl}/addReassurance`,
-      newContract
+      newContract,
+      { headers: this.getHeaders() }
     );
   }
 
   updateContract(id: number, updatedContract: Contract): Observable<Contract> {
     return this.http.put<Contract>(
       `${this.contractApiUrl}/updateReassurance`,
-      updatedContract
+      updatedContract,
+      { headers: this.getHeaders() }
     );
   }
 
   deleteContract(id: number): Observable<void> {
     return this.http.delete<void>(
-      `${this.contractApiUrl}/removeReassurance/${id}`
+      `${this.contractApiUrl}/removeReassurance/${id}`,
+      { headers: this.getHeaders() }
     );
   }
 
   getSinistres(): Observable<Sinistres[]> {
-    return this.http.get<Sinistres[]>(`${this.apiUrl}/all`);
+    return this.http.get<Sinistres[]>(`${this.apiUrl}/all`, { headers: this.getHeaders() });
   }
 
   getContractsPaginatedAndSearch(
@@ -64,7 +73,7 @@ export class ContractService {
 
     return this.http.get<any>(
       `${this.contractApiUrl}/Reassurance/paginated`,
-      { params: params }
+      { params: params, headers: this.getHeaders() }
     );
   }
 }

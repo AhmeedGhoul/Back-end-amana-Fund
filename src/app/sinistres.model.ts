@@ -4,8 +4,7 @@ export class Sinistres {
   reinsuranceShaire: number;
   settlementDate: string;
   settlementAmount: number;
-  user: User | null;
-  police: any;
+  user: User | null; // Keep the User reference
 
   constructor(
     idSinistre: number | null,
@@ -13,16 +12,14 @@ export class Sinistres {
     reinsuranceShaire: number,
     settlementDate: string,
     settlementAmount: number,
-    user: User | null,
-    police: any
+    user: User | null
   ) {
     this.idSinistre = idSinistre;
     this.claimAmount = claimAmount;
     this.reinsuranceShaire = reinsuranceShaire;
     this.settlementDate = settlementDate;
     this.settlementAmount = settlementAmount;
-    this.user = user;
-    this.police = police;
+    this.user = user; // Assign User object
   }
 }
 

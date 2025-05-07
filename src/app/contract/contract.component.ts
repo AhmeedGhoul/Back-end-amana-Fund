@@ -30,6 +30,7 @@ function pastOrPresentDateValidator(
 })
 export class ContractComponent implements OnInit {
   contractsList: Contract[] = [];
+
   selectedContract: Contract | null = null;
   contractForm: FormGroup;
   showForm: boolean = false;
@@ -75,6 +76,13 @@ export class ContractComponent implements OnInit {
     this.loadContracts();
     this.loadSinistres();
   }
+  getRentabilite(contract: Contract): number {
+    if (contract.coverageLimit && contract.coverageLimit !== 0) {
+      return (contract.premium / contract.coverageLimit) * 100;
+    }
+    return 0;
+  }
+
 
   loadContracts(): void {
     this.contractService
@@ -88,7 +96,6 @@ export class ContractComponent implements OnInit {
       .subscribe(
         (data: any) => {
           this.contractsList = data.content;
-          console.log("Contracts List:", this.contractsList); // Add this line
           this.totalElements = data.totalElements;
           this.page = data.number; // Current page number
           this.size = data.size;   // Page size
@@ -256,9 +263,6 @@ export class ContractComponent implements OnInit {
         (data: any) => {
           this.contractsList = data.content;
           this.totalElements = data.totalElements;
-          // Keep the current page and size from the response
-          // this.page = data.number;
-          // this.size = data.size;
         },
         (error: any) => {
           console.error('Error fetching contracts:', error);

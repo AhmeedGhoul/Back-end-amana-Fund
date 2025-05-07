@@ -1,112 +1,196 @@
-/* General Styling */
-h2 {
-  color: #2c3e50;
-  font-size: 24px;
+.container {
+  padding: 2rem;
+  background-color: #f9f9f9; /* Softer background color */
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
 }
 
-button {
-  margin-top: 10px;
-  padding: 10px 20px;
-  background-color: #3498db;
-  color: white;
+.section-title {
+  font-size: 1.8rem; /* Increased font size */
+  margin-bottom: 1.5rem; /* More space below */
+  color: #333;
+  font-weight: 700;
+  border-bottom: 2px solid #007bff; /* Distinctive border color */
+  padding-bottom: 0.5rem;
+}
+
+.search-form,
+.excel-download,
+.indemnification-calculator {
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.input-field,
+.input-small {
+  padding: 0.5rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem; /* Slightly larger font */
+  min-width: 150px;
+}
+
+.input-small {
+  width: 120px;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
   border: none;
+  border-radius: 6px;
+  font-size: 0.95rem; /* Slightly larger font */
   cursor: pointer;
+  transition: background 0.2s ease;
 }
 
-button:hover {
-  background-color: #2980b9;
+.btn:hover {
+  opacity: 0.9;
 }
 
-/* Sinistres Table Styling */
-table {
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-outline-primary {
+  background-color: white;
+  color: #007bff;
+  border: 1px solid #007bff;
+}
+
+.btn-outline-secondary {
+  background-color: white;
+  color: #6c757d;
+  border: 1px solid #6c757d;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.sinistres-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-bottom: 1.5rem;
 }
 
-th,
-td {
-  padding: 10px;
+.sinistres-table th,
+.sinistres-table td {
+  padding: 0.75rem;
   text-align: left;
-  border: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  font-size: 0.95rem;
 }
 
-th {
-  background-color: #f2f2f2;
+.sinistres-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
 }
 
-td button {
-  padding: 5px 10px;
-  background-color: #2ecc71;
-  border: none;
-  cursor: pointer;
-  color: white;
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 300px;
+  margin-bottom: 2rem;
 }
 
-td button:hover {
-  background-color: #27ae60;
+.form-container {
+  padding: 2rem;
+  border-radius: 12px;
+  background-color: #fefefe;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Form Styling */
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
-label {
-  font-weight: bold;
+.form-group label {
+  font-weight: 500;
+  margin-bottom: 0.4rem;
 }
 
-input {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
+.form-group input {
+  padding: 0.5rem;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-size: 0.95rem;
 }
 
-input[type="number"],
-input[type="date"] {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
+.result {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  padding: 1rem;
+  border-radius: 8px;
 }
 
-p {
-  color: red;
-  font-size: 14px;
-  margin-top: 5px;
+.error {
+  margin-top: 1rem;
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 1rem;
+  border-radius: 8px;
 }
 
-button[disabled] {
-  background-color: #95a5a6;
-  cursor: not-allowed;
+.actions {
+  margin-top: 1rem;
 }
 
-/* Indemnification Calculator Styling */
-.indemnification-calculator {
-  margin-top: 20px;
-  border: 1px solid #ddd;
-  padding: 15px;
-  border-radius: 5px;
+.mt-4 {
+  margin-top: 1.5rem;
 }
 
-.indemnification-calculator .form-group {
-  margin-bottom: 10px;
+.mt-5 {
+  margin-top: 2.5rem;
 }
 
-.indemnification-calculator .result {
-  margin-top: 15px;
+/* Ensure the canvas is responsive */
+canvas {
+  max-width: 100%; /* Make sure the chart resizes with the container */
+  height: auto; /* Adjust height automatically */
+}
+
+/* Hide chart on larger screens */
+.hidden-chart {
+  display: none; /* Initially hidden */
+}
+
+/* Show chart on small screens */
+@media (max-width: 768px) {
+  .hidden-chart {
+    display: block; /* Show chart on small screens */
+  }
+}
+
+/* Optional: Center the chart */
+.chart-container {
+  padding: 20px;
+  width: 100%; /* Full width of the container */
+  max-width: 600px; /* Limit maximum width */
+  margin: 0 auto; /* Center the chart */
+}
+
+/* Style for risk message */
+.risk-message {
+  margin-top: 1rem;
   font-weight: bold;
+  color: #dc3545; /* Red color for emphasis */
 }
 
-.indemnification-calculator .error {
-  color: red;
-}
-
-/* Chart Styling */
-#myChart {
-  width: 100%;
-  max-width: 400px; /* Adjust as needed */
-  height: auto;
-  margin-top: 10px;
-}

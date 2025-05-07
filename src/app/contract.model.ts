@@ -1,3 +1,5 @@
+
+
 export interface Contract {
   idContrat?: number;
   date: string;
@@ -5,5 +7,10 @@ export interface Contract {
   contact: string;
   coverageLimit: number;
   premium: number;
-  sinistre?: number | null;
+  sinistre: Sinistre | null;
+  profitabilityRatio?: number;
+}
+export interface Sinistre {
+  idSinistre: number;
+
 }
