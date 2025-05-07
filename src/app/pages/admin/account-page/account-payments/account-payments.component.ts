@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatTableModule, MatTable } from '@angular/material/table';
+import { MatTableModule, MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
@@ -48,7 +48,7 @@ export class AccountPaymentsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   displayedColumns: string[] = ['paymentDate', 'amount', 'agencyName', 'rib', 'actions'];
-  dataSource: AccountPayment[] = [];
+  dataSource: MatTableDataSource<AccountPayment> = new MatTableDataSource<AccountPayment>([]);
   searchTerm: string = '';
   selectedPayment: AccountPayment | null = null;
   filterForm: FormGroup;
@@ -89,15 +89,34 @@ export class AccountPaymentsComponent implements OnInit {
     this.snackBar.open('Filters have been reset', 'Close', { duration: 3000 });
   }
 
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = (item: AccountPayment, property: string) => {
+      switch (property) {
+        case 'paymentDate':
+          return item.paymentDate ? new Date(item.paymentDate).getTime() : 0;
+        case 'amount':
+          return item.amount ?? 0;
+        case 'agencyName':
+          return item.agencyName ? item.agencyName.toLowerCase() : '';
+        case 'rib':
+          return item.rib ?? '';
+        default:
+          return item[property as keyof AccountPayment] ?? '';
+      }
+    };
+    this.loadPayments();
+  }
+
   loadPayments(): void {
     this.loading = true;
     this.accountPaymentService.getAccountPaymentsPaged(this.currentPage, this.pageSize).subscribe({
       next: (response: any) => {
         if (response && response.content) {
-          this.dataSource = response.content;
+          this.dataSource.data = response.content;
           this.totalItems = response.totalElements;
         } else {
-          this.dataSource = [];
+          this.dataSource.data = [];
           this.totalItems = 0;
           this.snackBar.open('No payments found.', 'Close', { duration: 3000 });
         }
@@ -106,7 +125,7 @@ export class AccountPaymentsComponent implements OnInit {
       error: (error) => {
         console.error('Detailed error loading payments:', error);
         this.loading = false;
-        this.dataSource = [];
+        this.dataSource.data = [];
         this.totalItems = 0;
         
         let errorMessage = 'Failed to load payments.';
@@ -191,7 +210,7 @@ export class AccountPaymentsComponent implements OnInit {
       // Combine filtering methods
       this.accountPaymentService.getAccountPayments().subscribe({
         next: (allPayments: AccountPayment[]) => {
-          this.dataSource = allPayments.filter(payment => {
+          this.dataSource.data = allPayments.filter(payment => {
             const paymentDate = payment.paymentDate ? new Date(payment.paymentDate) : null;
             
             const matchesAgency = !params.agencyName || 
@@ -204,7 +223,7 @@ export class AccountPaymentsComponent implements OnInit {
           });
 
           this.loading = false;
-          if (this.dataSource.length === 0) {
+          if (this.dataSource.data.length === 0) {
             this.snackBar.open('No payments found matching the filters', 'Close', { duration: 3000 });
           }
 
