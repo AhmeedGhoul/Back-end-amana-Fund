@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -22,6 +23,7 @@ import {MatSelectModule} from '@angular/material/select';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     MatToolbarModule,
     MatIconModule,
     MatTableModule,
@@ -47,6 +49,8 @@ export class PoliceComponent implements OnInit {
   };
   totalElements = 0;
   totalPages = 0;
+  searchValue = '';
+  searchCriteria = '';
 
   constructor(
     private policeService: PoliceService,
@@ -147,6 +151,68 @@ export class PoliceComponent implements OnInit {
         }
       });
     }
+  }
+
+  search(): void {
+    if (!this.searchValue.trim()) {
+      this.snackBar.open('Please enter a search value', 'Close', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    this.loading = true;
+    this.error = '';
+
+    let amount: number | undefined;
+    let id: number | undefined;
+
+    if (this.searchCriteria === 'amount') {
+      amount = parseFloat(this.searchValue);
+      if (isNaN(amount)) {
+        this.snackBar.open('Please enter a valid number for amount search', 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+        this.loading = false;
+        return;
+      }
+    } else if (this.searchCriteria === 'id') {
+      id = parseInt(this.searchValue);
+      if (isNaN(id)) {
+        this.snackBar.open('Please enter a valid number for ID search', 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+        this.loading = false;
+        return;
+      }
+    }
+
+    this.policeService.searchPolice({ amount, id })
+      .subscribe({
+        next: (response) => {
+          if (response.status === 204) {
+            this.policeList = [];
+            this.snackBar.open('No results found', 'Close', {
+              duration: 3000,
+              panelClass: ['error-snackbar']
+            });
+          } else {
+            this.policeList = response.body || [];
+          }
+          this.loading = false;
+        },
+        error: (error) => {
+          this.error = 'Error loading police data';
+          this.loading = false;
+          this.snackBar.open('Error occurred while searching', 'Close', {
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      });
   }
 
   showSnackBar(message: string, type: 'success' | 'error'): void {

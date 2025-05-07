@@ -34,9 +34,8 @@ export class PoliceService {
     return this.http.get<PaginatedResponse<Police>>(`${this.apiUrl}/paginated`, { params: paramsObj });
   }
 
-  searchPolice(params: { start?: Date; amount?: number; id?: number; }): Observable<any> {
+  searchPolice(params: { amount?: number; id?: number; }): Observable<any> {
     const httpParams = new HttpParams()
-      .set('start', params.start?.toISOString() || '')
       .set('amount', params.amount?.toString() || '')
       .set('id', params.id?.toString() || '');
 

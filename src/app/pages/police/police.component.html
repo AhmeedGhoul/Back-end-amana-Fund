@@ -1,28 +1,27 @@
 <div class="container">
   <div class="header">
     <h2>Policy List</h2>
-    <div class="actions" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
   
-      <!-- Search Input -->
-      <input class="search-input" placeholder="Enter search value" />
-    
-      <!-- Criteria Dropdown -->
-      <mat-form-field appearance="outline">
-        <mat-select placeholder="Select criteria">
-          <mat-option>None</mat-option>
-          <mat-option value="amount">Amount</mat-option>
-          <mat-option value="id">ID</mat-option>
-        </mat-select>
-      </mat-form-field>
-    
+    <div class="actions" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+      <!-- Search and Select Container -->
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <input class="search-input" placeholder="Enter search value" />
+  
+        <mat-form-field appearance="outline" class="criteria-select">
+          <mat-select placeholder="Select criteria">
+            <mat-option value="amount">Amount</mat-option>
+            <mat-option value="id">ID</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+  
       <!-- Add Button -->
       <button mat-fab color="primary" routerLink="/admin/police/add" class="fab-button">
         <mat-icon>add</mat-icon>
       </button>
-    
     </div>
-    
   </div>
+  
 
   <div *ngIf="loading" class="loading">
     <mat-progress-spinner diameter="50"></mat-progress-spinner>
