@@ -32,6 +32,8 @@
     "ngx-webcam": "^0.4.1",
     "rxjs": "~7.5.0",
     "sass": "^1.57.1",
+    "scrollreveal": "^4.0.9",
+    "swiper": "^11.2.6",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"
   },

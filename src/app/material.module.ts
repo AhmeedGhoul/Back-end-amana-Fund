@@ -46,6 +46,8 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {RecaptchaModule} from "ng-recaptcha";
 import { AuditDetailsComponent } from './pages/admin/auditPage/audit/audit-details/audit-details.component';
+import { VisitorComponent } from './pages/visitor/visitor.component';
+import {RouterLink} from "@angular/router";
 @NgModule({
   declarations: [
 
@@ -95,7 +97,8 @@ import { AuditDetailsComponent } from './pages/admin/auditPage/audit/audit-detai
     NgIf,
     ReactiveFormsModule,
     RecaptchaModule,
-    DatePipe
+    DatePipe,
+    RouterLink
   ]
 })
 export class MaterialModule {}

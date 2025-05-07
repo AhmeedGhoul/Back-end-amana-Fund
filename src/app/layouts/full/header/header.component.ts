@@ -53,7 +53,7 @@ export class HeaderComponent {
   }
   logout() {
     this.authService.logout(); // Clear token
-    this.router.navigate(['/authentication/login']); // Redirect to login page
+    this.router.navigate(['']); // Redirect to login page
   }
 
   goToProfile() {

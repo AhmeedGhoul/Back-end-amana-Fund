@@ -3,17 +3,29 @@ import { FullComponent } from './layouts/full/full.component';
 import { BlankComponent } from './layouts/blank/blank.component';
 import { AuthGuard } from './pages/authentication/guards/auth.guard';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
-import {DefaultRedirectComponent} from "./pages/default-redirect-component/default-redirect-component.component";
+import { VisitorComponent } from './pages/visitor/visitor.component';
+import { DefaultRedirectComponent } from './pages/default-redirect-component/default-redirect-component.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: FullComponent,
+    component: BlankComponent,
     children: [
       {
-        path: '',
-        component: DefaultRedirectComponent // no redirectTo here
+        path: '', // 👈 root path
+        component: VisitorComponent, // 👈 shown at '/'
       },
+      {
+        path: 'authentication',
+        loadChildren: () =>
+          import('./pages/authentication/authentication.routes').then((m) => m.AuthenticationRoutes),
+      },
+    ],
+  },
+  {
+    path: '',
+    component: FullComponent,
+    children: [
       {
         path: 'dashboard',
         loadChildren: () =>
@@ -24,22 +36,11 @@ export const routes: Routes = [
         path: 'admin',
         loadChildren: () =>
           import('./pages/admin/admin.routes').then((m) => m.AdminRoutes),
-        canActivate: [AuthGuard], // only logged in
+        canActivate: [AuthGuard],
       },
       {
         path: 'not-found',
         component: NotFoundComponent,
-      },
-    ],
-  },
-  {
-    path: '',
-    component: BlankComponent,
-    children: [
-      {
-        path: 'authentication',
-        loadChildren: () =>
-          import('./pages/authentication/authentication.routes').then((m) => m.AuthenticationRoutes),
       },
     ],
   },
