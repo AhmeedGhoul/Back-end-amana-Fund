@@ -16,6 +16,7 @@ import { PoliceService } from '../../../app/services/police.service';
 import { Police } from './police.model';
 import { PaginationParams, PaginatedResponse } from './pagination.model';
 import {MatSelectModule} from '@angular/material/select';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-police',
@@ -34,7 +35,8 @@ import {MatSelectModule} from '@angular/material/select';
     MatCardModule,
     CurrencyPipe,
     MatFormFieldModule,
-    MatSelectModule
+    MatSelectModule,
+    RouterModule
   ]
 })
 export class PoliceComponent implements OnInit {

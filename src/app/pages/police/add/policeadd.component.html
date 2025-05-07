@@ -1,0 +1,65 @@
+<mat-card class="dialog-card">
+  <mat-card-header class="dialog-header">
+    <mat-card-title>Add New Policy</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+
+    <mat-form-field>
+      <mat-label>Start Date</mat-label>
+      <input matInput [matDatepicker]="start">
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="start"></mat-datepicker-toggle>
+      <mat-datepicker #start></mat-datepicker>
+    </mat-form-field>
+
+
+    <mat-form-field>
+      <mat-label>End Date</mat-label>
+      <input matInput [matDatepicker]="end">
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="end"></mat-datepicker-toggle>
+      <mat-datepicker #end></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Enter the Amount</mat-label>
+      <input matInput placeholder="Prime Amount">
+      <mat-icon matSuffix>money</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Choose the frequency</mat-label>
+      <mat-select>
+        <mat-option value="MONTHLY">MONTHLY</mat-option>
+        <mat-option value="QUARTERLY">QUARTERLY</mat-option>
+        <mat-option value="HALF_YEARLY">HALF_YEARLY</mat-option>
+        <mat-option value="YEARLY">YEARLY</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Renewal Date</mat-label>
+      <input matInput [matDatepicker]="renewalDate">
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="renewalDate"></mat-datepicker-toggle>
+      <mat-datepicker #renewalDate></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Choose User ID</mat-label>
+      <mat-select>
+        <mat-option value="ID">ID</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+  </mat-card-content>
+
+  <mat-card-actions class="dialog-actions">
+    <button mat-stroked-button color="warn" (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="!policeForm.valid" (click)="onSubmit()">
+      <mat-icon>save</mat-icon>
+      &nbsp; Save Policy
+    </button>
+  </mat-card-actions>
+</mat-card>

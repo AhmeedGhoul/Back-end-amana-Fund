@@ -53,4 +53,8 @@ export class PoliceService {
   deactivatePolice(id: number): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${id}/deactivate`, {});
   }
+
+  addPolice(police: Police): Observable<Police> {
+    return this.http.post<Police>(`${this.apiUrl}/add_police`, police);
+  }
 }
