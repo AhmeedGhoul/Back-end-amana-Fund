@@ -37,6 +37,16 @@ import {MatSelectModule} from '@angular/material/select';
   ]
 })
 export class PoliceComponent implements OnInit {
+  police : Police = {
+    idPolice: 0,
+    active: false,
+    start: null,
+    end: null,
+    amount: 0,
+    frequency: 'MONTHLY',
+    renewalDate: null,
+    userId: 0
+  }
   policeList: Police[] = [];
   loading = true;
   error = '';

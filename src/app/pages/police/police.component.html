@@ -1,27 +1,28 @@
 <div class="container">
   <div class="header">
     <h2>Policy List</h2>
-  
+
     <div class="actions" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
       <!-- Search and Select Container -->
       <div style="display: flex; align-items: center; gap: 1rem;">
-        <input class="search-input" placeholder="Enter search value" />
-  
+        <form>
+          <input class="search-input" placeholder="Enter search value" />
         <mat-form-field appearance="outline" class="criteria-select">
           <mat-select placeholder="Select criteria">
             <mat-option value="amount">Amount</mat-option>
             <mat-option value="id">ID</mat-option>
           </mat-select>
         </mat-form-field>
+      </form>
       </div>
-  
+
       <!-- Add Button -->
       <button mat-fab color="primary" routerLink="/admin/police/add" class="fab-button">
         <mat-icon>add</mat-icon>
       </button>
     </div>
   </div>
-  
+
 
   <div *ngIf="loading" class="loading">
     <mat-progress-spinner diameter="50"></mat-progress-spinner>
@@ -83,13 +84,16 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let element" class="actions-cell">
-          <button mat-icon-button color="warn" (click)="deletePolice(element.idPolice)" title="Delete Police" class="delete-button">
+          <button mat-icon-button color="warn" (click)="deletePolice(element.idPolice)" title="Delete Police"
+            class="delete-button">
             <mat-icon>delete_forever</mat-icon>
           </button>
-          <button mat-icon-button color="primary" (click)="generatePDF(element.idPolice)" title="Generate PDF" class="pdf-button">
+          <button mat-icon-button color="primary" (click)="generatePDF(element.idPolice)" title="Generate PDF"
+            class="pdf-button">
             <mat-icon>picture_as_pdf</mat-icon>
           </button>
-          <button mat-icon-button color="accent" (click)="deactivatePolice(element.idPolice)" title="Deactivate Police" class="deactivate-button">
+          <button mat-icon-button color="accent" (click)="deactivatePolice(element.idPolice)" title="Deactivate Police"
+            class="deactivate-button">
             <mat-icon>power_settings_new</mat-icon>
           </button>
         </td>
@@ -98,10 +102,8 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
-    <mat-paginator [length]="totalElements"
-                   [pageSize]="paginationParams.size"
-                   [pageSizeOptions]="[5, 10, 25, 100]"
-                   (page)="onPageChange($event)">
+    <mat-paginator [length]="totalElements" [pageSize]="paginationParams.size" [pageSizeOptions]="[5, 10, 25, 100]"
+      (page)="onPageChange($event)">
     </mat-paginator>
   </div>
 </div>

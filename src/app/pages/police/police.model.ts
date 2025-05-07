@@ -1,10 +1,10 @@
 export interface Police {
   idPolice: number;
   active: boolean;
-  start: Date;
-  end: Date;
+  start: Date | null;
+  end: Date | null;
   amount: number;
   frequency: 'MONTHLY' | 'QUARTERLY' | 'HALF_YEARLY' | 'YEARLY';
-  renewalDate: Date;
+  renewalDate: Date | null;
   userId: number;
 }
