@@ -9,13 +9,7 @@ const routes: Routes = [
     children: [
       {
         path: 'police',
-        component: PoliceComponent,
-        children: [
-          {
-            path: 'add',
-            component: PoliceaddComponent
-          }
-        ]
+        loadChildren: () => import('./pages/police/police-routing.module').then(m => m.PoliceRoutingModule)
       }
     ]
   },

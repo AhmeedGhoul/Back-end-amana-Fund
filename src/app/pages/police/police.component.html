@@ -10,17 +10,17 @@
         </form>
       </div>
 
-      <a mat-fab color="primary" routerLink="add" style="display: flex; justify-content: center; align-items: center; width: 56px; height: 56px;">
+      <a mat-fab color="primary" [routerLink]="['add']" style="display: flex; justify-content: center; align-items: center; width: 56px; height: 56px;">
         <mat-icon>add</mat-icon>
       </a>
     </div>
   </div>
 
   <div class="content">
-    <router-outlet></router-outlet>
-  </div>
-
-  <div *ngIf="loading" class="loading">
+    <div *ngIf="!editMode">
+      <router-outlet></router-outlet>
+    </div>
+    <div *ngIf="loading" class="loading">
     <mat-progress-spinner diameter="50"></mat-progress-spinner>
   </div>
 

@@ -12,11 +12,11 @@ import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { RouterModule, Router, RouterOutlet, ActivatedRoute } from '@angular/router';
 import { PoliceService } from '../../../app/services/police.service';
 import { Police } from './police.model';
 import { PaginationParams, PaginatedResponse } from './pagination.model';
 import {MatSelectModule} from '@angular/material/select';
-import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-police',
@@ -26,6 +26,7 @@ import { RouterModule } from '@angular/router';
   imports: [
     CommonModule,
     FormsModule,
+    RouterModule,
     MatToolbarModule,
     MatIconModule,
     MatTableModule,
@@ -36,7 +37,7 @@ import { RouterModule } from '@angular/router';
     CurrencyPipe,
     MatFormFieldModule,
     MatSelectModule,
-    RouterModule
+    RouterOutlet
   ]
 })
 export class PoliceComponent implements OnInit {
@@ -66,11 +67,22 @@ export class PoliceComponent implements OnInit {
   totalPages = 0;
   searchValue = '';
   searchCriteria = '';
+  editMode = false;
 
   constructor(
     private policeService: PoliceService,
-    private snackBar: MatSnackBar
-  ) {}
+    private snackBar: MatSnackBar,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+    this.route.params.subscribe(params => {
+      if (params['id']) {
+        this.editMode = true;
+      } else {
+        this.editMode = false;
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.loadPolice();
@@ -153,9 +165,10 @@ export class PoliceComponent implements OnInit {
       });
     }
   }
-  editPolice(id: number): void
-  {
-    
+  editPolice(idPolice: number): void {
+    this.router.navigate(['/admin/police/add'], {
+      queryParams: { idPolice: idPolice }
+    });
   }
 
   generatePDF(id: number): void {

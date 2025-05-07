@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PoliceService } from '../../../services/police.service';
 import { Police } from '../police.model';
@@ -42,28 +42,75 @@ import { MatIconModule } from '@angular/material/icon';
   ]
 })
 export class PoliceaddComponent implements OnInit {
-  policeForm: FormGroup;
+  policeForm!: FormGroup;
   loading = false;
+  editMode = false;
+  police!: Police;
 
   constructor(
-    private fb: FormBuilder,
+    private formBuilder: FormBuilder,
     private router: Router,
     private snackBar: MatSnackBar,
-    private policeService: PoliceService
-  ) {
-    this.policeForm = this.fb.group({
+    private policeService: PoliceService,
+    private route: ActivatedRoute
+  ) { }
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      const id = params['id'] || params['idPolice'];
+      if (id) {
+        this.editMode = true;
+        this.loadPolice(Number(id));
+      }
+    });
+
+    this.initForm();
+  }
+
+  private initForm(): void {
+    this.policeForm = this.formBuilder.group({
       active: [true],
       start: [null, Validators.required],
       end: [null, [Validators.required, this.futureDateValidator]],
       amount: [null, [Validators.required, Validators.min(0)]],
       frequency: ['', Validators.required],
-      renewalDate: [null, [Validators.required, this.futureDateValidator]]
+      renewalDate: [null, [Validators.required, this.futureDateValidator]],
+      userId: [1, Validators.required]  // Default to 1 if not editing
     });
 
-    // Initialize form values
     this.policeForm.patchValue({
       active: true,
       frequency: 'MONTHLY'
+    });
+  }
+
+  private loadPolice(id: number): void {
+    console.log('Fetching police with ID:', id);
+    this.loading = true;
+    this.policeService.getPoliceById(id).subscribe({
+      next: (police: Police) => {
+        console.log('Successfully loaded police:', police);
+        this.police = police;
+        // Set the form values including userId
+        this.policeForm.patchValue({
+          active: police.active,
+          start: police.start,
+          end: police.end,
+          amount: police.amount,
+          frequency: police.frequency,
+          renewalDate: police.renewalDate,
+          userId: police.userId || 1  // Fallback to 1 if userId is null
+        });
+        this.loading = false;
+      },
+      error: (error: any) => {
+        console.error('Error loading police:', error);
+        this.loading = false;
+        this.snackBar.open('Error loading policy: ' + error.message, 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
     });
   }
 
@@ -74,8 +121,6 @@ export class PoliceaddComponent implements OnInit {
     }
     return null;
   }
-
-  ngOnInit(): void {}
 
   onSubmit(): void {
     if (!this.policeForm.valid) {
@@ -92,45 +137,76 @@ export class PoliceaddComponent implements OnInit {
     }
 
     const police: Police = {
+      idPolice: this.editMode ? this.police.idPolice : undefined,
       active: this.policeForm.get('active')?.value,
       start: this.policeForm.get('start')?.value,
       end: this.policeForm.get('end')?.value,
       amount: this.policeForm.get('amount')?.value,
       frequency: this.policeForm.get('frequency')?.value,
       renewalDate: this.policeForm.get('renewalDate')?.value,
-      userId: 1
+      userId: this.policeForm.get('userId')?.value || 1  // Get userId from form or fallback to 1
     };
 
     console.log('Submitting police:', police); // Debug log
 
     this.loading = true;
-    this.policeService.addPolice(police).subscribe({
-      next: (response: any) => {
-        console.log('Response:', response); // Debug log
-        this.snackBar.open('Insurance policy added successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
-        this.router.navigate(['/admin/police']);
-      },
-      error: (error: any) => {
-        console.error('Error response:', error); // Debug log
-        let errorMessage = 'Error adding insurance policy';
-        if (error.error && error.error.message) {
-          errorMessage = error.error.message;
-        } else if (error.message) {
-          errorMessage = error.message;
+    if (this.editMode) {
+      this.policeService.updatePolice(police).subscribe({
+        next: (response: any) => {
+          console.log('Response:', response); // Debug log
+          this.snackBar.open('Insurance policy updated successfully', 'Close', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+          this.router.navigate(['/admin/police']);
+        },
+        error: (error: any) => {
+          console.error('Error response:', error); // Debug log
+          let errorMessage = 'Error updating insurance policy';
+          if (error.error && error.error.message) {
+            errorMessage = error.error.message;
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          this.snackBar.open(errorMessage, 'Close', {
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
+          this.loading = false;
+        },
+        complete: () => {
+          this.loading = false;
         }
-        this.snackBar.open(errorMessage, 'Close', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-        this.loading = false;
-      },
-      complete: () => {
-        this.loading = false;
-      }
-    });
+      });
+    } else {
+      this.policeService.addPolice(police).subscribe({
+        next: (response: any) => {
+          console.log('Response:', response); // Debug log
+          this.snackBar.open('Insurance policy added successfully', 'Close', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+          this.router.navigate(['/admin/police']);
+        },
+        error: (error: any) => {
+          console.error('Error response:', error); // Debug log
+          let errorMessage = 'Error adding insurance policy';
+          if (error.error && error.error.message) {
+            errorMessage = error.error.message;
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          this.snackBar.open(errorMessage, 'Close', {
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
+          this.loading = false;
+        },
+        complete: () => {
+          this.loading = false;
+        }
+      });
+    }
   }
 
   onCancel(): void {
