@@ -53,19 +53,24 @@ export class PoliceaddComponent implements OnInit {
   ) {
     this.policeForm = this.fb.group({
       active: [true],
-      start: [null],
-      end: ['', [Validators.required, this.futureDateValidator]],
-      amount: ['', [Validators.required, Validators.min(0)]],
+      start: [null, Validators.required],
+      end: [null, [Validators.required, this.futureDateValidator]],
+      amount: [null, [Validators.required, Validators.min(0)]],
       frequency: ['', Validators.required],
-      renewalDate: ['', [Validators.required, this.futureDateValidator]],
-      userId: ['', [Validators.required, Validators.min(1)]]
+      renewalDate: [null, [Validators.required, this.futureDateValidator]]
+    });
+
+    // Initialize form values
+    this.policeForm.patchValue({
+      active: true,
+      frequency: 'MONTHLY'
     });
   }
 
   private futureDateValidator(control: FormControl): { [key: string]: boolean } | null {
     const date = control.value;
-    if (date && new Date(date) <= new Date()) {
-      return { 'future': true };
+    if (date && date < new Date()) {
+      return { future: true };
     }
     return null;
   }
@@ -73,41 +78,59 @@ export class PoliceaddComponent implements OnInit {
   ngOnInit(): void {}
 
   onSubmit(): void {
-    if (this.policeForm.valid) {
-      const police: Police = {
-        active: this.policeForm.get('active')?.value,
-        start: this.policeForm.get('start')?.value,
-        end: this.policeForm.get('end')?.value,
-        amount: this.policeForm.get('amount')?.value,
-        frequency: this.policeForm.get('frequency')?.value,
-        renewalDate: this.policeForm.get('renewalDate')?.value,
-        userId: this.policeForm.get('userId')?.value
-      };
-
-      this.loading = true;
-      this.policeService.addPolice(police).subscribe({
-        next: (response) => {
-          this.snackBar.open('Insurance policy added successfully', 'Close', {
-            duration: 3000,
-            panelClass: ['success-snackbar']
-          });
-          this.router.navigate(['/admin/police']);
-        },
-        error: (error) => {
-          let errorMessage = 'Error adding insurance policy';
-          if (error.error && error.error.message) {
-            errorMessage = error.error.message;
-          }
-          this.snackBar.open(errorMessage, 'Close', {
-            duration: 3000,
-            panelClass: ['error-snackbar']
-          });
-        },
-        complete: () => {
-          this.loading = false;
-        }
+    if (!this.policeForm.valid) {
+      console.log('Form is invalid:', this.policeForm.errors);
+      Object.keys(this.policeForm.controls).forEach(field => {
+        const control = this.policeForm.get(field);
+        control?.markAsTouched({ onlySelf: true });
       });
+      this.snackBar.open('Please fill in all required fields correctly', 'Close', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
     }
+
+    const police: Police = {
+      active: this.policeForm.get('active')?.value,
+      start: this.policeForm.get('start')?.value,
+      end: this.policeForm.get('end')?.value,
+      amount: this.policeForm.get('amount')?.value,
+      frequency: this.policeForm.get('frequency')?.value,
+      renewalDate: this.policeForm.get('renewalDate')?.value,
+      userId: 1
+    };
+
+    console.log('Submitting police:', police); // Debug log
+
+    this.loading = true;
+    this.policeService.addPolice(police).subscribe({
+      next: (response: any) => {
+        console.log('Response:', response); // Debug log
+        this.snackBar.open('Insurance policy added successfully', 'Close', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+        this.router.navigate(['/admin/police']);
+      },
+      error: (error: any) => {
+        console.error('Error response:', error); // Debug log
+        let errorMessage = 'Error adding insurance policy';
+        if (error.error && error.error.message) {
+          errorMessage = error.error.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        this.snackBar.open(errorMessage, 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+        this.loading = false;
+      },
+      complete: () => {
+        this.loading = false;
+      }
+    });
   }
 
   onCancel(): void {

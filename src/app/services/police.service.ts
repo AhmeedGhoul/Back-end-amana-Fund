@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams,HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpParams, HttpResponse, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { Police } from '../pages/police/police.model';
 import { PaginationParams, PaginatedResponse } from '../pages/police/pagination.model';
 
@@ -55,6 +56,15 @@ export class PoliceService {
   }
 
   addPolice(police: Police): Observable<Police> {
-    return this.http.post<Police>(`${this.apiUrl}/add_police`, police);
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    return this.http.post<Police>(`${this.apiUrl}/add_police`, police, { headers })
+      .pipe(
+        catchError((error) => {
+          console.error('Error adding police:', error);
+          throw error;
+        })
+      );
   }
 }
