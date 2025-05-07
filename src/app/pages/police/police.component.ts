@@ -9,9 +9,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { PoliceService } from '../../../app/services/police.service';
 import { Police } from './police.model';
 import { PaginationParams, PaginatedResponse } from './pagination.model';
+import {MatSelectModule} from '@angular/material/select';
 
 @Component({
   selector: 'app-police',
@@ -27,7 +29,9 @@ import { PaginationParams, PaginatedResponse } from './pagination.model';
     MatSortModule,
     MatPaginatorModule,
     MatCardModule,
-    CurrencyPipe
+    CurrencyPipe,
+    MatFormFieldModule,
+    MatSelectModule
   ]
 })
 export class PoliceComponent implements OnInit {
