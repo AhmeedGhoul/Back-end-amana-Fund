@@ -26,6 +26,25 @@ export class AccountService {
     private authService: AuthService
   ) {}
 
+  getZakatStatusPdf(rib: string, checkDate: string): Observable<Blob> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+
+    return this.http.get(`${this.apiUrl}/by-rib/${rib}/zakat-status-pdf`, {
+      headers,
+      params: { checkDate },
+      responseType: 'blob'
+    }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error generating zakat status PDF:', error);
+        return throwError(() => new Error('Failed to generate zakat status PDF'));
+      })
+    );
+  }
+
   getPaymentStatistics(rib: string, periodType: string = 'monthly'): Observable<PaymentStatisticsDTO[]> {
     const token = localStorage.getItem('authToken');
     const headers = new HttpHeaders({

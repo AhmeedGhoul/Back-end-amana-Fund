@@ -17,6 +17,8 @@ import { MatSnackBarModule, MatSnackBar, MatSnackBarConfig } from '@angular/mate
 import { MatDialog } from '@angular/material/dialog';
 import { AccountService, PaymentStatisticsDTO } from '@app/services/account.service';
 import { Account } from '@app/models/account.model';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { saveAs } from 'file-saver';
 import { ChartType, ChartData } from 'chart.js';
 import { NgChartsModule } from 'ng2-charts';
 import { AccountPayment } from '@app/models/account-payment.model';
@@ -55,8 +57,7 @@ export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
     responsive: true,
     plugins: {
       legend: {
-        display: true,
-        position: 'top' as const,
+        display: false,
       },
       tooltip: {
         enabled: true,
@@ -122,7 +123,8 @@ export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private accountService: AccountService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -200,6 +202,48 @@ export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  generateZakatStatusPdf(): void {
+    // Strict null checks
+    if (!this.account?.rib) {
+      this.snackBar.open('No account selected or invalid RIB', 'Close', { 
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    // Ensure account type is Zakat before generating PDF
+    if (this.account.accountType !== 'EPARGNE_ZEKET') {
+      this.snackBar.open('This account is not a Zakat account', 'Close', { 
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+
+    this.accountService.getZakatStatusPdf(this.account.rib, today).subscribe({
+      next: (pdfBlob) => {
+        // Safely handle filename generation
+        const safeRib = this.account?.rib ?? 'unknown';
+        const filename = `zakat_status_${safeRib}_${today}.pdf`;
+        saveAs(pdfBlob, filename);
+        this.snackBar.open('Zakat Status PDF Generated Successfully', 'Close', { 
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      },
+      error: (error) => {
+        console.error('Error generating Zakat Status PDF', error);
+        this.snackBar.open('Failed to generate Zakat Status PDF', 'Close', { 
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
   fetchPaymentStatistics(rib: string): void {
     this.accountService.getPaymentStatistics(rib, this.periodType).subscribe({
       next: (stats: PaymentStatisticsDTO[]) => {
@@ -207,7 +251,6 @@ export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
         this.statsChartData = {
           labels: stats.map(s => s.period),
           datasets: [{
-            label: 'Payments by Month',
             data: stats.map(s => s.totalAmount),
             backgroundColor: '#42A5F5'
           }]

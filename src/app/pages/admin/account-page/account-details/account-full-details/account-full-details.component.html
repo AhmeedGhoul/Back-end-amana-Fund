@@ -89,6 +89,16 @@
           <mat-icon>add_circle_outline</mat-icon>
           Create Payment
         </button>
+        <button 
+          *ngIf="account?.accountType === 'EPARGNE_ZEKET'" 
+          mat-raised-button 
+          color="primary" 
+          class="zakat-pdf-btn" 
+          (click)="generateZakatStatusPdf()"
+        >
+          <mat-icon>picture_as_pdf</mat-icon>
+          Generate Zakat Status PDF
+        </button>
           <ng-container *ngIf="isEditMode" class="edit-mode-button-group">
             <button 
               mat-raised-button 
