@@ -28,9 +28,8 @@ export class ActivityLogService {
 
     if (filters.activityName) params = params.set('activityName', filters.activityName);
     if (filters.activityDescription) params = params.set('activityDescription', filters.activityDescription);
-    if (filters.activityDate) params = params.set('activityDate', filters.activityDate);
-    if (filters.userId) params = params.set('userId', filters.userId);
-    if (filters.auditId) params = params.set('auditId', filters.auditId);
+    if (filters.startDate) params = params.set('startDate', filters.startDate);
+    if (filters.endDate) params = params.set('endDate', filters.endDate);
 
     return this.http.get<PagedResponse<ActivityLog>>(`${this.apiUrl}/search`, {
       headers: this.getAuthHeaders(),

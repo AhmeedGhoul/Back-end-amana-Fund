@@ -23,7 +23,9 @@ export class AuditService {
       { headers: this.getAuthHeaders() }
     );
   }
-
+  detectSuspiciousActivity(auditId: number): Observable<string> {
+    return this.http.get(`${this.apiUrl}/detect-suspicious-activity/${auditId}`, { responseType: 'text',headers: this.getAuthHeaders() });
+  }
 
 searchAudits(filters: any, page: number, size: number): Observable<PagedResponse<Audit>> {
   const token = localStorage.getItem('authToken');

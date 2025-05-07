@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { UserComponent } from './user/user.component';
 import { AuditPageComponent } from './auditPage/audit-page.component';
 import { RoleGuard } from '../authentication/guards/role.guard';
+import {ProfileComponent} from "./profile/profile.component";
 
 export const AdminRoutes: Routes = [
   {
@@ -15,5 +16,9 @@ export const AdminRoutes: Routes = [
     component: AuditPageComponent,
     canActivate: [RoleGuard],
     data: { expectedRole: 'AUDITOR' },
+  },
+  {
+    path: 'profile',
+    component: ProfileComponent,
   },
 ];

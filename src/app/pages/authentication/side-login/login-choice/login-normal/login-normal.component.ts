@@ -1,35 +1,38 @@
 import { Component } from '@angular/core';
-import {
-  FormGroup,
-  FormControl,
-  Validators,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { MaterialModule } from '../../../material.module';
-import { MatButtonModule } from '@angular/material/button';
-import { AuthService } from './auth.service'; // Adjust path if needed
-import { AuthRequest } from './auth.model';   // Adjust path if needed
-import { CommonModule } from '@angular/common';
-import { RecaptchaModule } from 'ng-recaptcha';
-
+import { Router, RouterLink } from "@angular/router";
+import { AuthService } from "../auth.service";
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import { AuthRequest } from "../auth.model";
+import { MatInputModule } from "@angular/material/input";
+import { MatCardModule } from "@angular/material/card";
+import { MatButtonModule } from "@angular/material/button";
+import { RecaptchaModule } from "ng-recaptcha";
+import { NgIf } from "@angular/common";
+import {MatCheckboxModule} from "@angular/material/checkbox";
 @Component({
-  selector: 'app-side-login',
+  selector: 'app-login-normal',
+  templateUrl: './login-normal.component.html',
   standalone: true,
+  styleUrls: ['./login-normal.component.css'],
   imports: [
-    CommonModule,
-    RouterModule,
-    MaterialModule,
-    FormsModule,
+    MatInputModule,
     ReactiveFormsModule,
+    RouterLink,
+    MatCardModule,
     MatButtonModule,
     RecaptchaModule,
+    NgIf,
+    MatCheckboxModule,
+    FormsModule,
   ],
-  templateUrl: './side-login.component.html',
+  providers: [
+  ]
 })
-export class AppSideLoginComponent {
-  constructor(private router: Router, private authService: AuthService) {}
+export class LoginNormalComponent {
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   form = new FormGroup({
     uname: new FormControl('', [Validators.required, Validators.email]),
@@ -37,10 +40,12 @@ export class AppSideLoginComponent {
   });
 
   errorMessage = '';
+  captchaResponse: string = '';
 
   get f() {
     return this.form.controls;
   }
+
   forgotPassword() {
     this.router.navigate(['/authentication/forgot-password']);
   }
@@ -62,10 +67,10 @@ export class AppSideLoginComponent {
       }
     });
   }
-  captchaResponse: string = '';
 
   onCaptchaResolved(captcha: string | null): void {
     this.captchaResponse = captcha || '';
   }
+
 
 }

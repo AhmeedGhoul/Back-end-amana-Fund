@@ -13,9 +13,7 @@
 
     <!-- Filter Bar -->
     <div class="filter-bar d-flex gap-16 mb-24 flex-wrap">
-      <button mat-button [matMenuTriggerFor]="dateMenu">
-        <mat-icon>calendar_today</mat-icon> Date Audit
-      </button>
+
 
       <button mat-button [matMenuTriggerFor]="statusMenu">
         <mat-icon>assignment_turned_in</mat-icon> Status
@@ -142,7 +140,7 @@
 
         <!-- Header and Rows -->
         <tr mat-header-row *matHeaderRowDef="['select', 'dateAudit', 'statusAudit', 'output', 'reviewedDate', 'auditType', 'actions']"></tr>
-        <tr mat-row *matRowDef="let audit; columns: ['select', 'dateAudit', 'statusAudit', 'output', 'reviewedDate', 'auditType', 'actions'];"></tr>
+        <tr mat-row *matRowDef="let audit; columns: ['select', 'dateAudit', 'statusAudit', 'output', 'reviewedDate', 'auditType', 'actions'];" (click)="openAuditDetails(audit)"></tr>
 
       </table>
     </div>

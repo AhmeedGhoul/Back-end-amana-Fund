@@ -6,35 +6,32 @@
   </button>
 
 
-  <button mat-icon-button aria-label="Notifications">
-    <i-tabler class="d-flex" name="bell" matBadge="1" matBadgeColor="primary"></i-tabler>
+  <button mat-icon-button  [matMenuTriggerFor]="notificationsMenu" aria-label="Notifications" [matBadge]="unseenCount" matBadgeColor="primary" (click)="loadNotifications()">
+    <i-tabler class="d-flex" name="bell"></i-tabler>
   </button>
-
+  <!-- Notification Dropdown -->
+  <mat-menu #notificationsMenu="matMenu">
+    <ng-container *ngFor="let notification of notifications">
+      <button mat-menu-item (click)="markAsSeen(notification.id)">
+        {{ notification.message }}
+      </button>
+    </ng-container>
+  </mat-menu>
 
   <span class="flex-1-auto"></span>
 
   <!-- --------------------------------------------------------------- -->
   <!-- profile Dropdown -->
   <!-- --------------------------------------------------------------- -->
-  <a mat-flat-button color="primary" href="https://adminmart.com/product/modernize-angular-admin-dashboard/"
-    target="_blank" class="d-flex justify-content-center">
-    Download Free
-  </a>
   <button mat-icon-button [matMenuTriggerFor]="profilemenu" aria-label="Notifications">
-    <img src="/assets/images/profile/user-1.jpg" class="rounded-circle object-cover" width="35" />
+    <img src="/assets/images/profile/user-1.jpg" class="rounded-circle object-cover" width="35"  alt=""/>
   </button>
   <mat-menu #profilemenu="matMenu" class="cardWithShadow">
-    <button mat-menu-item>
-      <mat-icon class="d-flex align-items-center"><i-tabler name="user" class="icon-18 d-flex"></i-tabler></mat-icon>My
-      Profile
-    </button>
-    <button mat-menu-item>
-      <mat-icon class="d-flex align-items-center"><i-tabler name="mail" class="icon-18 d-flex"></i-tabler></mat-icon>My
-      Account
-    </button>
-    <button mat-menu-item>
-      <mat-icon class="d-flex align-items-center"><i-tabler name="list-check"
-          class="icon-18 d-flex"></i-tabler></mat-icon>My Task
+    <button mat-menu-item (click)="goToProfile()">
+      <mat-icon class="d-flex align-items-center">
+        <i-tabler name="user" class="icon-18 d-flex"></i-tabler>
+      </mat-icon>
+      My Profile
     </button>
 
     <div class="p-x-12 m-t-12">
@@ -42,5 +39,9 @@
         Logout
       </button>
     </div>
+
   </mat-menu>
 </mat-toolbar>
+<app-custom-notification [notifications]="notifications"></app-custom-notification>
+
+

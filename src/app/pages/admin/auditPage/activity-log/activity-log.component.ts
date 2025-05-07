@@ -91,8 +91,8 @@ export class ActivityLogComponent implements OnInit {
     const query = {
       activityName: this.filters.activityName,
       activityDescription: this.filters.activityDescription,
-      activityDate: this.filters.startDate?.toISOString() || null,
-      reviewedDate: this.filters.endDate?.toISOString() || null,
+      startDate: this.filters.startDate?.toISOString() || null,
+      endDate: this.filters.endDate?.toISOString() || null
     };
 
     this.activityLogService.searchLogs(query, this.currentPage, this.pageSize).subscribe({
@@ -103,7 +103,6 @@ export class ActivityLogComponent implements OnInit {
       error: (err) => console.error('Search failed', err)
     });
   }
-
   generateReport(): void {
     this.activityLogService.generateReport().subscribe(() => {
       alert('Report generated successfully!');

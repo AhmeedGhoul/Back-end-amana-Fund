@@ -28,33 +28,36 @@
             </div>
           </div>
 
-          <div class="or-border m-t-30">or sign up with</div>
+          <div class="or-border m-t-30">or sign in with</div>
 
-          <form class="m-t-30">
-            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Name</mat-label>
+          <form [formGroup]="form" (ngSubmit)="submit()">
+            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Email</mat-label>
             <mat-form-field appearance="outline" class="w-100" color="primary">
-              <input matInput />
+              <input matInput formControlName="uname" />
             </mat-form-field>
-            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Email Adddress</mat-label>
-            <mat-form-field appearance="outline" class="w-100" color="primary">
-              <input matInput type="email" />
-            </mat-form-field>
-            <!-- password -->
+
             <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Password</mat-label>
             <mat-form-field appearance="outline" class="w-100" color="primary">
-              <input matInput type="password" />
+              <input matInput type="password" formControlName="password" />
             </mat-form-field>
+            <mat-checkbox  name="rememberMe" class="m-t-12">
+              Remember me
+            </mat-checkbox>
 
-            <a [routerLink]="['/']" mat-flat-button color="primary" class="w-100">
-              Sign Up
-            </a>
-            <!-- input -->
+            <div class="text-center m-t-12">
+              <a href="javascript:void(0)" (click)="forgotPassword()">Forgot Password?</a>
+            </div>
+            <div *ngIf="errorMessage" class="text-danger m-b-12">{{ errorMessage }}</div>
+            <div class="recaptcha-wrapper">
+              <re-captcha
+                siteKey="6Lcc6ysrAAAAAPqPZRYF8vypm3Ig8dVTGR7-XUEo"
+                (resolved)="onCaptchaResolved($event)">
+              </re-captcha>
+            </div>
+            <button mat-flat-button color="primary" class="w-100" type="submit" [disabled]="form.invalid || !captchaResponse">
+              Sign In
+            </button>
           </form>
-          <span class="d-block f-w-500 text-center m-t-24">Already have an Account?
-
-            <a [routerLink]="['/authentication/login']" class="text-decoration-none text-primary f-w-500 f-s-14">
-              Sign In</a>
-          </span>
         </mat-card-content>
       </mat-card>
     </div>

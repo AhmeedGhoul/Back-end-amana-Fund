@@ -1,45 +1,60 @@
-import {Component, Input, OnInit} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FraudCase } from './fraud-case.model';
 import { FraudCaseService } from './fraud-case.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AddFraudCaseDialogComponent } from './add-fraud-case-dialog/add-fraud-case-dialog.component';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MaterialModule } from '../../../../material.module';
-import {Audit} from "../audit/audit.model";
+import { Audit } from '../audit/audit.model';
+import {MatIconModule} from "@angular/material/icon";
+import {MatButtonModule} from "@angular/material/button";
+import {MatCardModule} from "@angular/material/card";
+import {MatMenuModule} from "@angular/material/menu";
+import {MatListModule} from "@angular/material/list";
+import {FormsModule} from "@angular/forms";
+import {DatePipe, NgForOf, NgIf} from "@angular/common";
+import {MatInputModule} from "@angular/material/input";
+import {MatSelectModule} from "@angular/material/select";
+import {MaterialModule} from "../../../../material.module";
 
 @Component({
   selector: 'app-fraud-case',
-  standalone: true,
   templateUrl: './fraud-case.component.html',
-  styleUrls: ['./fraud-case.component.css'],
+  standalone: true,
   imports: [
-    CommonModule,
-    FormsModule,
-    MatCardModule,
     MatIconModule,
-    MaterialModule
-  ]
+    MatButtonModule,
+    MatCardModule,
+    MatMenuModule,
+    MatListModule,
+    FormsModule,
+    NgForOf,
+    MatInputModule,
+    MatSelectModule,
+    NgIf,
+    MaterialModule,
+    DatePipe
+  ],
+  styleUrls: ['./fraud-case.component.css']
 })
 export class FraudCaseComponent implements OnInit {
   fraudCases: FraudCase[] = [];
-  filters = {
-    caseType: '',
-    caseStatus: '',
-    startDate: null as Date | null,
-    endDate: null as Date | null,
-  };
   currentPage = 0;
   pageSize = 10;
   totalCases = 0;
 
+  filters = {
+    caseType: '',
+    caseStatus: '',
+    startDate: null as Date | null,
+    endDate: null as Date | null
+  };
+
+  caseTypes = ['FINANCIAL', 'COMPLIANCE', 'RISK', 'CORRUPTION'];
+  caseStatuses = ['PENDING', 'FAILED', 'FINISHED','PAUSED'];
+  activeTab = 'preset';
+  selectedPreset = '';
+
   @Input() selectedAudit!: Audit | null;
 
-  onAuditSelectionChanged(audit: Audit) {
-    this.selectedAudit = audit;
-  }
   constructor(private fraudCaseService: FraudCaseService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
@@ -60,7 +75,8 @@ export class FraudCaseComponent implements OnInit {
     const query = {
       caseType: this.filters.caseType,
       caseStatus: this.filters.caseStatus,
-      detectionDateTime: this.filters.startDate?.toISOString() || null
+      startDate: this.filters.startDate?.toISOString() || null,
+      endDate: this.filters.endDate?.toISOString() || null
     };
 
     this.fraudCaseService.searchCases(query, this.currentPage, this.pageSize).subscribe({
@@ -70,6 +86,35 @@ export class FraudCaseComponent implements OnInit {
       },
       error: (err) => console.error('Search failed', err)
     });
+  }
+
+  applyPresetRange(): void {
+    const today = new Date();
+    let start: Date;
+    let end: Date;
+
+    switch (this.selectedPreset) {
+      case 'last7':
+        start = new Date();
+        start.setDate(today.getDate() - 7);
+        end = today;
+        break;
+      case 'thisMonth':
+        start = new Date(today.getFullYear(), today.getMonth(), 1);
+        end = today;
+        break;
+      case 'lastMonth':
+        start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        end = new Date(today.getFullYear(), today.getMonth(), 0);
+        break;
+      default:
+        start = today;
+        end = today;
+    }
+
+    this.filters.startDate = start;
+    this.filters.endDate = end;
+    this.applyFilters();
   }
 
   pageChanged(newPage: number): void {

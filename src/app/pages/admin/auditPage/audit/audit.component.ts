@@ -9,6 +9,7 @@ import {FormsModule} from "@angular/forms";
 import { CommonModule } from '@angular/common';
 import {AddAuditDialogComponent} from "./add-audit-dialog/add-audit-dialog.component";
 import {ActivityLog} from "../activity-log/activity-log.model";
+import {AuditDetailsComponent} from "./audit-details/audit-details.component";
 
 @Component({
   selector: 'app-audit',
@@ -167,5 +168,11 @@ export class AuditComponent implements OnInit {
   }
   selectAudit(audit: Audit): void { // 🆕
     this.auditSelected.emit(audit);
+  }
+  openAuditDetails(audit: any): void {
+    this.dialog.open(AuditDetailsComponent, {
+      data: { audit },
+      width: '600px'
+    });
   }
 }

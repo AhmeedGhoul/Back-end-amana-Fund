@@ -1,0 +1,8 @@
+<div class="custom-notification-container">
+  <div *ngFor="let notification of notifications" class="custom-notification">
+    <span>{{ notification.message }}</span>
+    <button mat-icon-button (click)="markAsSeen(notification.id)">
+      <mat-icon>close</mat-icon> <!-- Close Icon -->
+    </button>
+  </div>
+</div>

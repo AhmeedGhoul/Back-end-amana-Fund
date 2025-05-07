@@ -1,0 +1,113 @@
+.profile-container {
+  width: 800px;
+  margin: auto;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.profile-image img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ccc;
+}
+
+.profile-info {
+  flex: 1;
+  padding-left: 20px;
+}
+
+h2 {
+  font-size: 32px;
+  color: #333;
+}
+
+button {
+  padding: 12px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+}
+
+.edit-button {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.save-button {
+  background-color: #2196F3;
+  color: white;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form .form-row {
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+}
+
+input {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+.profile-view p {
+  font-size: 18px;
+  margin: 8px 0;
+  color: #555;
+}
+
+.profile-view strong {
+  color: #333;
+}
+.password-section {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f1f1f1;
+  border-radius: 8px;
+}
+
+.password-section .form-row {
+  margin-bottom: 20px;
+}
+
+button.cancel-button {
+  background-color: #f44336;
+  color: white;
+}
+
+button.cancel-button:hover {
+  background-color: #d32f2f;
+}
+
+.password-section form {
+  display: flex;
+  flex-direction: column;
+}

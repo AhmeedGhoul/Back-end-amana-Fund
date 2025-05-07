@@ -1,7 +1,7 @@
 <mat-card class="cardWithShadow">
   <mat-card-content class="p-24">
 
-    <!-- Header -->
+    <!-- Header + Add Button -->
     <div class="d-flex w-100 align-center mb-24">
       <mat-card-title>Fraud Case Management</mat-card-title>
       <div class="m-l-auto">
@@ -14,32 +14,73 @@
       </div>
     </div>
 
-    <!-- Filter Toolbar -->
+    <!-- Filter Bar -->
     <div class="filter-bar d-flex gap-16 mb-24 flex-wrap">
-      <mat-form-field appearance="outline" class="flex-grow-1">
-        <mat-label>Case Type</mat-label>
-        <input matInput [(ngModel)]="filters.caseType" (ngModelChange)="applyFilters()" placeholder="Search type...">
-      </mat-form-field>
 
-      <mat-form-field appearance="outline" class="flex-grow-1">
-        <mat-label>Status</mat-label>
-        <input matInput [(ngModel)]="filters.caseStatus" (ngModelChange)="applyFilters()" placeholder="Search status...">
-      </mat-form-field>
+      <!-- Status Filter -->
+      <button mat-button [matMenuTriggerFor]="statusMenu">
+        <mat-icon>assignment_turned_in</mat-icon> Status
+      </button>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Start Date</mat-label>
-        <input matInput [matDatepicker]="startPicker" [(ngModel)]="filters.startDate" (dateChange)="applyFilters()">
-        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-        <mat-datepicker #startPicker></mat-datepicker>
-      </mat-form-field>
+      <!-- Type Filter -->
+      <button mat-button [matMenuTriggerFor]="typeMenu">
+        <mat-icon>category</mat-icon> Type
+      </button>
 
-      <mat-form-field appearance="outline">
-        <mat-label>End Date</mat-label>
-        <input matInput [matDatepicker]="endPicker" [(ngModel)]="filters.endDate" (dateChange)="applyFilters()">
-        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-        <mat-datepicker #endPicker></mat-datepicker>
-      </mat-form-field>
+
+
     </div>
+
+    <!-- Menus -->
+    <mat-menu #statusMenu="matMenu">
+      <mat-selection-list [(ngModel)]="filters.caseStatus" (ngModelChange)="applyFilters()">
+        <mat-list-option *ngFor="let status of caseStatuses" [value]="status">{{ status }}</mat-list-option>
+      </mat-selection-list>
+    </mat-menu>
+
+    <mat-menu #typeMenu="matMenu">
+      <mat-selection-list [(ngModel)]="filters.caseType" (ngModelChange)="applyFilters()">
+        <mat-list-option *ngFor="let type of caseTypes" [value]="type">{{ type }}</mat-list-option>
+      </mat-selection-list>
+    </mat-menu>
+
+    <mat-menu #dateMenu="matMenu" class="menu-panel">
+      <div class="tab-buttons d-flex">
+        <button mat-button [color]="activeTab === 'preset' ? 'primary' : undefined" (click)="activeTab = 'preset'">Preset</button>
+        <button mat-button [color]="activeTab === 'custom' ? 'primary' : undefined" (click)="activeTab = 'custom'">Custom</button>
+      </div>
+
+      <!-- Preset -->
+      <div *ngIf="activeTab === 'preset'" class="p-16">
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>Preset Range</mat-label>
+          <mat-select [(value)]="selectedPreset" (selectionChange)="applyPresetRange()">
+            <mat-option value="last7">Last 7 Days</mat-option>
+            <mat-option value="thisMonth">This Month</mat-option>
+            <mat-option value="lastMonth">Last Month</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Custom -->
+      <div *ngIf="activeTab === 'custom'" class="p-16">
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>Start Date</mat-label>
+          <input matInput [matDatepicker]="pickerStart" [(ngModel)]="filters.startDate">
+          <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
+          <mat-datepicker #pickerStart></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>End Date</mat-label>
+          <input matInput [matDatepicker]="pickerEnd" [(ngModel)]="filters.endDate">
+          <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+          <mat-datepicker #pickerEnd></mat-datepicker>
+        </mat-form-field>
+
+        <button mat-flat-button color="primary" class="w-100 mt-2" (click)="applyFilters()">Apply</button>
+      </div>
+    </mat-menu>
 
     <!-- Fraud Case Table -->
     <div class="table-container mb-24">
@@ -78,7 +119,7 @@
       </table>
     </div>
 
-    <!-- Pagination Controls -->
+    <!-- Pagination -->
     <div class="pagination-controls d-flex justify-between align-center">
       <button mat-stroked-button (click)="pageChanged(currentPage - 1)" [disabled]="currentPage === 0">Previous</button>
       <span class="page-info">Page {{ currentPage + 1 }}</span>
@@ -87,14 +128,3 @@
 
   </mat-card-content>
 </mat-card>
-
-<style scoped>
-  .d-flex { display: flex; }
-  .gap-16 { gap: 16px; }
-  .mb-24 { margin-bottom: 24px; }
-  .p-24 { padding: 24px; }
-  .flex-wrap { flex-wrap: wrap; }
-  .justify-between { justify-content: space-between; }
-  .full-width-table { width: 100%; }
-  .centered { text-align: center; }
-</style>

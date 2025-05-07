@@ -12,7 +12,7 @@ import { MaterialModule } from 'src/app/material.module';
 import { RouterModule } from '@angular/router';
 import {NgForOf, NgIf} from "@angular/common";
 import { navItems } from './sidebar-data';
-import { AuthService } from '../../../pages/authentication/side-login/auth.service';
+import { AuthService } from '../../../pages/authentication/side-login/login-choice/auth.service';
 import {NavItem} from "./nav-item/nav-item";
 import {AppNavItemComponent} from "./nav-item/nav-item.component";
 @Component({

@@ -11,7 +11,7 @@ import { NavService } from '../../../../services/nav.service';
 import { MaterialModule } from 'src/app/material.module';
 import { CommonModule } from '@angular/common';
 import { TablerIconComponent, TablerIconsModule } from 'angular-tabler-icons';
-import { AuthService } from '../../../../pages/authentication/side-login/auth.service';
+import { AuthService } from '../../../../pages/authentication/side-login/login-choice/auth.service';
 
 @Component({
   selector: 'app-nav-item',

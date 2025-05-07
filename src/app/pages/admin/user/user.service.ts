@@ -65,11 +65,18 @@ export class UserService {
     const token = localStorage.getItem('authToken');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-
-
     return this.http.put<void>(`${this.apiUrl}/Modify`, user, { headers });
   }
+  changePassword(userId: number, newPassword: string, oldPassword: string): Observable<void> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
+    return this.http.post<void>(`${this.apiUrl}/modify-password`, {
+      userId,
+      newPassword,
+      oldPassword
+    }, { headers });
+  }
 
 
 }

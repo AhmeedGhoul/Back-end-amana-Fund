@@ -10,6 +10,7 @@
   },
   "private": true,
   "dependencies": {
+    "@abacritt/angularx-social-login": "^2.4.0",
     "@angular/animations": "^16.2.0",
     "@angular/cdk": "^16.2.0",
     "@angular/common": "^16.2.0",
@@ -28,6 +29,7 @@
     "ng-apexcharts": "1.7.6",
     "ng-recaptcha": "^13.2.1",
     "ngx-scrollbar": "^11.0.0",
+    "ngx-webcam": "^0.4.1",
     "rxjs": "~7.5.0",
     "sass": "^1.57.1",
     "tslib": "^2.3.0",

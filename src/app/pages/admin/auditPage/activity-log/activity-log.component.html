@@ -23,19 +23,7 @@
         <input matInput [(ngModel)]="filters.activityDescription" (ngModelChange)="applyFilters()" placeholder="Search description..." />
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Start Date</mat-label>
-        <input matInput [matDatepicker]="pickerStart" [(ngModel)]="filters.startDate" (dateChange)="applyFilters()" />
-        <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
-        <mat-datepicker #pickerStart></mat-datepicker>
-      </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>End Date</mat-label>
-        <input matInput [matDatepicker]="pickerEnd" [(ngModel)]="filters.endDate" (dateChange)="applyFilters()" />
-        <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
-        <mat-datepicker #pickerEnd></mat-datepicker>
-      </mat-form-field>
     </div>
 
     <!-- Logs Table -->
@@ -76,14 +64,9 @@
           <td mat-cell *matCellDef="let log"> {{ log.user?.name || 'N/A' }} </td>
         </ng-container>
 
-        <ng-container matColumnDef="audit">
-          <th mat-header-cell *matHeaderCellDef> Audit Output </th>
-          <td mat-cell *matCellDef="let log"> {{ log.audit?.output || 'N/A' }} </td>
-        </ng-container>
-
         <!-- Header + Rows -->
-        <tr mat-header-row *matHeaderRowDef="['select', 'activityName', 'activityDescription', 'activityDate', 'user', 'audit']"></tr>
-        <tr mat-row *matRowDef="let row; columns: ['select', 'activityName', 'activityDescription', 'activityDate', 'user', 'audit'];"></tr>
+        <tr mat-header-row *matHeaderRowDef="['select', 'activityName', 'activityDescription', 'activityDate', 'user']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['select', 'activityName', 'activityDescription', 'activityDate', 'user'];"></tr>
 
       </table>
 

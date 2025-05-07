@@ -10,7 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import {AuthInterceptor} from "./pages/authentication/auth.interceptor";
 import { MatNativeDateModule } from '@angular/material/core';
-
+import {MatSnackBarModule} from "@angular/material/snack-bar";
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -24,7 +24,8 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatIconModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatOptionModule// For Material UI (if needed)
+    MatOptionModule,// For Material UI (if needed)
+    MatSnackBarModule
   ],
   templateUrl: './app.component.html',
   providers: [

@@ -9,13 +9,4 @@
   </a>
 </div>
 
-<!-- Render nav items only after roles are ready -->
-<ng-container *ngIf="rolesReady">
-  <mat-nav-list class="sidebar-list">
-    <app-nav-item
-      *ngFor="let item of filteredNavItems"
-      [item]="item"
-      (notify)="toggleMobileNav.emit()">
-    </app-nav-item>
-  </mat-nav-list>
-</ng-container>
+

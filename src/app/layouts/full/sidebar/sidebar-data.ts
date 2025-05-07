@@ -48,31 +48,6 @@ export const navItems: NavItem[] = [
     iconName: 'file-search', // changed from 'document' to a more fitting audit icon
     route: '/admin/audit',
     roles: ['AUDITOR']
-  },
-  {
-    navCap: 'Auth',
-  },
-  {
-    displayName: 'Login',
-    iconName: 'login',
-    route: '/authentication/login',
-  },
-  {
-    displayName: 'Register',
-    iconName: 'user-plus',
-    route: '/authentication/register',
-  },
-  {
-    navCap: 'Extra',
-  },
-  {
-    displayName: 'Icons',
-    iconName: 'mood-smile',
-    route: '/extra/icons',
-  },
-  {
-    displayName: 'Sample Page',
-    iconName: 'brand-dribbble',
-    route: '/extra/sample-page',
-  },
+  }
+
 ];

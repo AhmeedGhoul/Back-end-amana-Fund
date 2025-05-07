@@ -1,0 +1,49 @@
+<mat-card class="audit-card">
+  <mat-card-header>
+    <div mat-card-avatar class="avatar-icon">
+      <mat-icon color="primary">assignment</mat-icon>
+    </div>
+    <mat-card-title class="title-text">Audit Details</mat-card-title>
+    <mat-card-subtitle class="subtitle-text">{{ data.audit.auditType }}</mat-card-subtitle>
+    <button mat-icon-button class="close-btn" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-card-header>
+
+  <mat-divider></mat-divider>
+
+  <mat-card-content class="card-content">
+    <div class="info-section">
+      <div class="info-block">
+        <span class="label">Status</span>
+        <span class="value">{{ data.audit.statusAudit }}</span>
+      </div>
+      <div class="info-block">
+        <span class="label">Date</span>
+        <span class="value">{{ data.audit.dateAudit | date:'medium' }}</span>
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button mat-flat-button color="primary" (click)="runDetection()" [disabled]="loading">
+        <mat-icon>psychology</mat-icon>
+        <span class="ml-8">Run Analysis</span>
+      </button>
+      <mat-spinner *ngIf="loading" diameter="28" class="ml-16"></mat-spinner>
+    </div>
+
+    <mat-divider *ngIf="analysisResult" class="my-16"></mat-divider>
+
+    <div *ngIf="analysisResult" class="analysis-result">
+      <h3 class="result-title">AI Analysis Output</h3>
+      <pre class="result-box">{{ analysisResult }}</pre>
+    </div>
+  </mat-card-content>
+  <mat-card-actions align="end" class="card-actions">
+    <button mat-stroked-button color="warn" (click)="close()">Close</button>
+    <button *ngIf="analysisResult?.includes('Suspicious')" mat-flat-button color="accent" (click)="createFraudCase()">
+      <mat-icon>report</mat-icon>
+      <span class="ml-8">Create Fraud Case</span>
+    </button>
+  </mat-card-actions>
+</mat-card>

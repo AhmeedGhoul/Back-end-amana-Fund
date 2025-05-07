@@ -18,6 +18,7 @@ export class AuthService {
       })
     );
   }
+
   forgotPassword(email: string): Observable<any> {
     const params = new HttpParams().set('email', email);  // Add email as a query parameter
     return this.http.post('/api/v1/auth/forgot-password', null, { params });
@@ -35,6 +36,7 @@ export class AuthService {
   getToken(): string | null {
     return localStorage.getItem('authToken');
   }
+
 
   isLoggedIn(): boolean {
     return !!this.getToken();

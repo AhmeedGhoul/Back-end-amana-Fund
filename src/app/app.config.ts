@@ -40,30 +40,14 @@ export const appConfig: ApplicationConfig = {
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true },
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(
-      routes,
-      withInMemoryScrolling({
+    provideRouter(routes, withInMemoryScrolling({
         scrollPositionRestoration: 'enabled',
         anchorScrolling: 'enabled',
-      }),
-      withComponentInputBinding()
-    ),
+    }), withComponentInputBinding()),
     provideHttpClient(withInterceptorsFromDi()),
     provideClientHydration(),
-    provideAnimations(), // ✅ here
-    importProvidersFrom(
-      FormsModule,
-      ReactiveFormsModule,
-      MaterialModule,
-      TablerIconsModule.pick(TablerIcons),
-      NgScrollbarModule,
-      // TranslateModule.forRoot({
-      //   loader: {
-      //     provide: TranslateLoader,
-      //     useFactory: HttpLoaderFactory,
-      //     deps: [HttpClient],
-      //   },
-      // })
-    ),
-  ],
+    provideAnimations(),
+    importProvidersFrom(FormsModule, ReactiveFormsModule, MaterialModule, TablerIconsModule.pick(TablerIcons), NgScrollbarModule),
+    provideAnimations()
+],
 };

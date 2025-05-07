@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../authentication/side-login/auth.service';
+import { AuthService } from '../authentication/side-login/login-choice/auth.service';
 
 @Component({
   selector: 'app-default-redirect',

@@ -26,3 +26,150 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   justify-content: center;
   margin: 16px 0; /* spacing above and below */
 }
+.badge {
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 8px;
+  font-size: 14px;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.custom-notification {
+  background-color: #10b981; /* Set background color */
+  color: white; /* Set text color */
+  font-weight: bold;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  animation: slideInFromBottom 0.5s ease-in-out;
+}
+
+@keyframes slideInFromBottom {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.audit-card {
+  max-width: 720px;
+  margin: 24px auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+  background: #fff;
+}
+
+mat-card-header {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  background-color: #f7f9fc;
+  border-bottom: 1px solid #e0e0e0;
+  position: relative;
+}
+
+.avatar-icon {
+  background-color: #e8eaf6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.title-text {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.subtitle-text {
+  font-size: 13px;
+  color: #666;
+}
+
+.close-btn {
+  position: absolute;
+  right: 16px;
+  top: 12px;
+  color: #666;
+}
+
+.card-content {
+  padding: 24px;
+}
+
+.info-section {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.info-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.value {
+  font-size: 15px;
+  color: #222;
+  font-weight: 600;
+}
+
+.action-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.analysis-result {
+  margin-top: 16px;
+}
+
+.result-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #3f51b5;
+  margin-bottom: 8px;
+}
+
+.result-box {
+  background-color: #f1f3f4;
+  padding: 16px;
+  border-left: 4px solid #3f51b5;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  font-family: "Roboto Mono", monospace;
+  color: #212121;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.my-16 {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.ml-8 {
+  margin-left: 8px;
+}
+
+.ml-16 {
+  margin-left: 16px;
+}
