@@ -22,12 +22,23 @@ export class PersonService {
     });
   }
 
+  getPaginatedPersons(page: number, size: number, sortBy: string, direction: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/paginated`, {
+      params: {
+        page: page.toString(),
+        size: size.toString(),
+        sortBy,
+        direction
+      }
+    });
+  }
+
   getPersonList(): Observable<any> {
     return this.http.get(`${this.apiUrl}/list`);
   }
 
   deletePerson(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/delete/${id}`);
+    return this.http.delete(`${this.apiUrl}/remove_person/${id}`);
   }
 
   updatePerson(person: Person): Observable<any> {

@@ -1,0 +1,31 @@
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.mat-header-cell {
+  font-weight: 600;
+}
+
+.mat-cell {
+  padding: 8px;
+}
+
+.mat-icon-button {
+  margin: 0 4px;
+}
+
+.mat-card {
+  margin: 16px;
+}
+
+.mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mat-card-subtitle {
+  margin-left: 16px;
+}
