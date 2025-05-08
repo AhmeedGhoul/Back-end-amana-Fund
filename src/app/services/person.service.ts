@@ -41,6 +41,10 @@ export class PersonService {
     return this.http.delete(`${this.apiUrl}/remove_person/${id}`);
   }
 
+  deactivatePerson(id: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/deactivate`, {});
+  }
+
   updatePerson(person: Person): Observable<any> {
     return this.http.put(`${this.apiUrl}/update`, person);
   }

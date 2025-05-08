@@ -78,6 +78,26 @@ export class PersonListComponent implements OnInit {
     this.loadPersons();
   }
 
+  deactivatePerson(id: number): void {
+    if (confirm('Are you sure you want to deactivate this person? This action cannot be undone.')) {
+      this.personService.deactivatePerson(id).subscribe({
+        next: () => {
+          this.snackBar.open('Person deactivated successfully', 'Close', {
+            duration: 3000,
+            panelClass: ['mat-toolbar', 'mat-primary']
+          });
+          this.loadPersons();
+        },
+        error: (error) => {
+          this.snackBar.open('Error deactivating person: ' + error.message, 'Close', {
+            duration: 3000,
+            panelClass: ['mat-toolbar', 'mat-warn']
+          });
+        }
+      });
+    }
+  }
+
   deletePerson(id: number): void {
     if (confirm('Are you sure you want to delete this person?')) {
       this.personService.deletePerson(id).subscribe({

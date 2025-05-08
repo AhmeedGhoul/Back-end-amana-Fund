@@ -73,6 +73,9 @@
           <button mat-icon-button (click)="navigateToPerson(element.idGarantie)">
             <mat-icon>edit</mat-icon>
           </button>
+          <button mat-icon-button color="warn" (click)="deactivatePerson(element.idGarantie)">
+            <mat-icon>block</mat-icon>
+          </button>
           <button mat-icon-button color="warn" (click)="deletePerson(element.idGarantie)">
             <mat-icon>delete</mat-icon>
           </button>
