@@ -1,0 +1,154 @@
+<div class="container mt-4">
+  <div class="card shadow-sm p-4">
+    <h3 class="mb-4">Add New Person</h3>
+
+    <form [formGroup]="personForm" (ngSubmit)="onSubmit()">
+      <!-- Name -->
+      <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" 
+               class="form-control" 
+               id="name" 
+               formControlName="name"
+               [class.is-invalid]="formControls['name'].touched && formControls['name'].invalid">
+        <div *ngIf="formControls['name'].touched && formControls['name'].invalid" class="invalid-feedback">
+          <div *ngIf="formControls['name'].errors?.['required']">Name is required</div>
+          <div *ngIf="formControls['name'].errors?.['pattern']">Name must contain only letters</div>
+        </div>
+      </div>
+
+      <!-- Last Name -->
+      <div class="mb-3">
+        <label for="last_name" class="form-label">Last Name</label>
+        <input type="text" 
+               class="form-control" 
+               id="last_name" 
+               formControlName="last_name"
+               [class.is-invalid]="formControls['last_name'].touched && formControls['last_name'].invalid">
+        <div *ngIf="formControls['last_name'].touched && formControls['last_name'].invalid" class="invalid-feedback">
+          <div *ngIf="formControls['last_name'].errors?.['required']">Last Name is required</div>
+          <div *ngIf="formControls['last_name'].errors?.['pattern']">Last Name must contain only letters</div>
+        </div>
+      </div>
+
+      <!-- CIN -->
+      <div class="mb-3">
+        <label for="cin" class="form-label">CIN</label>
+        <input type="text" 
+               class="form-control" 
+               id="cin" 
+               formControlName="cin"
+               [class.is-invalid]="formControls['cin'].touched && formControls['cin'].invalid">
+        <div *ngIf="formControls['cin'].touched && formControls['cin'].invalid" class="invalid-feedback">
+          <div *ngIf="formControls['cin'].errors?.['required']">CIN is required</div>
+          <div *ngIf="formControls['cin'].errors?.['pattern']">CIN must be exactly 8 digits</div>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" 
+               class="form-control" 
+               id="email" 
+               formControlName="email"
+               [class.is-invalid]="formControls['email'].touched && formControls['email'].invalid">
+        <div *ngIf="formControls['email'].touched && formControls['email'].invalid" class="invalid-feedback">
+          <div *ngIf="formControls['email'].errors?.['required']">Email is required</div>
+          <div *ngIf="formControls['email'].errors?.['email']">Please enter a valid email address</div>
+        </div>
+      </div>
+
+      <!-- Age -->
+      <div class="mb-3">
+        <label for="age" class="form-label">Age</label>
+        <input type="number" 
+               class="form-control" 
+               id="age" 
+               formControlName="age"
+               [class.is-invalid]="formControls['age'].touched && formControls['age'].invalid">
+        <div *ngIf="formControls['age'].touched && formControls['age'].invalid" class="invalid-feedback">
+          <div *ngIf="formControls['age'].errors?.['required']">Age is required</div>
+          <div *ngIf="formControls['age'].errors?.['min']">Age must be at least 18</div>
+          <div *ngIf="formControls['age'].errors?.['max']">Age must be less than 100</div>
+        </div>
+      </div>
+
+      <!-- Revenue -->
+      <div class="mb-3">
+        <label for="revenue" class="form-label">Revenue</label>
+        <input type="number" 
+               class="form-control" 
+               id="revenue" 
+               formControlName="revenue"
+               [class.is-invalid]="formControls['revenue'].touched && formControls['revenue'].invalid">
+        <div *ngIf="formControls['revenue'].touched && formControls['revenue'].invalid" class="invalid-feedback">
+          <div *ngIf="formControls['revenue'].errors?.['required']">Revenue is required</div>
+          <div *ngIf="formControls['revenue'].errors?.['min']">Revenue must be positive</div>
+        </div>
+      </div>
+
+      <!-- Active -->
+      <div class="mb-3">
+        <label class="form-label">Active</label>
+        <div class="form-check">
+          <input class="form-check-input" 
+                 type="checkbox" 
+                 id="active" 
+                 formControlName="active">
+          <label class="form-check-label" for="active">
+            Active
+          </label>
+        </div>
+      </div>
+
+      <!-- Documents -->
+      <div class="mb-3">
+        <label for="documents" class="form-label">Documents</label>
+        <textarea class="form-control" 
+                  id="documents" 
+                  formControlName="documents"
+                  rows="3"
+                  [class.is-invalid]="formControls['documents'].touched && formControls['documents'].invalid"></textarea>
+        <div *ngIf="formControls['documents'].touched && formControls['documents'].invalid" class="invalid-feedback">
+          <div *ngIf="formControls['documents'].errors?.['required']">Documents are required</div>
+        </div>
+      </div>
+
+      <!-- Police ID -->
+      <mat-form-field class="w-100">
+        <mat-label>Police ID</mat-label>
+        <mat-select formControlName="police_id" required>
+          <mat-option value="">Select a Police ID</mat-option>
+          <mat-option *ngFor="let police of policeList" [value]="police.idPolice">
+            {{police.idPolice}} - {{police.amount}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="formControls['police_id'].hasError('required')">Police ID is required</mat-error>
+      </mat-form-field>
+
+      <!-- Submit Buttons -->
+      <div class="d-flex justify-content-end gap-2">
+        <button type="button" 
+                class="btn btn-secondary" 
+                (click)="resetForm()"
+                [disabled]="loading">
+          Reset
+        </button>
+        <button type="submit" 
+                class="btn btn-primary" 
+                [disabled]="loading || personForm.invalid">
+          {{ loading ? 'Adding...' : 'Add Person' }}
+        </button>
+      </div>
+    </form>
+
+    <!-- Messages -->
+    <div *ngIf="successMessage" class="alert alert-success mt-3">
+      {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+      {{ errorMessage }}
+    </div>
+  </div>
+</div>

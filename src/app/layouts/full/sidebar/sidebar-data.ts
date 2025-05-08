@@ -6,25 +6,25 @@ export const navItems: NavItem[] = [
   },
   {
     displayName: 'Dashboard',
-    iconName: 'layout-dashboard', // corrected
-    route: '/dashboard',
+    iconName: 'dashboard',
+    route: '/dashboard'
   },
   {
     navCap: 'Admin',
   },
   {
     displayName: 'Users',
-    iconName: 'user', // valid
+    iconName: 'user', 
     route: '/admin/user',
   },
   {
     displayName: 'Accounts',
-    iconName: 'wallet', // changed from 'account' to a more fitting icon
+    iconName: 'wallet', 
     route: '/ui-components/chips',
   },
   {
     displayName: 'Contracts',
-    iconName: 'file-text', // changed from 'contract' to a valid icon
+    iconName: 'file-text', 
     route: '/ui-components/lists',
   },
   {
@@ -45,12 +45,12 @@ export const navItems: NavItem[] = [
       {
         displayName: 'Person',
         iconName: 'user',
-        route: '/police/person'
+        route: '/person'
       },
       {
         displayName: 'Object',
         iconName: 'wallet',
-        route: '/police/object'
+        route: '/object'
       }
     ]
   },

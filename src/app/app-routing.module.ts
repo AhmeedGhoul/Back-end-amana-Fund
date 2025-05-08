@@ -36,6 +36,14 @@ const routes: Routes = [
           ),
         canActivate: [AuthGuard],
       },
+      {
+        path: 'person',
+        loadChildren: () =>
+          import('./pages/person/person.module').then(
+            (m) => m.PersonModule
+          ),
+        canActivate: [AuthGuard]
+      }
     ],
   },
   {
