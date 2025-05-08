@@ -1,0 +1,104 @@
+<mat-card>
+  <mat-card-content>
+
+    <h2>{{ isEditMode ? 'Edit Agency' : 'Add New Agency' }}</h2>
+
+    <form [formGroup]="agencyForm" (ngSubmit)="submit()" class="d-flex flex-column gap-16">
+
+      <mat-form-field appearance="fill">
+        <mat-label>Governorate</mat-label>
+        <mat-select formControlName="governorate">
+          <mat-option *ngFor="let governorate of governorateOptions" [value]="governorate">
+            {{ governorate }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="agencyForm.get('governorate')?.hasError('required')">
+          Governorate is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Address</mat-label>
+        <input matInput formControlName="address">
+        <mat-error *ngIf="agencyForm.get('address')?.hasError('required')">
+          Address is required
+        </mat-error>
+        <mat-error *ngIf="agencyForm.get('address')?.hasError('minlength')">
+          Address must be at least 5 characters long
+        </mat-error>
+        <mat-error *ngIf="agencyForm.get('address')?.hasError('maxlength')">
+          Address cannot be more than 100 characters long
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>City</mat-label>
+        <input matInput formControlName="city">
+        <mat-error *ngIf="agencyForm.get('city')?.hasError('required')">
+          City is required
+        </mat-error>
+        <mat-error *ngIf="agencyForm.get('city')?.hasError('minlength')">
+          City must be at least 3 characters long
+        </mat-error>
+        <mat-error *ngIf="agencyForm.get('city')?.hasError('maxlength')">
+          City cannot be more than 50 characters long
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Phone Number</mat-label>
+        <input matInput formControlName="phoneNumber">
+        <mat-error *ngIf="agencyForm.get('phoneNumber')?.hasError('required')">
+          Phone number is required
+        </mat-error>
+        <mat-error *ngIf="agencyForm.get('phoneNumber')?.hasError('pattern')">
+          Phone number must be exactly 8 digits
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email">
+        <mat-error *ngIf="agencyForm.get('email')?.hasError('required')">
+          Email is required
+        </mat-error>
+        <mat-error *ngIf="agencyForm.get('email')?.hasError('pattern')">
+          Email must belong to the domain 'amana.tn'
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Latitude (Optional)</mat-label>
+        <input matInput type="number" formControlName="latitude">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Longitude (Optional)</mat-label>
+        <input matInput type="number" formControlName="longitude">
+      </mat-form-field>
+
+      <div class="d-flex justify-between mt-16">
+        <button mat-flat-button color="primary" type="submit">
+          {{ isEditMode ? 'Update' : 'Create' }}
+        </button>
+        <button mat-flat-button color="warn" (click)="close()" type="button">
+          Cancel
+        </button>
+      </div>
+
+    </form>
+
+  </mat-card-content>
+</mat-card>
+
+<style scoped>
+  .gap-16 { gap: 16px; }
+  .mt-16 { margin-top: 16px; }
+  .mb-16 { margin-bottom: 16px; }
+  .mb-8 { margin-bottom: 8px; }
+  .d-flex { display: flex; }
+  .flex-column { flex-direction: column; }
+  .justify-between { justify-content: space-between; }
+  .full-width-table { width: 100%; }
+  .small-table th, .small-table td { padding: 6px 8px; font-size: 13px; }
+</style>
