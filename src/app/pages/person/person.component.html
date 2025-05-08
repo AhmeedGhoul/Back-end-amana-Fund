@@ -1,11 +1,14 @@
 <mat-card class="dialog-card">
   <mat-card-header class="dialog-header">
     <mat-card-title>Add New Person</mat-card-title>
-    <button mat-icon-button 
-            [routerLink]="['./list']"
-            matTooltip="View Person List">
-      <mat-icon>list</mat-icon>
-    </button>
+    <div class="header-actions">
+      <button mat-icon-button 
+              color="primary"
+              [routerLink]="['./list']"
+              matTooltip="View Person List">
+        <mat-icon>list</mat-icon>
+      </button>
+    </div>
   </mat-card-header>
 
   <mat-card-content>
