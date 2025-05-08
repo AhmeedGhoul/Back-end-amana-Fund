@@ -47,6 +47,11 @@ export class PoliceService {
     return this.http.get<number>(`${this.apiUrl}/active-total-amount`);
   }
 
+  getTotalAmount(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/total-amount`);
+  }
+
+
   getPoliceById(id: number): Observable<Police> {
     console.log('Fetching police with ID:', id);
     return this.http.get<Police>(`${this.apiUrl}/get_policeById/${id}`)
