@@ -5,6 +5,8 @@ import { AuthGuard } from './pages/authentication/guards/auth.guard';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { VisitorComponent } from './pages/visitor/visitor.component';
 import { DefaultRedirectComponent } from './pages/default-redirect-component/default-redirect-component.component';
+import { SinistresComponent } from './sinistres/sinistres.component';
+import { ContractComponent } from './contract/contract.component';
 
 export const routes: Routes = [
   {
@@ -36,6 +38,16 @@ export const routes: Routes = [
         path: 'admin',
         loadChildren: () =>
           import('./pages/admin/admin.routes').then((m) => m.AdminRoutes),
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'sinistres',
+        component: SinistresComponent,
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'contracts',
+        component: ContractComponent,
         canActivate: [AuthGuard],
       },
       {

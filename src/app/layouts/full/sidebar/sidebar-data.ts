@@ -25,8 +25,13 @@ export const navItems: NavItem[] = [
   },
   {
     displayName: 'Contracts',
-    iconName: 'file-text', // changed from 'contract' to a valid icon
-    route: '/ui-components/lists',
+    iconName: 'file-text',
+    route: '/contracts', // Corrected route
+  },
+  {
+    displayName: 'Sinistres',
+    iconName: 'alert-triangle',
+    route: '/sinistres', // Corrected route
   },
   {
     displayName: 'Policies',

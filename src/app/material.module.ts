@@ -14,6 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
+import { MatNativeDateModule } from '@angular/material/core'; // Import MatNativeDateModule
 // Material Navigation
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -61,12 +62,18 @@ import { RequestComponent } from './pages/admin/agency/request/request.component
 import { AddRequestDialogComponent } from './pages/admin/agency/request/add-request-dialog/add-request-dialog.component';
 import { AuditDetailsComponent } from './pages/admin/auditPage/audit/audit-details/audit-details.component';
 import { VisitorComponent } from './pages/visitor/visitor.component';
+import { SinistresComponent } from './sinistres/sinistres.component';
+import { ContractComponent, ConfirmationDialogComponent } from './contract/contract.component'; // Import ConfirmationDialogComponent
 
 @NgModule({
   declarations: [
-    NotFoundComponent
+    NotFoundComponent,
+
+    SinistresComponent,
+    ContractComponent,
+    ConfirmationDialogComponent // Declare ConfirmationDialogComponent
   ],
-  exports: [
+  imports: [  // Add these imports
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -105,12 +112,7 @@ import { VisitorComponent } from './pages/visitor/visitor.component';
     MatPaginatorModule,
     MatSortModule,
     MatTableModule,
-    RecaptchaModule,
-    DatePipe,
-    NgForOf,
-    NgIf
-  ],
-  imports: [
+    MatNativeDateModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -155,9 +157,57 @@ import { VisitorComponent } from './pages/visitor/visitor.component';
     AddAuditDialogComponent,
     AddFraudCaseDialogComponent,
     RequestComponent,
-
     AddRequestDialogComponent,
-    VisitorComponent
-  ]
+    VisitorComponent,
+    MatNativeDateModule
+  ],
+  exports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    CommonModule, // Export CommonModule
+    FormsModule, // Export FormsModule
+    ReactiveFormsModule, // Export ReactiveFormsModule
+    MatAutocompleteModule,
+    MatCheckboxModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatRadioModule,
+    MatSelectModule,
+    MatSliderModule,
+    MatSlideToggleModule,
+    MatMenuModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    MatCardModule,
+    MatDividerModule,
+    MatExpansionModule,
+    MatGridListModule,
+    MatListModule,
+    MatStepperModule,
+    MatTabsModule,
+    MatTreeModule,
+    MatButtonModule,
+    MatButtonToggleModule,
+    MatBadgeModule,
+    MatChipsModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
+    MatRippleModule,
+    MatBottomSheetModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    MatTooltipModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatTableModule,
+    RecaptchaModule,
+    DatePipe,
+    NgForOf,
+    NgIf
+  ],
+
 })
-export class MaterialModule {}
+export class MaterialModule { }

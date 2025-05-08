@@ -1,0 +1,180 @@
+/* Base Container */
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 2rem;
+  background-color: #f4f9ff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 123, 255, 0.1);
+  animation: fadeIn 0.6s ease;
+}
+
+/* Section Titles */
+h2, h3, h4 {
+  color: #1f4e79;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* Card Styling */
+.card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 16px rgba(0, 123, 255, 0.05);
+  animation: slideUp 0.4s ease-in-out;
+}
+
+/* Table Styling */
+.table {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.table thead {
+  background-color: #d0e7ff;
+  color: #0b3558;
+}
+
+.table tbody tr:hover {
+  background-color: #e6f3ff;
+  transition: background-color 0.3s ease;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+}
+
+/* Buttons */
+.btn {
+  border: none;
+  padding: 0.45rem 1rem;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Button Color Variants */
+.btn-primary {
+  background-color: #007bff;
+  color: #fff;
+}
+.btn-primary:hover {
+  background-color: #0069d9;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: #fff;
+}
+.btn-success:hover {
+  background-color: #218838;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: #fff;
+}
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+.btn-warning:hover {
+  background-color: #e0a800;
+}
+
+.btn-outline-secondary {
+  border: 2px solid #6c757d;
+  color: #6c757d;
+}
+.btn-outline-secondary:hover {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-outline-dark {
+  border: 2px solid #343a40;
+  color: #343a40;
+}
+.btn-outline-dark:hover {
+  background-color: #343a40;
+  color: white;
+}
+
+.btn-info {
+  background-color: #17a2b8;
+  color: #fff;
+}
+.btn-info:hover {
+  background-color: #138496;
+}
+
+/* Forms */
+input, select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+input:focus, select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Search Form */
+.search-form {
+  background-color: #e9f3ff;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  animation: slideUp 0.4s ease;
+}
+
+/* Chart & Risk */
+.chart-wrapper {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.05);
+}
+
+.risk-message, .alert-info {
+  background-color: #e3f2fd;
+  color: #0c5460;
+  border: 1px solid #b8daff;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+}
+
+/* Pagination */
+.pagination-controls {
+  margin-top: 1rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.d-flex button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
