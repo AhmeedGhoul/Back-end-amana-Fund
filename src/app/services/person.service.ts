@@ -45,6 +45,12 @@ export class PersonService {
     return this.http.put(`${this.apiUrl}/${id}/deactivate`, {});
   }
 
+  searchPersonByCIN(cin: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/search-by-cin`, {
+      params: { cin }
+    });
+  }
+
   updatePerson(person: Person): Observable<any> {
     return this.http.put(`${this.apiUrl}/update`, person);
   }

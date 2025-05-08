@@ -6,10 +6,81 @@
 
   <mat-card-content>
     <div class="toolbar">
+      <mat-form-field appearance="outline" style="width: 300px;">
+        <mat-label>CIN Search</mat-label>
+        <input matInput [(ngModel)]="searchCIN" (keyup.enter)="searchPerson()" placeholder="Enter CIN">
+        <button mat-button matSuffix (click)="searchPerson()" type="button">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
       <button mat-raised-button color="primary" (click)="navigateToAddPerson()">
         <mat-icon>add</mat-icon>
         Add Person
       </button>
+    </div>
+
+    <div *ngIf="searchResults" class="search-results">
+      <mat-card class="search-card">
+        <mat-card-header>
+          <mat-card-title>Search Results</mat-card-title>
+          <mat-card-subtitle>CIN: {{searchResults.cin}}</mat-card-subtitle>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div class="person-info">
+            <div class="info-group">
+              <mat-icon class="info-icon">person</mat-icon>
+              <div>
+                <p class="info-label">Full Name</p>
+                <p class="info-value">{{searchResults.name}} {{searchResults.lastName}}</p>
+              </div>
+            </div>
+
+            <div class="info-group">
+              <mat-icon class="info-icon">email</mat-icon>
+              <div>
+                <p class="info-label">Email</p>
+                <p class="info-value">{{searchResults.email}}</p>
+              </div>
+            </div>
+
+            <div class="info-group">
+              <mat-icon class="info-icon">cake</mat-icon>
+              <div>
+                <p class="info-label">Age</p>
+                <p class="info-value">{{searchResults.age}}</p>
+              </div>
+            </div>
+
+            <div class="info-group">
+              <mat-icon class="info-icon">attach_money</mat-icon>
+              <div>
+                <p class="info-label">Revenue</p>
+                <p class="info-value">${{searchResults.revenue}}</p>
+              </div>
+            </div>
+
+            <div class="info-group">
+              <mat-icon class="info-icon" [color]="searchResults.active ? 'primary' : 'warn'">
+                {{searchResults.active ? 'check_circle' : 'cancel'}}
+              </mat-icon>
+              <div>
+                <p class="info-label">Status</p>
+                <p class="info-value" [class.active]="searchResults.active">
+                  {{searchResults.active ? 'Active' : 'Inactive'}}
+                </p>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="navigateToPerson(searchResults.idGarantie)">
+            <mat-icon>edit</mat-icon>
+            Edit Person
+          </button>
+        </mat-card-actions>
+      </mat-card>
     </div>
 
     <table mat-table [dataSource]="dataSource" matSort>

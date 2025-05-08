@@ -13,6 +13,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { PersonComponent } from '../person.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-person-list',
@@ -25,7 +28,10 @@ import { ActivatedRoute, Router } from '@angular/router';
     MatCardModule,
     MatIconModule,
     MatToolbarModule,
-    MatButtonModule
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule
   ],
   templateUrl: './person-list.component.html',
   styleUrls: ['./person-list.component.scss']
@@ -38,6 +44,8 @@ export class PersonListComponent implements OnInit {
   currentPage: number = 0;
   sortField: string = 'name';
   sortDirection: string = 'asc';
+  searchCIN: string = '';
+  searchResults: any | null = null;
 
   constructor(
     private personService: PersonService,
@@ -45,7 +53,10 @@ export class PersonListComponent implements OnInit {
     public dialog: MatDialog,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) {
+    // Clear search results when component initializes
+    this.searchResults = null;
+  }
 
   ngOnInit(): void {
     this.loadPersons();
@@ -114,6 +125,32 @@ export class PersonListComponent implements OnInit {
             panelClass: ['mat-toolbar', 'mat-warn']
           });
         }
+      });
+    }
+  }
+
+  searchPerson(): void {
+    if (this.searchCIN.trim()) {
+      this.personService.searchPersonByCIN(this.searchCIN).subscribe({
+        next: (result) => {
+          this.searchResults = result;
+          this.snackBar.open('Person found successfully', 'Close', {
+            duration: 3000,
+            panelClass: ['mat-toolbar', 'mat-primary']
+          });
+        },
+        error: (error) => {
+          this.searchResults = null;
+          this.snackBar.open('No person found with this CIN', 'Close', {
+            duration: 3000,
+            panelClass: ['mat-toolbar', 'mat-warn']
+          });
+        }
+      });
+    } else {
+      this.snackBar.open('Please enter a CIN number', 'Close', {
+        duration: 3000,
+        panelClass: ['mat-toolbar', 'mat-warn']
       });
     }
   }
