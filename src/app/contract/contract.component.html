@@ -41,7 +41,7 @@
             <th>Coverage Limit</th>
             <th>Premium</th>
             <th>Rentabilité (%)</th>
-            <th>Sinistre ID</th>
+
             <th>Actions</th>
           </tr>
         </thead>
@@ -61,7 +61,7 @@
             <td>{{ contract.coverageLimit | number }}</td>
             <td>{{ contract.premium | number }}</td>
             <td>{{ getRentabilite(contract) | number: '1.2-2' }}%</td>
-            <td>{{ contract.sinistre?.idSinistre }}</td>
+
             <td class="text-nowrap">
               <button (click)="selectContract(contract)" class="btn btn-sm btn-primary me-1">Update</button>
               <button (click)="deleteContract(contract.idContrat)" class="btn btn-sm btn-danger">Delete</button>
@@ -121,14 +121,7 @@
           <input id="premium" formControlName="premium" type="number" class="form-control" required />
         </div>
 
-        <div class="col-md-6">
-          <label for="sinistre" class="form-label">Sinistre</label>
-          <select id="sinistre" formControlName="sinistre" class="form-select">
-            <option *ngFor="let sinistre of sinistresList" [value]="sinistre.idSinistre">
-              {{ sinistre.idSinistre }}
-            </option>
-          </select>
-        </div>
+
       </div>
 
       <div class="mt-4 d-flex justify-content-end gap-2">
@@ -139,4 +132,8 @@
       </div>
     </form>
   </div>
+</div>
+<div class="card shadow-sm p-4 mb-4">
+  <h4 class="mb-3">Rentabilité des Contrats</h4>
+  <canvas #rentabiliteChart style="max-height: 300px;"></canvas>
 </div>
