@@ -50,3 +50,107 @@
   font-size: 0.875em;
   color: #dc3545;
 }
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.fab-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12) !important;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.back-button {
+  text-decoration: none;
+  color: inherit;
+}
+
+.dialog-card {
+  max-width: 800px;
+  margin: 20px auto;
+}
+
+.dialog-header {
+  padding: 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.form-grid {
+  width: 100%;
+  padding: 24px;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+.field-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.6);
+  margin-bottom: 8px;
+  display: block;
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+mat-error {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: #d32f2f;
+}
+
+mat-card-title {
+  font-size: 1.75rem;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+mat-checkbox {
+  margin-top: 8px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}

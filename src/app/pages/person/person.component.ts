@@ -1,48 +1,55 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { PersonService } from '../../services/person.service';
-import { PoliceService } from '../../services/police.service';
-import { Police } from '../../pages/police/police.model';
 import { Person } from './person.model';
+import { PoliceService } from '../../services/police.service';
+import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-person',
+  templateUrl: './person.component.html',
+  styleUrls: ['./person.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatCardModule,
-    MatInputModule,
     MatFormFieldModule,
+    MatInputModule,
     MatSelectModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatCardModule,
     MatDatepickerModule,
     MatNativeDateModule
-  ],
-  templateUrl: './person.component.html',
-  styleUrls: ['./person.component.scss']
+  ]
 })
 export class PersonComponent implements OnInit {
   personForm: FormGroup;
   submitted = false;
   loading = false;
-  policeList: Police[] = [];
+  policeList: any[] = [];
   successMessage: string = '';
   errorMessage: string = '';
 
   constructor(
-    private fb: FormBuilder,
+    private formBuilder: FormBuilder,
     private personService: PersonService,
-    private policeService: PoliceService
+    private policeService: PoliceService,
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {
     this.initializeForm();
     this.loadPoliceList();
@@ -53,7 +60,7 @@ export class PersonComponent implements OnInit {
   }
 
   private initializeForm(): void {
-    this.personForm = this.fb.group({
+    this.personForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.pattern('^[A-Za-z]+$')]],
       last_name: ['', [Validators.required, Validators.pattern('^[A-Za-z]+$')]],
       cin: ['', [Validators.required, Validators.pattern('\\d{8}')]],
@@ -71,25 +78,23 @@ export class PersonComponent implements OnInit {
   }
 
   private loadPoliceList(): void {
-    this.policeService.getPoliceList().subscribe({
-      next: (policeList) => {
-        this.policeList = policeList;
+    this.policeService.getPoliceList().subscribe(
+      (police) => {
+        this.policeList = police;
       },
-      error: (error) => {
+      (error) => {
         console.error('Error loading police list:', error);
       }
-    });
+    );
   }
 
   onSubmit(): void {
-    this.submitted = true;
-    
     if (this.personForm.invalid) {
       return;
     }
 
     this.loading = true;
-    const personData = {
+    const person: Person = {
       idGarantie: null,
       name: this.personForm.get('name')?.value,
       lastName: this.personForm.get('last_name')?.value,
@@ -102,23 +107,33 @@ export class PersonComponent implements OnInit {
       policeId: this.personForm.get('police_id')?.value
     };
 
-    this.personService.addPerson(personData).subscribe(
-      (response) => {
+    this.personService.addPerson(person).subscribe({
+      next: (response) => {
         this.loading = false;
-        this.successMessage = 'Person added successfully!';
-        this.personForm.reset();
-        this.submitted = false;
+        this.resetForm();
+        this.snackBar.open('Person added successfully!', 'Close', {
+          duration: 3000,
+          panelClass: ['mat-toolbar', 'mat-primary'],
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
       },
-      (error) => {
+      error: (error) => {
         this.loading = false;
-        this.errorMessage = error.error?.message || 'An error occurred while adding the person.';
+        this.snackBar.open('Error adding person: ' + error.message, 'Close', {
+          duration: 3000,
+          panelClass: ['mat-toolbar', 'mat-warn'],
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
       }
-    );
+    });
   }
 
   resetForm(): void {
     this.personForm.reset();
     this.submitted = false;
+    this.loading = false;
     this.successMessage = '';
     this.errorMessage = '';
   }
