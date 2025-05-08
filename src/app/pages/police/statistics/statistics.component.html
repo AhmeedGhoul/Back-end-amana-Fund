@@ -1,0 +1,79 @@
+<div class="container mt-5">
+  <!-- Error Message -->
+  <div class="alert alert-danger" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <!-- Loading State -->
+  <div class="text-center" *ngIf="loading">
+    <div class="spinner-border text-primary"></div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="row g-4" *ngIf="!loading && !error">
+    <!-- Active Percentage Card -->
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Active Percentage</h5>
+          <h2 class="text-info">{{ activePercentage.toFixed(1) }}%</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Amount Card -->
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Total Amount</h5>
+          <h2 class="text-success">{{ totalAmount1.toFixed(2) }} $</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="row g-4 mt-4" *ngIf="!loading && !error">
+    <!-- Active Percentage Chart -->
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Active Police Percentage</h5>
+          <div class="chart-container">
+            <div class="pie" [ngStyle]="{ '--p': activePercentage + '%' }"></div>
+            <div class="legend">
+              <span><span class="box active"></span> Active</span>
+              <span><span class="box inactive"></span> Inactive</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+<!-- Total Active Police Amount -->
+<div class="col-md-6">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Total Active Police Amount</h5>
+      <div class="bar-chart">
+        <div class="bar" [ngStyle]="{ '--value': policeAmount + '%' }">
+          <span class="bar-label">${{ totalAmount.toFixed(2) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
+    
+    <div class="col-12 mt-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Police Amount Growth Over Time</h5>
+          <canvas id="growthChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>-->

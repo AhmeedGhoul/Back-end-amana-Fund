@@ -43,7 +43,15 @@ export const routes: Routes = [
         component: NotFoundComponent,
       },
     ],
+  }, {
+    path: 'police',
+    loadChildren: () =>
+      import('./pages/police/police-routing.module').then(
+        (m) => m.PoliceRoutingModule
+      ),
+    canActivate: [AuthGuard],
   },
+
   {
     path: '**',
     redirectTo: 'not-found',

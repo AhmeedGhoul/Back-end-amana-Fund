@@ -9,6 +9,8 @@ import { AccountPageComponent } from './account-page/account-page.component';
 import { AccountDetailsComponent } from './account-page/account-details/account-details.component';
 import { AccountPaymentsComponent } from './account-page/account-payments/account-payments.component';
 import { AccountFullDetailsComponent } from './account-page/account-details/account-full-details/account-full-details.component';
+import {PoliceComponent} from "../police/police.component";
+import {PoliceaddComponent} from "../police/add/policeadd.component";
 
 
 export const AdminRoutes: Routes = [
@@ -43,5 +45,15 @@ export const AdminRoutes: Routes = [
   {
     path: 'payments',
     component: AccountPaymentsComponent
+  },
+  {
+    path: 'police',
+    component: PoliceComponent,
+    children: [
+      {
+        path: 'add',
+        component: PoliceaddComponent
+      }
+    ]
   }
 ];

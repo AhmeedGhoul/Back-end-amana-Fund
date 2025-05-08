@@ -29,6 +29,33 @@ export const navItems: NavItem[] = [
     route: '/ui-components/lists',
   },
   {
+    displayName: 'Policies',
+    iconName: 'file-text',
+    class: 'has-arrow',
+    children: [
+      {
+        displayName: 'Policy Contract',
+        iconName: 'file-text',
+        route: '/admin/police'
+      },
+      {
+        displayName: 'Statistics Dashboard',
+        iconName: 'chart-bar',
+        route: '/police/statistics'
+      },
+      {
+        displayName: 'Person',
+        iconName: 'user',
+        route: '/police/person'
+      },
+      {
+        displayName: 'Object',
+        iconName: 'wallet',
+        route: '/police/object'
+      }
+    ]
+  },
+  {
     displayName: 'Credit Pools',
     iconName: 'receipt', // changed from 'credit' to valid financial icon
     route: '/ui-components/menu',
