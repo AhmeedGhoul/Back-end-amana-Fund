@@ -19,10 +19,15 @@ import { AccountService, PaymentStatisticsDTO } from '@app/services/account.serv
 import { Account } from '@app/models/account.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { saveAs } from 'file-saver';
-import { ChartType, ChartData } from 'chart.js';
+import { Chart, ChartType, ChartData, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineController, PointElement, LineElement, BarController } from 'chart.js';
 import { AccountPayment } from '@app/models/account-payment.model';
 import { AccountPaymentDialogComponent } from '../account-payment-dialog/account-payment-dialog.component';
 import {BaseChartDirective} from "ng2-charts";
+import { AccountStatsChartComponent } from './account-stats-chart.component';
+
+// Register Chart.js components to avoid 'category is not a registered scale' error
+Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineController, PointElement, LineElement, BarController);
+
 
 @Component({
   selector: 'app-account-full-details',
@@ -47,7 +52,7 @@ import {BaseChartDirective} from "ng2-charts";
     RouterModule,
     DatePipe,
     BaseChartDirective,
-
+    AccountStatsChartComponent
   ]
 })
 export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
@@ -248,14 +253,57 @@ export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
     this.accountService.getPaymentStatistics(rib, this.periodType).subscribe({
       next: (stats: PaymentStatisticsDTO[]) => {
         this.paymentStats = stats;
+        // Prepare a second dummy dataset for demo purposes (e.g., transaction count)
+        const transactionCounts = stats.map(() => Math.floor(Math.random() * 10 + 1));
         this.statsChartData = {
           labels: stats.map(s => s.period),
-          datasets: [{
-            data: stats.map(s => s.totalAmount),
-            backgroundColor: '#42A5F5'
-          }]
+          datasets: [
+            {
+              label: 'Total Amount',
+              data: stats.map(s => s.totalAmount),
+              fill: true,
+              borderColor: (ctx: any) => {
+                const chart = ctx.chart;
+                const {ctx: canvasCtx, chartArea} = chart;
+                if (!chartArea) return '#42A5F5';
+                const gradient = canvasCtx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                gradient.addColorStop(0, 'rgba(66,165,245,0.2)');
+                gradient.addColorStop(1, 'rgba(66,165,245,1)');
+                return gradient;
+              },
+              backgroundColor: (ctx: any) => {
+                const chart = ctx.chart;
+                const {ctx: canvasCtx, chartArea} = chart;
+                if (!chartArea) return 'rgba(66,165,245,0.2)';
+                const gradient = canvasCtx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                gradient.addColorStop(0, 'rgba(66,165,245,0.1)');
+                gradient.addColorStop(1, 'rgba(66,165,245,0.5)');
+                return gradient;
+              },
+              pointBackgroundColor: '#fff',
+              pointBorderColor: '#42A5F5',
+              pointRadius: 6,
+              pointHoverRadius: 10,
+              tension: 0.4,
+              borderWidth: 3,
+              order: 1,
+              yAxisID: 'y',
+            },
+            {
+              label: 'Transactions',
+              data: transactionCounts,
+              type: 'bar',
+              backgroundColor: 'rgba(255,99,132,0.2)',
+              borderColor: 'rgba(255,99,132,1)',
+              borderWidth: 2,
+              order: 2,
+              yAxisID: 'y1',
+              borderRadius: 8,
+              barPercentage: 0.6,
+              categoryPercentage: 0.5
+            }
+          ]
         };
-        console.log('statsChartData', this.statsChartData); // Debug chart data
         if (!stats.length) {
           console.warn('No payment statistics returned from API.');
         }
