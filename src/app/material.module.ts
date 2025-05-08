@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import {DatePipe, NgForOf, NgIf} from '@angular/common';
+import { CommonModule } from '@angular/common';
 // Material Form Controls
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -41,16 +42,21 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { NotFoundComponent } from './pages/not-found/not-found.component';
-
+import { AuditComponent } from './pages/admin/auditPage/audit/audit.component';
+import { AddAuditDialogComponent } from './pages/admin/auditPage/audit/add-audit-dialog/add-audit-dialog.component';
+import { ActivityLogComponent } from './pages/admin/auditPage/activity-log/activity-log.component';
+import { FraudCaseComponent } from './pages/admin/auditPage/fraud-case/fraud-case.component';
+import { AddFraudCaseDialogComponent } from './pages/admin/auditPage/fraud-case/add-fraud-case-dialog/add-fraud-case-dialog.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {RecaptchaModule} from "ng-recaptcha";
 import { AuditDetailsComponent } from './pages/admin/auditPage/audit/audit-details/audit-details.component';
 import { VisitorComponent } from './pages/visitor/visitor.component';
 import {RouterLink} from "@angular/router";
+import { RequestComponent } from './pages/admin/agency/request/request.component';
+import { AddRequestDialogComponent } from './pages/admin/agency/request/add-request-dialog/add-request-dialog.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
 @NgModule({
   declarations: [
-
     NotFoundComponent
   ],
   exports: [

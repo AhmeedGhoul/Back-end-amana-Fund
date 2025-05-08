@@ -1,0 +1,16 @@
+.page-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 24px;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+@media (min-width: 992px) {
+  .w-lg-50 {
+    width: 48%;
+  }
+}
