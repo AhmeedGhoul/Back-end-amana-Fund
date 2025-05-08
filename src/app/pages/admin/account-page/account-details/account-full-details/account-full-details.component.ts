@@ -20,9 +20,9 @@ import { Account } from '@app/models/account.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { saveAs } from 'file-saver';
 import { ChartType, ChartData } from 'chart.js';
-import { NgChartsModule } from 'ng2-charts';
 import { AccountPayment } from '@app/models/account-payment.model';
 import { AccountPaymentDialogComponent } from '../account-payment-dialog/account-payment-dialog.component';
+import {BaseChartDirective} from "ng2-charts";
 
 @Component({
   selector: 'app-account-full-details',
@@ -33,7 +33,6 @@ import { AccountPaymentDialogComponent } from '../account-payment-dialog/account
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    NgChartsModule,
     MatCardModule,
     MatIconModule,
     MatButtonModule,
@@ -47,7 +46,8 @@ import { AccountPaymentDialogComponent } from '../account-payment-dialog/account
     MatRippleModule,
     RouterModule,
     DatePipe,
-    AccountPaymentDialogComponent
+    BaseChartDirective,
+
   ]
 })
 export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
@@ -159,18 +159,18 @@ export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
         this.accountPaymentsDataSource.sortingDataAccessor = (item: AccountPayment, property: string) => {
           try {
             switch (property) {
-              case 'paymentDate': 
+              case 'paymentDate':
                 return item.paymentDate ? new Date(item.paymentDate).getTime() : 0;
-              case 'amount': 
+              case 'amount':
                 return item.amount ?? 0;
-              default: 
+              default:
                 return item[property as keyof AccountPayment] ?? '';
             }
           } catch (accessorError) {
-            console.error('Error in sorting accessor:', { 
-              property, 
-              item, 
-              error: accessorError 
+            console.error('Error in sorting accessor:', {
+              property,
+              item,
+              error: accessorError
             });
             return 0;
           }
@@ -205,7 +205,7 @@ export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
   generateZakatStatusPdf(): void {
     // Strict null checks
     if (!this.account?.rib) {
-      this.snackBar.open('No account selected or invalid RIB', 'Close', { 
+      this.snackBar.open('No account selected or invalid RIB', 'Close', {
         duration: 3000,
         panelClass: ['error-snackbar']
       });
@@ -214,7 +214,7 @@ export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
 
     // Ensure account type is Zakat before generating PDF
     if (this.account.accountType !== 'EPARGNE_ZEKET') {
-      this.snackBar.open('This account is not a Zakat account', 'Close', { 
+      this.snackBar.open('This account is not a Zakat account', 'Close', {
         duration: 3000,
         panelClass: ['error-snackbar']
       });
@@ -229,14 +229,14 @@ export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
         const safeRib = this.account?.rib ?? 'unknown';
         const filename = `zakat_status_${safeRib}_${today}.pdf`;
         saveAs(pdfBlob, filename);
-        this.snackBar.open('Zakat Status PDF Generated Successfully', 'Close', { 
+        this.snackBar.open('Zakat Status PDF Generated Successfully', 'Close', {
           duration: 3000,
           panelClass: ['success-snackbar']
         });
       },
       error: (error) => {
         console.error('Error generating Zakat Status PDF', error);
-        this.snackBar.open('Failed to generate Zakat Status PDF', 'Close', { 
+        this.snackBar.open('Failed to generate Zakat Status PDF', 'Close', {
           duration: 3000,
           panelClass: ['error-snackbar']
         });
@@ -292,7 +292,7 @@ export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
           const dateB = b.paymentDate ? new Date(b.paymentDate).getTime() : 0;
           return dateB - dateA; // Descending order
         });
-        
+
         // Preserve original type while ensuring data integrity
         const processedPayments = sortedPayments.map(payment => ({
           ...payment,
@@ -303,17 +303,17 @@ export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
 
         this.accountPayments = processedPayments;
         this.accountPaymentsDataSource = new MatTableDataSource<AccountPayment>(processedPayments);
-        
+
         // Configure sorting accessor for custom sorting
         this.accountPaymentsDataSource.sortingDataAccessor = (item: AccountPayment, property: string) => {
           switch(property) {
-            case 'paymentDate': 
+            case 'paymentDate':
               return item.paymentDate ? new Date(item.paymentDate).getTime() : 0;
-            case 'amount': 
+            case 'amount':
               return item.amount ?? 0;
-            case 'agencyName': 
+            case 'agencyName':
               return item.agencyName?.toLowerCase() ?? '';
-            default: 
+            default:
               return item[property] ?? '';
           }
         };
@@ -363,18 +363,18 @@ export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
         this.accountPaymentsDataSource.sortingDataAccessor = (item: AccountPayment, property: string) => {
           try {
             switch (property) {
-              case 'paymentDate': 
+              case 'paymentDate':
                 return item.paymentDate ? new Date(item.paymentDate).getTime() : 0;
-              case 'amount': 
+              case 'amount':
                 return item.amount ?? 0;
-              default: 
+              default:
                 return item[property as keyof AccountPayment] ?? '';
             }
           } catch (accessorError) {
-            console.error('Error in sorting accessor:', { 
-              property, 
-              item, 
-              error: accessorError 
+            console.error('Error in sorting accessor:', {
+              property,
+              item,
+              error: accessorError
             });
             return 0;
           }
@@ -469,7 +469,7 @@ export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
       rib: this.account.rib,
       amount: newAmount,
       clientEmail: this.editableAccount.clientEmail ?? this.account.clientEmail,
-      
+
       // Preserve existing attributes
       agent: this.account.agent,
       zakatTransactions: this.account.zakatTransactions,
@@ -501,23 +501,23 @@ export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
       },
       error: (error: any) => {
         console.error('Full error object:', error);
-        
+
         // Extract more detailed error information
-        const errorMessage = error.error?.message || 
-                            error.message || 
+        const errorMessage = error.error?.message ||
+                            error.message ||
                             'Failed to update account';
         const errorDetails = error.error?.details || 'No additional details';
-        
+
         console.error('Error updating account:', {
           status: error.status,
           message: errorMessage,
           details: errorDetails,
           headers: error.headers?.keys()
         });
-        
-        this.snackBar.open(`Update Failed: ${errorMessage}`, 'Close', { 
-          duration: 5000, 
-          panelClass: 'error-snackbar' 
+
+        this.snackBar.open(`Update Failed: ${errorMessage}`, 'Close', {
+          duration: 5000,
+          panelClass: 'error-snackbar'
         });
       }
     });
@@ -540,7 +540,7 @@ export class AccountFullDetailsComponent implements OnInit, AfterViewInit {
       },
       error: (error) => {
         console.error('Error sending account email:', error);
-        this.snackBar.open('Failed to send account details', 'Close', { 
+        this.snackBar.open('Failed to send account details', 'Close', {
           duration: 5000,
           panelClass: 'error-snackbar'
         } as MatSnackBarConfig);

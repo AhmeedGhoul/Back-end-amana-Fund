@@ -9,7 +9,7 @@ export interface PaymentStatisticsDTO {
 
 import { catchError, map } from 'rxjs/operators';
 import { User } from '../models/user.model';
-import { AuthService } from '@app/pages/authentication/side-login/auth.service';
+import { AuthService } from '@app/pages/authentication/side-login/login-choice/auth.service';
 import { Account, Page } from '../models/account.model';
 import { AccountPayment } from '../models/account-payment.model';
 
@@ -63,34 +63,34 @@ export class AccountService {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
-    
+
     // Use the paged endpoint
     const url = `${this.apiUrl}/dispaccount/paged`;
-    
+
     // Prepare query parameters
     const queryParams: { [key: string]: string | number } = {
       page: params.page || 0,
       size: params.size || 10
     };
-    
+
     // Add optional filtering
     if (params.accountType) {
       // Ensure the account type is a valid enum value
       const validAccountTypes = ['EPARGNE', 'EPARGNE_ZEKET'];
       const accountType = params.accountType.toUpperCase();
-      
+
       if (validAccountTypes.includes(accountType)) {
         queryParams['accountType'] = accountType;
       } else {
         console.warn(`Invalid account type: ${params.accountType}. Using default.`);
       }
     }
-    
+
     // Add RIB filtering if provided
     if (params.rib) {
       queryParams['rib'] = params.rib;
     }
-    
+
     return this.http.get<Page<Account>>(url, {
       headers,
       params: new HttpParams({ fromObject: queryParams })
@@ -102,7 +102,7 @@ export class AccountService {
           errorBody: error.error,
           requestParams: queryParams
         });
-        
+
         // Rethrow the error to be handled by the component
         return throwError(() => error);
       })
@@ -126,7 +126,7 @@ export class AccountService {
           message: error.message,
           errorBody: error.error
         });
-        
+
         return throwError(() => error);
       })
     );
@@ -177,7 +177,7 @@ export class AccountService {
   sendAccountEmail(identifier: string | number): Observable<any> {
     // Retrieve authentication token
     const token = localStorage.getItem('authToken');
-    
+
     // Prepare authorization headers
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
@@ -185,13 +185,13 @@ export class AccountService {
     });
 
     // Select appropriate endpoint based on identifier type
-    const endpoint = typeof identifier === 'string' 
-      ? `${this.apiUrl}/send-email` 
+    const endpoint = typeof identifier === 'string'
+      ? `${this.apiUrl}/send-email`
       : `${this.apiUrl}/${identifier}/send-email`;
 
     // Prepare request body
-    const body = typeof identifier === 'string' 
-      ? { rib: identifier } 
+    const body = typeof identifier === 'string'
+      ? { rib: identifier }
       : {};
 
     // Send email and handle potential errors
@@ -229,7 +229,7 @@ export class AccountService {
 
     // Validate required fields
     const requiredAccountUpdateFields = ['id', 'rib'];
-    const missingUpdateFields = requiredAccountUpdateFields.filter(field => 
+    const missingUpdateFields = requiredAccountUpdateFields.filter(field =>
       !accountToUpdate[field] || accountToUpdate[field] === null
     );
 
@@ -308,7 +308,7 @@ export class AccountService {
           };
 
           filteredAccount.agent = {} as any;
-          
+
           // Safely copy only allowed agent fields
           (Object.keys(agentFieldMapping) as Array<keyof typeof agentFieldMapping>).forEach(agentField => {
             const agentFieldValue = fieldValue[agentField];
@@ -316,7 +316,7 @@ export class AccountService {
               filteredAccount.agent[agentField] = agentFieldValue;
             }
           });
-        } 
+        }
         // Copy non-null and non-undefined values for other fields
         else if (fieldValue !== null && fieldValue !== undefined) {
           filteredAccount[field] = fieldValue;
@@ -326,7 +326,7 @@ export class AccountService {
 
     // Validate data types and formats
     const validationErrors: string[] = [];
-    
+
     // Validate amount
     if (filteredAccount.amount !== undefined) {
       if (typeof filteredAccount.amount !== 'number' || filteredAccount.amount < 0) {
@@ -396,7 +396,7 @@ export class AccountService {
 
     // Validate required fields
     const requiredFields = ['accountType', 'clientEmail'];
-    let missingFields = requiredFields.filter(field => 
+    let missingFields = requiredFields.filter(field =>
       !account.hasOwnProperty(field) || account[field as keyof Account] === null
     );
 
@@ -432,8 +432,8 @@ export class AccountService {
   }
 
   exportAccountToExcel(accountId: number): Observable<Blob> {
-    return this.http.get(`${this.apiUrl}/${accountId}/export-excel`, { 
-      responseType: 'blob' 
+    return this.http.get(`${this.apiUrl}/${accountId}/export-excel`, {
+      responseType: 'blob'
     });
   }
 
@@ -488,7 +488,7 @@ export class AccountService {
       return throwError(() => new Error('RIB cannot be empty'));
     }
 
-    return this.http.get<AccountPayment[]>(`${this.paymentapiUrl}/by-rib/${trimmedRib}`, { 
+    return this.http.get<AccountPayment[]>(`${this.paymentapiUrl}/by-rib/${trimmedRib}`, {
       headers,
       observe: 'response'  // Get full response to inspect headers and status
     }).pipe(
@@ -499,7 +499,7 @@ export class AccountService {
           headers: response.headers.keys(),
           body: response.body
         });
-        
+
         // Ensure non-null AccountPayment array is returned
         if (!response.body) {
           console.warn('No account payments data returned');

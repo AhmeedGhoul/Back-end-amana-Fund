@@ -2,7 +2,7 @@
   {{ item.navCap }}
 </div>
 
-<a *ngIf="!item.navCap && !item.external && !item.twoLines"
+<a *ngIf="!item.navCap && !item.external && !item.twoLines && canAccess(item)"
    mat-list-item
    (click)="onItemSelected(item)"
    [ngClass]="{

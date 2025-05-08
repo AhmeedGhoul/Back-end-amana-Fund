@@ -22,21 +22,25 @@ export const navItems: NavItem[] = [
     displayName: 'Account',
     iconName: 'wallet', // changed from 'account' to a more fitting icon
     route: '/admin/account',
+    roles: ['ADMIN','AGENT']
   },
   {
     displayName: 'Contracts',
     iconName: 'file-text',
     route: '/contracts', // Corrected route
+    roles: ['ADMIN','AGENT']
   },
   {
     displayName: 'Sinistres',
     iconName: 'alert-triangle',
     route: '/sinistres', // Corrected route
+    roles: ['ADMIN']
   },
   {
     displayName: 'Policies',
     iconName: 'file-text',
     class: 'has-arrow',
+    roles: ['ADMIN'],
     children: [
       {
         displayName: 'Policy Contract',
@@ -64,16 +68,13 @@ export const navItems: NavItem[] = [
     displayName: 'Credit Pools',
     iconName: 'receipt', // changed from 'credit' to valid financial icon
     route: '/ui-components/menu',
-  },
-  {
-    displayName: 'Sinistres',
-    iconName: 'alert-triangle', // changed from 'danger' to valid warning icon
-    route: '/ui-components/tooltips',
+    roles: ['ADMIN','AGENT']
   },
   {
     displayName: 'Agencies',
     iconName: 'building', // changed from 'agency' to valid organization icon
     route: '/admin/agency',
+    roles: ['ADMIN','AGENT']
   },
   {
     displayName: 'Audit',
