@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, Injector } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { PersonService } from '../../services/person.service';
 import { Person } from './person.model';
+import { Police } from '../police/police.model';
+import { PersonService } from '../../services/person.service';
 import { PoliceService } from '../../services/police.service';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,6 +19,23 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { RouterModule } from '@angular/router';
+import { HttpEventType } from '@angular/common/http';
+
+// Define PersonDTO interface directly in the component
+interface PersonDTO {
+  idGarantie?: number | undefined;
+  name: string;
+  lastName: string;
+  cin: string;
+  email: string;
+  age: number;
+  revenue: number;
+  active: boolean;
+  documents: string;
+  policeId: number;
+  filePath: string | null;
+}
+
 
 @Component({
   selector: 'app-person',
@@ -36,42 +55,75 @@ import { RouterModule } from '@angular/router';
     MatDatepickerModule,
     MatNativeDateModule,
     RouterModule
+  ],
+  providers: [
+    { provide: MAT_DIALOG_DATA, useValue: null }
   ]
 })
 export class PersonComponent implements OnInit {
   personForm: FormGroup;
+  mode: 'add' | 'edit' = 'add';
+  person: Person = new Person();
+  policeList: Police[] = [];
+  isSubmitting = false;
+  error = '';
+  selectedFilePath: string | null = null;
+  uploadProgress = 0;
+  showProgress = false;
+  isValidFileType = true;
   submitted = false;
   loading = false;
-  policeList: any[] = [];
-  selectedFilePath: string | null = null;
-  isValidFileType = true;
+  files: File[] = [];
+  private injector: Injector;
 
   constructor(
     private formBuilder: FormBuilder,
     private personService: PersonService,
     private policeService: PoliceService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    @Inject(MAT_DIALOG_DATA) public data: { person: Person; mode: 'add' | 'edit' } | null,
+    injector: Injector
   ) {
+    this.injector = injector;
     this.initializeForm();
     this.loadPoliceList();
   }
 
   ngOnInit(): void {
-    this.loadPoliceList();
+    if (this.data) {
+      this.mode = this.data.mode;
+      this.person = this.data.person;
+      this.initializeForm();
+    } else {
+      // Check if we have state data (when coming from navigation)
+      const state = history.state as { person: Person; mode: 'add' | 'edit' };
+      if (state) {
+        this.mode = state.mode;
+        this.person = state.person;
+        this.initializeForm();
+      } else {
+        this.mode = 'add';
+        this.person = new Person();
+        this.initializeForm();
+      }
+    }
   }
 
   private initializeForm(): void {
+    // Initialize form with default values if person is undefined
+    const initialPerson = this.person || new Person();
+
     this.personForm = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.pattern('^[A-Za-z]+$')]],
-      last_name: ['', [Validators.required, Validators.pattern('^[A-Za-z]+$')]],
-      cin: ['', [Validators.required, Validators.pattern('\\d{8}')]],
-      email: ['', [Validators.required, Validators.email]],
-      age: ['', [Validators.required, Validators.min(18), Validators.max(100)]],
-      revenue: ['', [Validators.required, Validators.min(0)]],
-      active: [true],
-      documents: ['', Validators.required],
-      police_id: ['', Validators.required]
+      name: [initialPerson.name || '', [Validators.required]],
+      last_name: [initialPerson.lastName || '', [Validators.required]],
+      cin: [initialPerson.cin || '', [Validators.required]],
+      email: [initialPerson.email || '', [Validators.required, Validators.email]],
+      age: [initialPerson.age || 0, [Validators.required, Validators.min(0)]],
+      revenue: [initialPerson.revenue || 0, [Validators.required, Validators.min(0)]],
+      active: [initialPerson.active || true],
+      documents: [initialPerson.documents || ''],
+      police_id: [initialPerson.policeId || null, [Validators.required]]
     });
   }
 
@@ -81,37 +133,41 @@ export class PersonComponent implements OnInit {
 
   private loadPoliceList(): void {
     this.policeService.getPoliceList().subscribe(
-      (police) => {
+      (police: Police[]) => {
         this.policeList = police;
       },
-      (error) => {
+      (error: any) => {
         console.error('Error loading police list:', error);
       }
     );
   }
 
-  onFileSelected(event: any): void {
-    const file: File = event.target.files[0];
-    if (file) {
-      // Check if file is PDF
-      if (file.type !== 'application/pdf') {
-        this.snackBar.open('Please select a PDF file only', 'Close', {
-          duration: 3000,
-          panelClass: ['mat-toolbar', 'mat-warn'],
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
-        });
-        this.isValidFileType = false;
-        return;
-      }
+  onFileSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const file: File | null = target.files?.[0] || null;
 
-      this.selectedFilePath = file.name;
-      this.personForm.patchValue({
-        documents: file.name,
-        filePath: file.name
-      });
+    if (!file) {
+      this.selectedFilePath = null;
       this.isValidFileType = true;
+      return;
     }
+
+    // Check if file is PDF
+    if (file.type !== 'application/pdf') {
+      this.snackBar.open('Please select a PDF file only', 'Close', {
+        duration: 3000,
+        panelClass: ['mat-toolbar', 'mat-warn']
+      });
+      this.isValidFileType = false;
+      return;
+    }
+
+    this.selectedFilePath = file.name;
+    this.personForm.patchValue({
+      documents: file.name,
+      filePath: file.name
+    });
+    this.files = [file];
   }
 
   onSubmit(): void {
@@ -119,29 +175,8 @@ export class PersonComponent implements OnInit {
       return;
     }
 
-    if (!this.selectedFilePath) {
-      this.snackBar.open('Please select a PDF file', 'Close', {
-        duration: 3000,
-        panelClass: ['mat-toolbar', 'mat-warn'],
-        horizontalPosition: 'center',
-        verticalPosition: 'top'
-      });
-      return;
-    }
-
-    if (!this.isValidFileType) {
-      this.snackBar.open('Please select a valid PDF file', 'Close', {
-        duration: 3000,
-        panelClass: ['mat-toolbar', 'mat-warn'],
-        horizontalPosition: 'center',
-        verticalPosition: 'top'
-      });
-      return;
-    }
-
-    this.loading = true;
     const person: Person = {
-      idGarantie: null,
+      idGarantie: this.person?.idGarantie || null,
       name: this.personForm.get('name')?.value,
       lastName: this.personForm.get('last_name')?.value,
       cin: this.personForm.get('cin')?.value,
@@ -154,25 +189,76 @@ export class PersonComponent implements OnInit {
       filePath: this.selectedFilePath
     };
 
-    this.personService.addPerson(person).subscribe({
-      next: (response) => {
-        this.loading = false;
-        this.resetForm();
-        this.snackBar.open('Person added successfully with document path!', 'Close', {
+    if (this.mode === 'edit') {
+      this.updatePerson(person);
+    } else {
+      this.addPerson(person);
+    }
+  }
+
+  private navigateBack(): void {
+    if (this.data) {
+      // If we have dialog data, we're in dialog mode
+      const dialog = this.injector.get(MatDialogRef);
+      dialog.close(true);
+    } else {
+      this.router.navigate(['/person']);
+    }
+  }
+
+  private updatePerson(person: Person): void {
+    this.isSubmitting = true;
+    this.personService.updatePerson(person).subscribe({
+      next: () => {
+        this.snackBar.open('Person updated successfully', 'Close', {
           duration: 3000,
-          panelClass: ['mat-toolbar', 'mat-primary'],
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
+          panelClass: ['mat-toolbar', 'mat-primary']
         });
+        this.router.navigate(['/person/list']);
       },
-      error: (error) => {
-        this.loading = false;
-        this.snackBar.open('Error adding person: ' + error.message, 'Close', {
+      error: (error: any) => {
+        this.error = 'Failed to update person. Please try again.';
+        this.isSubmitting = false;
+      }
+    });
+  }
+
+  private addPerson(person: Person): void {
+    if (!this.selectedFilePath) {
+      this.snackBar.open('Please select a PDF file', 'Close', {
+        duration: 3000,
+        panelClass: ['mat-toolbar', 'mat-warn']
+      });
+      return;
+    }
+
+    // Create a PersonDTO object with file path
+    const personDTO: PersonDTO = {
+      idGarantie: person.idGarantie || undefined,
+      name: person.name,
+      lastName: person.lastName,
+      cin: person.cin,
+      email: person.email,
+      age: person.age,
+      revenue: person.revenue,
+      active: person.active,
+      documents: this.selectedFilePath,
+      policeId: person.policeId,
+      filePath: this.selectedFilePath
+    };
+
+    this.isSubmitting = true;
+    this.personService.addPerson(personDTO).subscribe({
+      next: () => {
+        this.snackBar.open('Person added successfully!', 'Close', {
           duration: 3000,
-          panelClass: ['mat-toolbar', 'mat-warn'],
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
+          panelClass: ['mat-toolbar', 'mat-primary']
         });
+        this.router.navigate(['/person/list']);
+      },
+      error: (error: any) => {
+        this.error = 'Failed to add person. Please try again.';
+        this.isSubmitting = false;
       }
     });
   }
@@ -183,5 +269,8 @@ export class PersonComponent implements OnInit {
     this.loading = false;
     this.selectedFilePath = null;
     this.isValidFileType = true;
+    this.uploadProgress = 0;
+    this.showProgress = false;
+    this.error = '';
   }
 }

@@ -1,7 +1,23 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { Person } from '../pages/person/person.model';
+
+// Define PersonDTO interface
+interface PersonDTO {
+  idGarantie?: number | null;
+  name: string;
+  lastName: string;
+  cin: string;
+  email: string;
+  age: number;
+  revenue: number;
+  active: boolean;
+  documents: string;
+  policeId: number;
+  filePath: string | null;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -11,12 +27,12 @@ export class PersonService {
 
   constructor(private http: HttpClient) { }
 
-  addPerson(person: Person): Observable<any> {
-    return this.http.post(`${this.apiUrl}/add_personG`, person);
+  addPerson(personDTO: PersonDTO): Observable<any> {
+    return this.http.post(`${this.apiUrl}/add_personG`, personDTO);
   }
 
   addPersonWithFile(formData: FormData): Observable<any> {
-    return this.http.post(`${this.apiUrl}/add-with-file`, formData, {
+    return this.http.post(`${this.apiUrl}/add_personG_with_file`, formData, {
       reportProgress: true,
       observe: 'events'
     });
@@ -45,14 +61,35 @@ export class PersonService {
     return this.http.put(`${this.apiUrl}/${id}/deactivate`, {});
   }
 
-  searchPersonByCIN(cin: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/search-by-cin`, {
-      params: { cin }
-    });
+  updatePerson(person: Person): Observable<any> {
+    // Convert Person to PersonDTO format
+    const personDTO = {
+      idGarantie: person.idGarantie,
+      name: person.name,
+      lastName: person.lastName,
+      cin: person.cin,
+      email: person.email,
+      age: person.age,
+      revenue: person.revenue,
+      active: person.active,
+      documents: person.documents,
+      policeId: person.policeId
+    };
+    
+    return this.http.put(`${this.apiUrl}/update_person`, personDTO);
   }
 
-  updatePerson(person: Person): Observable<any> {
-    return this.http.put(`${this.apiUrl}/update`, person);
+  searchPersonByCIN(cin: string): Observable<Person[]> {
+    return this.http.get<Person[]>(`${this.apiUrl}/search-by-cin?cin=${cin}`).pipe(
+      catchError(error => {
+        console.error('Search error:', error);
+        if (error.status === 500) {
+          // Handle the case where no person is found
+          return of([]);
+        }
+        throw error;
+      })
+    );
   }
 
   getPersonById(id: number): Observable<any> {

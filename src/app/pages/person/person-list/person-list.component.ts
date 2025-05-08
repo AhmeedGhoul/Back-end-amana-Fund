@@ -16,6 +16,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-person-list',
@@ -29,6 +30,7 @@ import { MatInputModule } from '@angular/material/input';
     MatIconModule,
     MatToolbarModule,
     MatButtonModule,
+    RouterModule,
     MatFormFieldModule,
     MatInputModule,
     FormsModule
@@ -44,6 +46,7 @@ export class PersonListComponent implements OnInit {
   currentPage: number = 0;
   sortField: string = 'name';
   sortDirection: string = 'asc';
+  allowedSortFields: string[] = ['name', 'age', 'revenue'];
   searchCIN: string = '';
   searchResults: any | null = null;
 
@@ -84,9 +87,16 @@ export class PersonListComponent implements OnInit {
   }
 
   onSortChange(event: any): void {
-    this.sortField = event.active;
-    this.sortDirection = event.direction;
-    this.loadPersons();
+    if (this.allowedSortFields.includes(event.active)) {
+      this.sortField = event.active;
+      this.sortDirection = event.direction;
+      this.loadPersons();
+    } else {
+      this.snackBar.open('Sorting is only allowed on Name, Age, or Revenue fields', 'Close', {
+        duration: 3000,
+        panelClass: ['mat-toolbar', 'mat-warn']
+      });
+    }
   }
 
   deactivatePerson(id: number): void {
@@ -132,19 +142,29 @@ export class PersonListComponent implements OnInit {
   searchPerson(): void {
     if (this.searchCIN.trim()) {
       this.personService.searchPersonByCIN(this.searchCIN).subscribe({
-        next: (result) => {
-          this.searchResults = result;
-          this.snackBar.open('Person found successfully', 'Close', {
-            duration: 3000,
-            panelClass: ['mat-toolbar', 'mat-primary']
-          });
+        next: (persons) => {
+          if (persons.length > 0) {
+            this.searchResults = persons;
+            this.snackBar.open(`Found ${persons.length} person${persons.length > 1 ? 's' : ''}`, 'Close', {
+              duration: 3000,
+              panelClass: ['mat-toolbar', 'mat-primary']
+            });
+          } else {
+            this.searchResults = null;
+            this.snackBar.open('No persons found with this CIN', 'Close', {
+              duration: 3000,
+              panelClass: ['mat-toolbar', 'mat-warn']
+            });
+          }
         },
         error: (error) => {
           this.searchResults = null;
-          this.snackBar.open('No person found with this CIN', 'Close', {
+          const errorMessage = error.error?.message || 'Error searching for person';
+          this.snackBar.open(`Error: ${errorMessage}`, 'Close', {
             duration: 3000,
-            panelClass: ['mat-toolbar', 'mat-warn']
+            panelClass: ['mat-toolbar', 'mat-error']
           });
+          console.error('Search error:', error);
         }
       });
     } else {
@@ -157,6 +177,29 @@ export class PersonListComponent implements OnInit {
 
   navigateToAddPerson(): void {
     this.router.navigate(['/person']);
+  }
+
+  openAddFormWithPerson(person: Person): void {
+    this.router.navigate(['../add'], {
+      relativeTo: this.route,
+      state: { person: person, mode: 'edit' }
+    });
+  }
+
+  openEditDialog(element: any): void {
+    const dialogRef = this.dialog.open(PersonComponent, {
+      width: '500px',
+      data: { 
+        mode: 'edit',
+        person: element
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadPersons();
+      }
+    });
   }
 
   navigateToPerson(id: number): void {

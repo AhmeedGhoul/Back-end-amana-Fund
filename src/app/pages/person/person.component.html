@@ -1,10 +1,10 @@
 <mat-card class="dialog-card">
   <mat-card-header class="dialog-header">
-    <mat-card-title>Add New Person</mat-card-title>
+    <mat-card-title>{{mode === 'edit' ? 'Edit Person' : 'Add New Person'}}</mat-card-title>
     <div class="header-actions">
       <button mat-icon-button 
               color="primary"
-              [routerLink]="['./list']"
+              [routerLink]="['/person/list']"
               matTooltip="View Person List">
         <mat-icon>list</mat-icon>
       </button>

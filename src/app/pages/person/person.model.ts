@@ -9,19 +9,19 @@ export class Person {
   active: boolean;
   documents: string;
   policeId: number;
-  filePath?: string;
+  filePath: string | null;
 
   constructor(
     idGarantie: number | null = null,
-    name: string,
-    lastName: string,
-    cin: string,
-    email: string,
-    age: number,
-    revenue: number,
-    active: boolean,
-    documents: string,
-    policeId: number
+    name: string = '',
+    lastName: string = '',
+    cin: string = '',
+    email: string = '',
+    age: number = 0,
+    revenue: number = 0,
+    active: boolean = true,
+    documents: string = '',
+    policeId: number = 0
   ) {
     this.idGarantie = idGarantie;
     this.name = name;

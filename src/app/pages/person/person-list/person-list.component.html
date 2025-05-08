@@ -13,17 +13,17 @@
           <mat-icon>search</mat-icon>
         </button>
       </mat-form-field>
-      <button mat-raised-button color="primary" (click)="navigateToAddPerson()">
+      <button mat-raised-button color="primary" [routerLink]="['/person/add']">
         <mat-icon>add</mat-icon>
         Add Person
       </button>
     </div>
 
-    <div *ngIf="searchResults" class="search-results">
-      <mat-card class="search-card">
+    <div *ngIf="searchResults && searchResults.length > 0" class="search-results">
+      <mat-card class="search-card" *ngFor="let person of searchResults">
         <mat-card-header>
           <mat-card-title>Search Results</mat-card-title>
-          <mat-card-subtitle>CIN: {{searchResults.cin}}</mat-card-subtitle>
+          <mat-card-subtitle>CIN: {{person.cin}}</mat-card-subtitle>
         </mat-card-header>
         
         <mat-card-content>
@@ -32,7 +32,7 @@
               <mat-icon class="info-icon">person</mat-icon>
               <div>
                 <p class="info-label">Full Name</p>
-                <p class="info-value">{{searchResults.name}} {{searchResults.lastName}}</p>
+                <p class="info-value">{{person.name}} {{person.lastName}}</p>
               </div>
             </div>
 
@@ -40,7 +40,7 @@
               <mat-icon class="info-icon">email</mat-icon>
               <div>
                 <p class="info-label">Email</p>
-                <p class="info-value">{{searchResults.email}}</p>
+                <p class="info-value">{{person.email}}</p>
               </div>
             </div>
 
@@ -48,7 +48,7 @@
               <mat-icon class="info-icon">cake</mat-icon>
               <div>
                 <p class="info-label">Age</p>
-                <p class="info-value">{{searchResults.age}}</p>
+                <p class="info-value">{{person.age}}</p>
               </div>
             </div>
 
@@ -56,29 +56,25 @@
               <mat-icon class="info-icon">attach_money</mat-icon>
               <div>
                 <p class="info-label">Revenue</p>
-                <p class="info-value">${{searchResults.revenue}}</p>
+                <p class="info-value">${{person.revenue}}</p>
               </div>
             </div>
 
             <div class="info-group">
-              <mat-icon class="info-icon" [color]="searchResults.active ? 'primary' : 'warn'">
-                {{searchResults.active ? 'check_circle' : 'cancel'}}
+              <mat-icon class="info-icon" [color]="person.active ? 'primary' : 'warn'">
+                {{person.active ? 'check_circle' : 'cancel'}}
               </mat-icon>
               <div>
                 <p class="info-label">Status</p>
-                <p class="info-value" [class.active]="searchResults.active">
-                  {{searchResults.active ? 'Active' : 'Inactive'}}
+                <p class="info-value" [class.active]="person.active">
+                  {{person.active ? 'Active' : 'Inactive'}}
                 </p>
               </div>
             </div>
           </div>
         </mat-card-content>
-
+        <!--                  -->
         <mat-card-actions>
-          <button mat-raised-button color="primary" (click)="navigateToPerson(searchResults.idGarantie)">
-            <mat-icon>edit</mat-icon>
-            Edit Person
-          </button>
         </mat-card-actions>
       </mat-card>
     </div>
@@ -89,24 +85,6 @@
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
         <td mat-cell *matCellDef="let element">{{element.name}}</td>
-      </ng-container>
-
-      <!-- Last Name Column -->
-      <ng-container matColumnDef="lastName">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Name</th>
-        <td mat-cell *matCellDef="let element">{{element.lastName}}</td>
-      </ng-container>
-
-      <!-- CIN Column -->
-      <ng-container matColumnDef="cin">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>CIN</th>
-        <td mat-cell *matCellDef="let element">{{element.cin}}</td>
-      </ng-container>
-
-      <!-- Email Column -->
-      <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
-        <td mat-cell *matCellDef="let element">{{element.email}}</td>
       </ng-container>
 
       <!-- Age Column -->
@@ -121,9 +99,27 @@
         <td mat-cell *matCellDef="let element">${{element.revenue}}</td>
       </ng-container>
 
+      <!-- Last Name Column -->
+      <ng-container matColumnDef="lastName">
+        <th mat-header-cell *matHeaderCellDef>Last Name</th>
+        <td mat-cell *matCellDef="let element">{{element.lastName}}</td>
+      </ng-container>
+
+      <!-- CIN Column -->
+      <ng-container matColumnDef="cin">
+        <th mat-header-cell *matHeaderCellDef>CIN</th>
+        <td mat-cell *matCellDef="let element">{{element.cin}}</td>
+      </ng-container>
+
+      <!-- Email Column -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let element">{{element.email}}</td>
+      </ng-container>
+
       <!-- Active Column -->
       <ng-container matColumnDef="active">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Active</th>
+        <th mat-header-cell *matHeaderCellDef>Active</th>
         <td mat-cell *matCellDef="let element">
           <mat-icon [color]="element.active ? 'primary' : 'warn'">
             {{element.active ? 'check_circle' : 'cancel'}}
@@ -141,7 +137,9 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let element">
-          <button mat-icon-button (click)="navigateToPerson(element.idGarantie)">
+          <button mat-icon-button 
+                  color="primary"
+                  (click)="openAddFormWithPerson(element)">
             <mat-icon>edit</mat-icon>
           </button>
           <button mat-icon-button color="warn" (click)="deactivatePerson(element.idGarantie)">
