@@ -30,7 +30,14 @@ export const routes: Routes = [
         canActivate: [AuthGuard],      // Guard attached here (this triggers it!)
 
       },
-
+      {
+        path: 'police',
+        loadChildren: () =>
+          import('./pages/police/police-routing.module').then(
+            (m) => m.PoliceRoutingModule
+          ),
+        canActivate: [AuthGuard],
+      },
 
     ],
   },

@@ -39,6 +39,14 @@ export class PoliceService {
     return this.http.get<Police[]>(`${this.apiUrl}/getall_police`);
   }
 
+  getActivePercentage(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/active-percentage`);
+  }
+
+  getTotalActiveAmount(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/active-total-amount`);
+  }
+
   getPoliceById(id: number): Observable<Police> {
     console.log('Fetching police with ID:', id);
     return this.http.get<Police>(`${this.apiUrl}/get_policeById/${id}`)
