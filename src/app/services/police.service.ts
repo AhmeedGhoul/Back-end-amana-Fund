@@ -46,6 +46,10 @@ export class PoliceService {
   getTotalActiveAmount(): Observable<number> {
     return this.http.get<number>(`${this.apiUrl}/active-total-amount`);
   }
+  getAllUsers() {
+    return this.http.get<any[]>('http://localhost:8088/api/v1/police/getall_users');
+  }
+  
 
   getTotalAmount(): Observable<number> {
     return this.http.get<number>(`${this.apiUrl}/total-amount`);

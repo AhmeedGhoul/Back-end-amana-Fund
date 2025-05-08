@@ -55,6 +55,16 @@
 
       <mat-checkbox formControlName="active">Active</mat-checkbox>
 
+      <mat-form-field>
+        <mat-label>Select User</mat-label>
+        <mat-select formControlName="userId">
+          <mat-option *ngFor="let user of users" [value]="user.id">
+            {{ user.email }} (ID: {{ user.id }})
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="policeForm.get('userId')?.hasError('required')">User is required</mat-error>
+      </mat-form-field>
+
       <div class="button-container">
         <button mat-stroked-button color="warn" type="button" (click)="onCancel()">Cancel</button>
         <button mat-raised-button color="primary" type="submit" [disabled]="!policeForm.valid">

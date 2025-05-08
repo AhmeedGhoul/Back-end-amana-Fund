@@ -46,6 +46,7 @@ export class PoliceaddComponent implements OnInit {
   loading = false;
   editMode = false;
   police!: Police;
+  users: any[] = [];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -56,6 +57,8 @@ export class PoliceaddComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.fetchUsers(); // ⬅️ fetch users from API
+
     this.route.queryParams.subscribe(params => {
       const id = params['id'] || params['idPolice'];
       if (id) {
@@ -66,6 +69,22 @@ export class PoliceaddComponent implements OnInit {
 
     this.initForm();
   }
+  private fetchUsers(): void {
+    this.policeService.getAllUsers().subscribe({
+      next: (data: any[]) => {
+        this.users = data;
+      },
+      error: (error) => {
+        console.error('Failed to load users:', error);
+        this.snackBar.open('Failed to load users', 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
+  
 
   private initForm(): void {
     this.policeForm = this.formBuilder.group({
@@ -113,6 +132,7 @@ export class PoliceaddComponent implements OnInit {
       }
     });
   }
+  
 
   private futureDateValidator(control: FormControl): { [key: string]: boolean } | null {
     const date = control.value;
