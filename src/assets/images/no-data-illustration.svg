@@ -1,0 +1,26 @@
+<![CDATA[<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0f4f8;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#e6eaf0;stop-opacity:1"/>
+    </linearGradient>
+  </defs>
+  
+  <rect width="100%" height="100%" fill="url(#bg-gradient)"/>
+  
+  <g transform="translate(200, 150) scale(0.7)">
+    <path d="M-100,-50 Q0,-100 100,-50" fill="none" stroke="#b0bec5" stroke-width="3" stroke-dasharray="5,5"/>
+    
+    <circle cx="0" cy="0" r="80" fill="#e1f5fe" stroke="#03a9f4" stroke-width="3"/>
+    
+    <g transform="translate(0, 20)">
+      <path d="M-40,-20 L40,-20 L30,30 L-30,30 Z" fill="#ffffff" stroke="#607d8b" stroke-width="2"/>
+      <line x1="-30" y1="0" x2="30" y2="0" stroke="#b0bec5" stroke-width="2"/>
+      <line x1="-20" y1="15" x2="20" y2="15" stroke="#b0bec5" stroke-width="2"/>
+    </g>
+    
+    <text x="0" y="70" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#607d8b">
+      No Data Available
+    </text>
+  </g>
+</svg>]]>

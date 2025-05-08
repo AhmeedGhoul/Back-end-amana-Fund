@@ -1,0 +1,170 @@
+<div class="account-full-details-container">
+  <mat-card class="details-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>account_balance</mat-icon>
+        Account Full Details
+      </mat-card-title>
+      <mat-card-subtitle *ngIf="account">RIB: {{ account.rib }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <!-- Payment Statistics Chart -->
+    <div class="stats-chart-section">
+      <div style="margin-bottom: 12px; display: flex; justify-content: flex-end; gap: 16px;">
+        <mat-form-field appearance="outline" class="period-type-dropdown custom-dropdown">
+          <mat-label>Period Type</mat-label>
+          <mat-select [(ngModel)]="periodType" (selectionChange)="onPeriodTypeChange()">
+            <mat-option value="daily">Day</mat-option>
+            <mat-option value="monthly">Month</mat-option>
+            <mat-option value="yearly">Year</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <h3 class="section-title">
+        <mat-icon>bar_chart</mat-icon>
+        <span class="period-type-label">Payment Trends {{ periodType | titlecase }}</span>
+      </h3>
+      <div *ngIf="statsChartData.labels?.length; else noStats" style="display: block; max-width: 600px; margin: 0 auto;">
+        <canvas baseChart
+          [data]="statsChartData"
+          type="line"
+          [options]="statsChartOptions">
+        </canvas>
+      </div>
+      <ng-template #noStats>
+        <div class="no-stats-msg" style="text-align:center; color: #888; margin: 16px 0;">
+          <mat-icon>info</mat-icon> No payment statistics available for this account.
+        </div>
+      </ng-template>
+    </div>
+
+    <mat-card-content>
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner></mat-spinner>
+        <p>Loading account details...</p>
+      </div>
+
+      <div *ngIf="!loading" class="details-grid">
+        <div *ngFor="let detail of accountDetails" class="detail-item">
+          <div class="detail-label">{{ detail.attribute }}</div>
+          <div class="detail-value">
+            <ng-container *ngIf="!isEditMode || !isEditableField(detail.attribute)">
+              {{ detail.value }}
+            </ng-container>
+            <ng-container *ngIf="isEditMode && isEditableField(detail.attribute)">
+              <input 
+                *ngIf="detail.attribute === 'Amount'"
+                [(ngModel)]="editableAccount.amount" name="amount"
+                type="number"
+                class="edit-input"
+              >
+            <input 
+                *ngIf="detail.attribute === 'Client Email'"
+                [(ngModel)]="editableAccount.clientEmail" name="clientEmail"
+                type="email"
+                class="edit-input"
+              >
+
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons edit-mode-buttons">
+        <button mat-stroked-button color="primary" routerLink="/admin/account">
+          <mat-icon>arrow_back</mat-icon>
+          Back to Accounts
+        </button>
+        <button 
+          *ngIf="!isEditMode" 
+          mat-raised-button 
+          color="accent" 
+          (click)="toggleEditMode()"
+        >
+          <mat-icon>edit</mat-icon>
+          Edit Account
+        </button>
+        <button mat-raised-button class="create-payment-btn" (click)="openPaymentDialog()">
+          <mat-icon>add_circle_outline</mat-icon>
+          Create Payment
+        </button>
+        <button 
+          *ngIf="account?.accountType === 'EPARGNE_ZEKET'" 
+          mat-raised-button 
+          color="primary" 
+          class="zakat-pdf-btn" 
+          (click)="generateZakatStatusPdf()"
+        >
+          <mat-icon>picture_as_pdf</mat-icon>
+          Generate Zakat Status PDF
+        </button>
+          <ng-container *ngIf="isEditMode" class="edit-mode-button-group">
+            <button 
+              mat-raised-button 
+              color="primary" 
+              (click)="saveAccountChanges()"
+            >
+              <mat-icon>save</mat-icon>
+              Save Changes
+            </button>
+            <button 
+              mat-stroked-button 
+              color="warn" 
+              (click)="cancelEditMode()"
+            >
+              <mat-icon>cancel</mat-icon>
+              Cancel
+            </button>
+          </ng-container>
+      </div>
+
+      <!-- Account Payments Section -->
+      <div class="payments-section">
+        <ng-container *ngIf="!loading">
+          <div *ngIf="accountPayments.length === 0" class="no-payments-msg">
+            <mat-icon>info_outline</mat-icon>
+            <span>No payment history found for this account</span>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="accountPayments.length > 0">
+          <h3 class="section-title">
+            <mat-icon>payments</mat-icon>
+            <span>Account Payments</span>
+          </h3>
+          <div class="table-responsive">
+            <table mat-table [dataSource]="accountPaymentsDataSource" matSort class="payments-table">
+              <!-- Payment Date Column -->
+               <ng-container matColumnDef="paymentDate">
+                 <th mat-header-cell *matHeaderCellDef mat-sort-header="paymentDate">Date</th>
+                 <td mat-cell *matCellDef="let payment">
+                   {{ payment.paymentDate | date:'medium' }}
+                 </td>
+               </ng-container>
+
+              <!-- Amount Column -->
+               <ng-container matColumnDef="amount">
+                 <th mat-header-cell *matHeaderCellDef mat-sort-header="amount">Amount</th>
+                 <td mat-cell *matCellDef="let payment">
+                   {{ payment.amount | number:'1.2-2' }} TND
+                 </td>
+               </ng-container>
+
+              <!-- Agency Name Column -->
+               <ng-container matColumnDef="agencyName">
+                 <th mat-header-cell *matHeaderCellDef mat-sort-header="agencyName">Agency</th>
+                 <td mat-cell *matCellDef="let payment">
+                   {{ payment.agencyName }}
+                 </td>
+               </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns" class="payment-row"></tr>
+            </table>
+          </div>
+        </ng-container>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

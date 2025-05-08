@@ -1,0 +1,158 @@
+.dashboard-container {
+  padding: 24px;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 500;
+    }
+
+    .period-selector {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      mat-form-field {
+        width: 150px;
+      }
+    }
+  }
+
+  .stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 24px;
+
+    .stat-card {
+      .stat-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+
+        .stat-info {
+          h3 {
+            margin: 0;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.6);
+          }
+
+          .amount {
+            font-size: 24px;
+            font-weight: 500;
+            margin-top: 8px;
+          }
+        }
+
+        mat-icon {
+          font-size: 32px;
+          width: 32px;
+          height: 32px;
+        }
+      }
+
+      &.sales {
+        background: linear-gradient(135deg, #9c27b0, #673ab7);
+        color: white;
+      }
+
+      &.cart {
+        background: linear-gradient(135deg, #26a69a, #00897b);
+        color: white;
+      }
+
+      &.orders {
+        background: linear-gradient(135deg, #ff7043, #f4511e);
+        color: white;
+      }
+    }
+  }
+
+  .charts-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 24px;
+
+    .conversion-card, .devices-card {
+      .mat-card-header {
+        margin-bottom: 16px;
+      }
+    }
+
+    .conversion-rate {
+      display: flex;
+      justify-content: center;
+      margin: 24px 0;
+
+      .rate-circle {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 8px solid #2196F3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .rate-number {
+          font-size: 32px;
+          font-weight: 500;
+          color: #2196F3;
+        }
+      }
+    }
+
+    .funnel-stats {
+      .funnel-step {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 16px;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .step-label {
+          color: rgba(0, 0, 0, 0.87);
+        }
+
+        .step-value, .step-percentage {
+          color: rgba(0, 0, 0, 0.6);
+        }
+      }
+    }
+
+    .chart-legend {
+      margin-top: 16px;
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+
+        .legend-color {
+          width: 12px;
+          height: 12px;
+          border-radius: 2px;
+
+          &.mobile {
+            background-color: #36A2EB;
+          }
+
+          &.desktop {
+            background-color: #2196F3;
+          }
+        }
+      }
+    }
+  }
+} 

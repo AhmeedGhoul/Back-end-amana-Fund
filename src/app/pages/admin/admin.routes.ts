@@ -5,6 +5,10 @@ import { RoleGuard } from '../authentication/guards/role.guard';
 import {ProfileComponent} from "./profile/profile.component";
 import {AgencyComponent} from "./agency/agency/agency.component";
 import {AgencyPageComponent} from "./agency/agency-page.component";
+import { AccountPageComponent } from './account-page/account-page.component';
+import { AccountDetailsComponent } from './account-page/account-details/account-details.component';
+import { AccountPaymentsComponent } from './account-page/account-payments/account-payments.component';
+import { AccountFullDetailsComponent } from './account-page/account-details/account-full-details/account-full-details.component';
 
 
 export const AdminRoutes: Routes = [
@@ -25,7 +29,19 @@ export const AdminRoutes: Routes = [
     component: ProfileComponent,
   },
   {
+    path: 'accounts/details/:rib',
+    component: AccountFullDetailsComponent
+  },
+  {
     path: 'agency',
     component: AgencyPageComponent,
+  },
+  {
+    path: 'account',
+    component: AccountPageComponent
+  },
+  {
+    path: 'payments',
+    component: AccountPaymentsComponent
   }
 ];
