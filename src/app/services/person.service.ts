@@ -9,22 +9,33 @@ import { Person } from '../pages/person/person.model';
 export class PersonService {
   private apiUrl = 'http://localhost:8088/api/v1/person';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  addPerson(person: Person): Observable<Person> {
-    return this.http.post<Person>(`${this.apiUrl}/add_personG`, person);
+  addPerson(person: Person): Observable<any> {
+    return this.http.post(`${this.apiUrl}/add_personG`, person);
   }
 
-  getPersonById(id: number): Observable<Person> {
-    return this.http.get<Person>(`${this.apiUrl}/${id}`);
+  addPersonWithFile(formData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/add-with-file`, formData, {
+      reportProgress: true,
+      observe: 'events'
+    });
   }
 
-  updatePerson(id: number, person: Person): Observable<Person> {
-    return this.http.put<Person>(`${this.apiUrl}/update_person/${id}`, person);
+  getPersonList(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/list`);
   }
 
-  deletePerson(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/remove_person/${id}`);
+  deletePerson(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/delete/${id}`);
+  }
+
+  updatePerson(person: Person): Observable<any> {
+    return this.http.put(`${this.apiUrl}/update`, person);
+  }
+
+  getPersonById(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/get/${id}`);
   }
 
   getPersonByCIN(cin: string): Observable<Person> {

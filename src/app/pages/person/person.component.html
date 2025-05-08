@@ -86,15 +86,20 @@
       </div>
 
       <!-- Documents -->
-      <div>
-        <mat-form-field appearance="outline">
-          <mat-label>Documents</mat-label>
-          <textarea matInput 
-                    formControlName="documents"
-                    rows="3"
-                    [class.is-invalid]="formControls['documents'].touched && formControls['documents'].invalid"></textarea>
-          <mat-error *ngIf="formControls['documents'].hasError('required')">Documents are required</mat-error>
-        </mat-form-field>
+      <div class="form-field-wrapper">
+        <div class="file-input-container">
+          <label class="file-label">PDF Document</label>
+          <input type="file" 
+                 (change)="onFileSelected($event)"
+                 accept=".pdf"
+                 class="file-input"
+                 [class.is-invalid]="formControls['documents'].touched && formControls['documents'].invalid">
+          <div class="file-error" *ngIf="formControls['documents'].hasError('required')">Please upload a PDF document</div>
+          <div class="file-error" *ngIf="formControls['documents'].touched && !formControls['documents'].hasError('required') && !isValidFileType">Please upload a PDF file only</div>
+        </div>
+        <div *ngIf="selectedFilePath" class="file-info">
+          Selected file: {{selectedFilePath}}
+        </div>
       </div>
 
       <!-- Police ID -->

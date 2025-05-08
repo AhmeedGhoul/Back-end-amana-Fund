@@ -9,6 +9,7 @@ export class Person {
   active: boolean;
   documents: string;
   policeId: number;
+  filePath?: string;
 
   constructor(
     idGarantie: number | null = null,

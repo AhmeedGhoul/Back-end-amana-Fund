@@ -124,6 +124,58 @@ mat-form-field {
   margin-bottom: 8px;
 }
 
+mat-file-info {
+  margin-top: 8px;
+  color: #666;
+  font-size: 14px;
+}
+
+.form-field-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+
+  .file-input-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+
+    .file-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.54);
+    }
+
+    .file-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 4px;
+      font-size: 14px;
+      background-color: white;
+      transition: border-color 0.2s ease;
+
+      &:focus {
+        border-color: #1976d2;
+        outline: none;
+      }
+
+      &.is-invalid {
+        border-color: #f44336;
+      }
+    }
+
+    .file-error {
+      color: #f44336;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+  }
+}
+
 mat-error {
   margin-top: 4px;
   font-size: 0.75rem;

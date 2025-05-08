@@ -41,8 +41,8 @@ export class PersonComponent implements OnInit {
   submitted = false;
   loading = false;
   policeList: any[] = [];
-  successMessage: string = '';
-  errorMessage: string = '';
+  selectedFilePath: string | null = null;
+  isValidFileType = true;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -88,8 +88,52 @@ export class PersonComponent implements OnInit {
     );
   }
 
+  onFileSelected(event: any): void {
+    const file: File = event.target.files[0];
+    if (file) {
+      // Check if file is PDF
+      if (file.type !== 'application/pdf') {
+        this.snackBar.open('Please select a PDF file only', 'Close', {
+          duration: 3000,
+          panelClass: ['mat-toolbar', 'mat-warn'],
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
+        this.isValidFileType = false;
+        return;
+      }
+
+      this.selectedFilePath = file.name;
+      this.personForm.patchValue({
+        documents: file.name,
+        filePath: file.name
+      });
+      this.isValidFileType = true;
+    }
+  }
+
   onSubmit(): void {
     if (this.personForm.invalid) {
+      return;
+    }
+
+    if (!this.selectedFilePath) {
+      this.snackBar.open('Please select a PDF file', 'Close', {
+        duration: 3000,
+        panelClass: ['mat-toolbar', 'mat-warn'],
+        horizontalPosition: 'center',
+        verticalPosition: 'top'
+      });
+      return;
+    }
+
+    if (!this.isValidFileType) {
+      this.snackBar.open('Please select a valid PDF file', 'Close', {
+        duration: 3000,
+        panelClass: ['mat-toolbar', 'mat-warn'],
+        horizontalPosition: 'center',
+        verticalPosition: 'top'
+      });
       return;
     }
 
@@ -104,14 +148,15 @@ export class PersonComponent implements OnInit {
       revenue: this.personForm.get('revenue')?.value,
       active: this.personForm.get('active')?.value,
       documents: this.personForm.get('documents')?.value,
-      policeId: this.personForm.get('police_id')?.value
+      policeId: this.personForm.get('police_id')?.value,
+      filePath: this.selectedFilePath
     };
 
     this.personService.addPerson(person).subscribe({
       next: (response) => {
         this.loading = false;
         this.resetForm();
-        this.snackBar.open('Person added successfully!', 'Close', {
+        this.snackBar.open('Person added successfully with document path!', 'Close', {
           duration: 3000,
           panelClass: ['mat-toolbar', 'mat-primary'],
           horizontalPosition: 'center',
@@ -134,7 +179,7 @@ export class PersonComponent implements OnInit {
     this.personForm.reset();
     this.submitted = false;
     this.loading = false;
-    this.successMessage = '';
-    this.errorMessage = '';
+    this.selectedFilePath = null;
+    this.isValidFileType = true;
   }
 }
