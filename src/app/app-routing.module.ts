@@ -43,6 +43,14 @@ const routes: Routes = [
             (m) => m.PersonModule
           ),
         canActivate: [AuthGuard]
+      },
+      {
+        path: 'object',
+        loadComponent: () =>
+          import('./pages/object/object.component').then(
+            (m) => m.ObjectComponent
+          ),
+        canActivate: [AuthGuard]
       }
     ],
   },

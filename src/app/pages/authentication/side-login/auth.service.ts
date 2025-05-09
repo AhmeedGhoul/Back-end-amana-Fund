@@ -7,7 +7,7 @@ import { AuthRequest, AuthResponse } from './auth.model';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = '/api/v1/auth/authenticate';
+  private apiUrl = 'http://localhost:8088/api/v1/auth/authenticate';
 
   constructor(private http: HttpClient) {}
 
@@ -20,11 +20,11 @@ export class AuthService {
   }
   forgotPassword(email: string): Observable<any> {
     const params = new HttpParams().set('email', email);  // Add email as a query parameter
-    return this.http.post('/api/v1/auth/forgot-password', null, { params });
+    return this.http.post('http://localhost:8088/api/v1/auth/forgot-password', null, { params });
   }
   resetPassword(token: string, newPassword: string): Observable<any> {
     console.log(token);  // Debugging log to check token value
-    return this.http.post('/api/v1/auth/reset-password', { token, newPassword });
+    return this.http.post('http://localhost:8088/api/v1/auth/reset-password', { token, newPassword });
   }
 
 

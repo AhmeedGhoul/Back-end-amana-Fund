@@ -46,6 +46,14 @@ export const routes: Routes = [
           ),
         canActivate: [AuthGuard],
       },
+      {
+        path: 'object',
+        loadComponent: () =>
+          import('./pages/object/object.component').then(
+            (m) => m.ObjectComponent
+          ),
+        canActivate: [AuthGuard]
+      },
 
     ],
   },
