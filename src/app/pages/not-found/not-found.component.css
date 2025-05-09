@@ -1,0 +1,117 @@
+.not-found-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.bg-gradient {
+  background: linear-gradient(135deg, #00bcd4, #8e44ad);
+}
+
+.card-with-shadow {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.boxed-auth {
+  background-color: #ffffff;
+  border-radius: 12px;
+}
+
+.mat-card-content {
+  padding: 32px;
+}
+
+.mat-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.f-s-16 {
+  font-size: 16px;
+}
+
+.f-s-24 {
+  font-size: 24px;
+}
+
+.f-w-600 {
+  font-weight: 600;
+}
+
+.m-b-12 {
+  margin-bottom: 12px;
+}
+
+.m-b-16 {
+  margin-bottom: 16px;
+}
+
+.m-t-30 {
+  margin-top: 30px;
+}
+
+.go-home-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  text-transform: uppercase;
+  font-weight: 600;
+  border-radius: 6px;
+  background-color: #4caf50;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.go-home-btn:hover {
+  background-color: #388e3c;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.go-home-btn:active {
+  background-color: #2c6f28;
+}
+
+.go-home-btn:disabled {
+  background-color: #b0bec5;
+}
+
+.mat-card-header {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
+
+img.align-middle {
+  width: 150px;
+  height: auto;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.w-100 {
+  width: 100%;
+}

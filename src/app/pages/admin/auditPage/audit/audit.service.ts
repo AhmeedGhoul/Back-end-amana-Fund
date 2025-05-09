@@ -83,4 +83,11 @@ return this.http.get<PagedResponse<Audit>>(`${this.apiUrl}/search`, { params, he
       { headers: this.getAuthHeaders(), params }
     );
   }
+    getTotalAudits(): Observable<number> {
+      return this.http.get<number>(`${this.apiUrl}/totalAudits`, { headers: this.getAuthHeaders() });
+    }
+
+    getAuditsWithFraudCases(): Observable<number> {
+      return this.http.get<number>(`${this.apiUrl}/auditsWithFraudCases`, { headers: this.getAuthHeaders() });
+    }
 }

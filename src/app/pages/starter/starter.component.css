@@ -1,0 +1,29 @@
+/* Overall Card Styles */
+.card {
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+}
+
+.card-header {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Chart Sizes */
+.apx-chart {
+  width: 100%;
+  height: 350px;
+}
+
+/* Mobile First Responsiveness */
+@media (max-width: 768px) {
+  .card {
+    margin-bottom: 20px;
+  }
+}

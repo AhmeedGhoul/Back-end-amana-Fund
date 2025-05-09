@@ -60,4 +60,11 @@ export class FraudCaseService {
       headers: this.getAuthHeaders()
     });
   }
+  getTotalFraudCases(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/totalFraudCases`, { headers: this.getAuthHeaders() });
+  }
+
+  getFraudCasesByType(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/fraudCasesByType`, { headers: this.getAuthHeaders() });
+  }
 }

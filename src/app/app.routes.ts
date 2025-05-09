@@ -22,6 +22,10 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./pages/authentication/authentication.routes').then((m) => m.AuthenticationRoutes),
       },
+      {
+        path: 'not-found',
+        component: NotFoundComponent,
+      },
     ],
   },
   {
@@ -50,10 +54,7 @@ export const routes: Routes = [
         component: ContractComponent,
         canActivate: [AuthGuard],
       },
-      {
-        path: 'not-found',
-        component: NotFoundComponent,
-      },
+
     ],
   }, {
     path: 'police',

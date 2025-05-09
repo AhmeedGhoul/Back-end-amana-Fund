@@ -1,1 +1,26 @@
-<p>not-found works!</p>
+<div class="not-found-container justify-content-center align-items-center bg-light">
+  <div class="position-relative row w-100 h-100 bg-gradient justify-content-center">
+    <div class="col-lg-4 d-flex align-items-center">
+      <mat-card class="card-with-shadow boxed-auth">
+        <mat-card-content class="p-32">
+          <div class="text-center">
+            <img src="./assets/images/Front/logo.png" class="align-middle m-2" alt="logo" />
+          </div>
+
+          <div class="m-t-30">
+            <h2 class="mat-title f-s-24 f-w-600 m-b-12">Page Not Found</h2>
+            <p class="f-s-16 text-center m-b-16">
+              Oops! The page you are looking for does not exist.
+            </p>
+
+            <div class="d-flex justify-content-center">
+              <button mat-flat-button color="primary" class="go-home-btn" (click)="goHome()">
+                Go Back to Home
+              </button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

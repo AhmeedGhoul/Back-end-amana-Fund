@@ -64,6 +64,7 @@ import { AuditDetailsComponent } from './pages/admin/auditPage/audit/audit-detai
 import { VisitorComponent } from './pages/visitor/visitor.component';
 import { SinistresComponent } from './sinistres/sinistres.component';
 import { ContractComponent, ConfirmationDialogComponent } from './contract/contract.component'; // Import ConfirmationDialogComponent
+import { NgApexchartsModule } from "ng-apexcharts";
 
 @NgModule({
   declarations: [
@@ -73,7 +74,8 @@ import { ContractComponent, ConfirmationDialogComponent } from './contract/contr
     ContractComponent,
     ConfirmationDialogComponent // Declare ConfirmationDialogComponent
   ],
-  imports: [  // Add these imports
+  imports: [
+    NgApexchartsModule,// Add these imports
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

@@ -1,16 +1,15 @@
 .profile-container {
-  width: 800px;
+  width: 850px;
   margin: auto;
   padding: 30px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
+  background-color: #f5f7fa;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .profile-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
   margin-bottom: 30px;
 }
@@ -20,7 +19,7 @@
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #ccc;
+  border: 3px solid #1976d2;
 }
 
 .profile-info {
@@ -29,26 +28,36 @@
 }
 
 h2 {
-  font-size: 32px;
+  font-size: 28px;
   color: #333;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
 button {
-  padding: 12px 20px;
+  padding: 12px 25px;
   font-size: 16px;
   cursor: pointer;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
 .edit-button {
   background-color: #4CAF50;
   color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .save-button {
   background-color: #2196F3;
   color: white;
+}
+
+.save-button:hover,
+.edit-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
 form {
@@ -70,7 +79,7 @@ input {
   padding: 12px;
   font-size: 16px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 8px;
 }
 
 input:focus {
@@ -84,14 +93,11 @@ input:focus {
   color: #555;
 }
 
-.profile-view strong {
-  color: #333;
-}
 .password-section {
   margin-top: 30px;
   padding: 20px;
   background-color: #f1f1f1;
-  border-radius: 8px;
+  border-radius: 12px;
 }
 
 .password-section .form-row {
@@ -110,4 +116,29 @@ button.cancel-button:hover {
 .password-section form {
   display: flex;
   flex-direction: column;
+}
+
+.m-t-24 {
+  margin-top: 24px;
+}
+
+.m-t-12 {
+  margin-top: 12px;
+}
+
+.m-l-auto {
+  margin-left: auto;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.save-button,
+.cancel-button {
+  margin-top: 16px;
+}
+
+.webcam-container {
+  margin: 16px 0;
 }

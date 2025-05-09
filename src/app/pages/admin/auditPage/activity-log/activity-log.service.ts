@@ -42,4 +42,7 @@ export class ActivityLogService {
       headers: this.getAuthHeaders()
     });
   }
+  getMostCommonActivity(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/mostCommonActivity`, { headers: this.getAuthHeaders() });
+  }
 }

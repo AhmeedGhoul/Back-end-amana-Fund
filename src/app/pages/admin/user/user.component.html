@@ -1,27 +1,23 @@
-<mat-card class="cardWithShadow">
+<mat-card class="card-with-shadow">
   <mat-card-content class="p-24">
-    <!-- Header and Add User Button -->
+    <!-- Header Section with Title and Add User Button -->
     <div class="d-flex w-100 align-center mb-24">
-      <mat-card-title>User Management</mat-card-title>
+      <mat-card-title class="title">User Management</mat-card-title>
       <div class="m-l-auto">
-        <button mat-flat-button color="primary" (click)="openAddUserDialog()">
+        <button mat-raised-button color="primary" (click)="openAddUserDialog()" class="add-user-btn">
           <mat-icon>person_add</mat-icon> Add User
         </button>
-
       </div>
     </div>
 
-    <!-- Search and Filters Section -->
+    <!-- Search and Filter Section -->
     <div class="search-filters mb-24">
-      <!-- Search Bar -->
       <mat-form-field appearance="fill" class="full-width mb-16">
         <mat-label>Search</mat-label>
         <input matInput [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()" placeholder="Search by name, email, etc.">
       </mat-form-field>
 
-      <!-- Filters Row -->
       <div class="d-flex gap-16">
-        <!-- Enabled Filter -->
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Enabled</mat-label>
           <mat-select [(value)]="enabledFilter" (selectionChange)="applyFilters()">
@@ -31,7 +27,6 @@
           </mat-select>
         </mat-form-field>
 
-        <!-- Age Filter -->
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Age</mat-label>
           <input matInput type="number" [(ngModel)]="ageFilter" (ngModelChange)="applyFilters()" placeholder="Filter by age">
@@ -40,13 +35,13 @@
 
       <!-- Report Generation Button -->
       <div class="mt-16">
-        <button mat-flat-button color="accent" (click)="generateReport()">
+        <button mat-raised-button color="accent" (click)="generateReport()" class="generate-report-btn">
           <mat-icon>download</mat-icon> Generate Report
         </button>
       </div>
     </div>
 
-    <!-- User Table -->
+    <!-- User Table Section -->
     <div class="table-container mb-24">
       <table mat-table [dataSource]="users" class="mat-elevation-z8 full-width-table">
         <ng-container matColumnDef="name">
@@ -98,44 +93,3 @@
     </div>
   </mat-card-content>
 </mat-card>
-
-<style scoped>
-  .full-width {
-    width: 100%;
-  }
-
-  .mb-16 {
-    margin-bottom: 16px;
-  }
-
-  .mb-24 {
-    margin-bottom: 24px;
-  }
-
-  .d-flex {
-    display: flex;
-  }
-
-  .gap-16 {
-    gap: 16px;
-  }
-
-  .centered {
-    text-align: center;
-  }
-
-  .page-info {
-    font-size: 14px;
-  }
-
-  .pagination-controls {
-    margin-top: 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .mat-card-content {
-    padding: 24px;
-  }
-</style>

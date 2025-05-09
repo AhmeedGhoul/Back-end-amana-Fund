@@ -1,0 +1,112 @@
+/* Card Styling */
+.card-with-shadow {
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin: 16px auto;
+  width: 100%;
+  max-width: 1200px;
+  transition: box-shadow 0.3s ease;
+}
+
+.card-with-shadow:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Header and Add User Button */
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+}
+
+.add-user-btn {
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  background-color: #1976d2;
+  color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.add-user-btn:hover {
+  background-color: #1565c0;
+  transform: translateY(-2px);
+}
+
+/* Search and Filters */
+.search-filters {
+  margin-bottom: 24px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.mb-16 {
+  margin-bottom: 16px;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.gap-16 {
+  gap: 16px;
+}
+
+.generate-report-btn {
+  font-size: 14px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  background-color: #42a5f5;
+  color: white;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.generate-report-btn:hover {
+  background-color: #1e88e5;
+  transform: translateY(-2px);
+}
+
+/* Table Styling */
+.table-container {
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+
+.mat-header-cell {
+  background-color: #1976d2;
+  color: white;
+  font-weight: 600;
+  padding: 12px;
+}
+
+.mat-cell {
+  padding: 12px;
+  color: #333;
+}
+
+.centered {
+  text-align: center;
+}
+
+.pagination-controls {
+  margin-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-info {
+  font-size: 14px;
+}

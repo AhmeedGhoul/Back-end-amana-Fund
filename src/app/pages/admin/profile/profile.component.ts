@@ -33,7 +33,6 @@ export class ProfileComponent implements OnInit {
   oldPassword: string = '';
   newPassword: string = '';
   confirmPassword: string = '';
-  isEditing: boolean = false;
   isPasswordEditing: boolean = false;
 
   // Face recognition
@@ -71,9 +70,6 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  enableEditing(): void {
-    this.isEditing = true;
-  }
 
   onSubmit(): void {
     if (this.editForm.valid && this.user) {
@@ -84,7 +80,6 @@ export class ProfileComponent implements OnInit {
       this.userService.editUser(updatedUser).subscribe({
         next: () => {
           alert('Profile updated successfully!');
-          this.isEditing = false;
           this.user = updatedUser;
         },
         error: err => {

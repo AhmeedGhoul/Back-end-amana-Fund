@@ -21,6 +21,8 @@ import { MatTableModule } from '@angular/material/table';
   selector: 'app-user',
   standalone: true,
   templateUrl: './user.component.html',
+  styleUrls: ['./user.component.css'],
+
   imports: [
     CommonModule,
     FormsModule,

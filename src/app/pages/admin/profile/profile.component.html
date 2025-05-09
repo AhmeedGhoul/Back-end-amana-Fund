@@ -1,13 +1,10 @@
 <div class="profile-container">
   <div class="profile-header">
     <div class="profile-image">
-      <img src="https://via.placeholder.com/150" alt="Profile Image" />
+      <img src="/assets/images/profile/user-1.jpg" alt="Profile Image" />
     </div>
     <div class="profile-info">
       <h2>My Profile</h2>
-      <button *ngIf="!isEditing" (click)="enableEditing()" class="edit-button">
-        Edit
-      </button>
     </div>
   </div>
 
@@ -64,7 +61,7 @@
             <mat-label>Civil Status</mat-label>
             <mat-select formControlName="civilStatus">
               <mat-option value="Single">Single</mat-option>
-              <mat-option value="Maried">Maried</mat-option>
+              <mat-option value="Married">Married</mat-option>
               <mat-option value="Widow">Widow</mat-option>
             </mat-select>
           </mat-form-field>
@@ -93,7 +90,7 @@
       <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="editForm.invalid">
         <mat-icon>save</mat-icon>&nbsp; Save Changes
       </button>
-      <button mat-stroked-button color="warn" (click)="isEditing = false">Cancel</button>
+      <button mat-stroked-button color="warn">Cancel</button>
     </mat-card-actions>
   </mat-card>
 
