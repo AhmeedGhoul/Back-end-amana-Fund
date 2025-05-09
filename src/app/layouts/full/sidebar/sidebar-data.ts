@@ -45,7 +45,7 @@ export const navItems: NavItem[] = [
       {
         displayName: 'Person',
         iconName: 'user',
-        route: '/person/add'
+        route: '/person/list'
       },
       {
         displayName: 'Object',
