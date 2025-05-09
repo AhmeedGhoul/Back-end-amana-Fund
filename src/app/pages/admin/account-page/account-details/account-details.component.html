@@ -53,101 +53,18 @@
       </div>
     </div>
 
-    <div class="table-container">
-      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
-        <!-- RIB Column -->
-        <ng-container matColumnDef="rib">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            <div class="column-header">
-              <mat-icon>credit_card</mat-icon>
-              RIB
-            </div>
-          </th>
-          <td mat-cell *matCellDef="let element">
-            <div class="cell-content">
-              {{element.rib}}
-            </div>
-          </td>
-        </ng-container>
-
-        <!-- Account Type Column -->
-        <ng-container matColumnDef="accountType">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> 
-            <div class="column-header">
-              <mat-icon>account_balance</mat-icon>
-              Type
-            </div>
-          </th>
-          <td mat-cell *matCellDef="let element"> 
-            <div class="cell-content">
-              <span class="account-type" [ngClass]="element.accountType.toLowerCase()">
-                {{element.displayAccountType || element.accountType}}
-              </span>
-            </div>
-          </td>
-        </ng-container>
-
-        <!-- Amount Column -->
-        <ng-container matColumnDef="amount">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            <div class="column-header">
-              <mat-icon>attach_money</mat-icon>
-              Amount
-            </div>
-          </th>
-          <td mat-cell *matCellDef="let element">
-            <div class="cell-content amount">
-              {{element.amount | currency:'TND'}}
-            </div>
-          </td>
-        </ng-container>
-
-        <!-- Actions Column -->
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>
-            <div class="column-header">
-              <mat-icon>settings</mat-icon>
-              Actions
-            </div>
-          </th>
-          <td mat-cell *matCellDef="let element">
-            <div class="cell-content actions">
-              <button mat-icon-button (click)="openAccountDetails(element)">
-                <mat-icon>visibility</mat-icon>
-              </button>
-            </div>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
-
-      <!-- Empty State View -->
-      <div *ngIf="dataSource.data.length === 0" class="empty-state">
-        <div class="empty-state-container">
-          <div class="empty-state-content">
-            <div class="empty-state-icon">
-              <mat-icon class="error-icon">{{ ribError ? 'error_outline' : 'info_outline' }}</mat-icon>
-            </div>
-            <h2 class="empty-state-title">{{ ribError ? 'Invalid RIB' : 'No Accounts Found' }}</h2>
-            <p class="empty-state-description">
-              {{ ribError 
-                 ? 'The RIB you entered does not exist or is incorrect. Please verify the RIB and try again.' 
-                 : 'There are currently no accounts to display in this view.' 
-              }}
-            </p>
-            <div class="empty-state-actions">
-              <button mat-stroked-button color="primary" (click)="resetSearch()">
-                <mat-icon>refresh</mat-icon>
-                Reset Search
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
+    <app-accounts-table
+      [dataSource]="dataSource"
+      [displayedColumns]="displayedColumns"
+      [ribError]="ribError"
+      [ribErrorMessage]="ribErrorMessage"
+      [totalElements]="totalElements"
+      [pageSizeOptions]="pageSizeOptions"
+      [paginator]="paginator"
+      [sort]="sort"
+      (openAccountDetails)="openAccountDetails($event)"
+      (resetSearch)="resetSearch()"
+    ></app-accounts-table>
 
     <mat-paginator
       [pageSizeOptions]="pageSizeOptions"

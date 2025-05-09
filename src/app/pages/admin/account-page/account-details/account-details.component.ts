@@ -23,6 +23,7 @@ import { AccountActionsComponent } from './account-actions/account-actions.compo
 import { AccountService } from '../../../../services/account.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ThreeDCardComponent } from '@app/components/three-dcard/three-dcard.component';
+import { AccountsTableComponent } from '@app/components/accounts-table/accounts-table.component';
 
 @Component({
   selector: 'app-account-details',
@@ -46,7 +47,8 @@ import { ThreeDCardComponent } from '@app/components/three-dcard/three-dcard.com
     RouterModule,
     RouterLink,
     AccountActionsComponent,
-    ThreeDCardComponent
+    ThreeDCardComponent,
+    AccountsTableComponent
   ],
   templateUrl: './account-details.component.html',
   styleUrls: ['./account-details.component.scss']

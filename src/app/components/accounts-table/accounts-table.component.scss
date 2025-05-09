@@ -1,0 +1,155 @@
+.table-container {
+    padding: 0 24px 24px;
+    overflow-x: auto;
+
+    table {
+        width: 100%;
+        border-radius: 8px;
+        overflow: hidden;
+
+        .column-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1a237e;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 16px 0;
+
+            mat-icon {
+                font-size: 18px;
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        .cell-content {
+            padding: 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            &.amount {
+                font-weight: 600;
+                color: #1a237e;
+            }
+
+            .account-type {
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+
+                &.epargne {
+                    background-color: #e3f2fd;
+                    color: #0d47a1;
+                }
+
+                &.epargne_zeket {
+                    background-color: #e8f5e9;
+                    color: #1b5e20;
+                }
+            }
+
+            .interest-rate {
+                font-weight: 600;
+
+                &.high-rate {
+                    color: #2e7d32;
+                }
+            }
+
+            &.actions {
+                gap: 8px;
+
+                button {
+                    transition: all 0.2s ease;
+
+                    &:hover {
+                        transform: scale(1.1);
+                    }
+                }
+            }
+        }
+    }
+
+    .mat-row {
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &:hover {
+            background-color: #f5f7fa;
+        }
+
+        &.selected {
+            background-color: #e3f2fd;
+        }
+    }
+
+    .mat-header-row {
+        background-color: #f8f9fa;
+    }
+}
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 2rem;
+  background-color: rgba(240, 240, 240, 0.5);
+  border-radius: 8px;
+
+  .empty-state-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 500px;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    .empty-state-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+      color: #bdbdbd;
+      &.error-icon {
+        color: #f44336;
+      }
+      &.info-icon {
+        color: #2196F3;
+      }
+    }
+
+    .empty-state-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .empty-state-description {
+      font-size: 16px;
+      color: #7f8c8d;
+      margin-bottom: 16px;
+    }
+
+    .empty-state-actions {
+      margin-top: 16px;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      button {
+        text-transform: none;
+        padding: 0.75rem 1.5rem;
+      }
+    }
+  }
+}
