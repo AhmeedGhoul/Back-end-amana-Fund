@@ -1,0 +1,21 @@
+<mat-card class="promotion-card">
+  <div class="d-flex align-center justify-between mat-card-header">
+    <span class="font-bold">Promote {{ data.user.email }}</span>
+    <button mat-icon-button (click)="closeDialog()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-form-field appearance="outline" class="full-width mat-form-field">
+    <mat-label>Select Role</mat-label>
+    <mat-select [(value)]="selectedRole">
+      <!-- Change the role values to user-friendly names -->
+      <mat-option *ngFor="let role of roles" [value]="role">{{ role }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div class="d-flex justify-end mat-action-buttons">
+    <button mat-flat-button color="primary" (click)="changeUserRole('promote')">Promote</button>
+    <button mat-flat-button color="warn" class="m-l-8" (click)="changeUserRole('demote')">Demote</button>
+  </div>
+</mat-card>

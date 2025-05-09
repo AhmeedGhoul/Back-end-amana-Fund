@@ -1,0 +1,100 @@
+<mat-card class="cardWithShadow">
+  <mat-card-content class="p-24">
+
+    <!-- Header + Report Button -->
+    <div class="d-flex w-100 align-center mb-24">
+      <mat-card-title>Activity Log Management</mat-card-title>
+      <div class="m-l-auto">
+        <button mat-flat-button color="accent" (click)="generateReport()">
+          <mat-icon>download</mat-icon> Export Report
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter Toolbar -->
+    <div class="filter-bar d-flex gap-16 mb-24 flex-wrap">
+      <mat-form-field appearance="outline" class="flex-grow-1">
+        <mat-label>Activity Name</mat-label>
+        <input matInput [(ngModel)]="filters.activityName" (ngModelChange)="applyFilters()" placeholder="Search name..." />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="flex-grow-1">
+        <mat-label>Description</mat-label>
+        <input matInput [(ngModel)]="filters.activityDescription" (ngModelChange)="applyFilters()" placeholder="Search description..." />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Start Date</mat-label>
+        <input matInput [matDatepicker]="pickerStart" [(ngModel)]="filters.startDate" (dateChange)="applyFilters()" />
+        <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
+        <mat-datepicker #pickerStart></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>End Date</mat-label>
+        <input matInput [matDatepicker]="pickerEnd" [(ngModel)]="filters.endDate" (dateChange)="applyFilters()" />
+        <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+        <mat-datepicker #pickerEnd></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <!-- Logs Table -->
+    <div class="table-container mb-24">
+      <!-- Table with selection -->
+      <table mat-table [dataSource]="activityLogs" class="mat-elevation-z8 full-width-table" matSort>
+
+        <!-- Selection Checkbox Column -->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="masterToggle()" [checked]="isAllSelected()" [indeterminate]="someSelected()">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let log">
+            <mat-checkbox (click)="$event.stopPropagation()" (change)="toggleSelection(log)" [checked]="isSelected(log)">
+            </mat-checkbox>
+          </td>
+        </ng-container>
+
+        <!-- Normal columns -->
+        <ng-container matColumnDef="activityName">
+          <th mat-header-cell *matHeaderCellDef> Name </th>
+          <td mat-cell *matCellDef="let log"> {{ log.activityName }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="activityDescription">
+          <th mat-header-cell *matHeaderCellDef> Description </th>
+          <td mat-cell *matCellDef="let log"> {{ log.activityDescription }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="activityDate">
+          <th mat-header-cell *matHeaderCellDef> Date </th>
+          <td mat-cell *matCellDef="let log"> {{ log.activityDate | date:'medium' }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="user">
+          <th mat-header-cell *matHeaderCellDef> User </th>
+          <td mat-cell *matCellDef="let log"> {{ log.user?.name || 'N/A' }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="audit">
+          <th mat-header-cell *matHeaderCellDef> Audit Output </th>
+          <td mat-cell *matCellDef="let log"> {{ log.audit?.output || 'N/A' }} </td>
+        </ng-container>
+
+        <!-- Header + Rows -->
+        <tr mat-header-row *matHeaderRowDef="['select', 'activityName', 'activityDescription', 'activityDate', 'user', 'audit']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['select', 'activityName', 'activityDescription', 'activityDate', 'user', 'audit'];"></tr>
+
+      </table>
+
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-controls d-flex justify-between align-center">
+      <button mat-stroked-button (click)="pageChanged(currentPage - 1)" [disabled]="currentPage === 0">Previous</button>
+      <span class="page-info">Page {{ currentPage + 1 }}</span>
+      <button mat-stroked-button (click)="pageChanged(currentPage + 1)" [disabled]="(currentPage + 1) * pageSize >= totalLogs">Next</button>
+    </div>
+
+  </mat-card-content>
+</mat-card>

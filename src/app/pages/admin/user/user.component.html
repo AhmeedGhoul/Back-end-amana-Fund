@@ -1,0 +1,141 @@
+<mat-card class="cardWithShadow">
+  <mat-card-content class="p-24">
+    <!-- Header and Add User Button -->
+    <div class="d-flex w-100 align-center mb-24">
+      <mat-card-title>User Management</mat-card-title>
+      <div class="m-l-auto">
+        <button mat-flat-button color="primary" (click)="openAddUserDialog()">
+          <mat-icon>person_add</mat-icon> Add User
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Search and Filters Section -->
+    <div class="search-filters mb-24">
+      <!-- Search Bar -->
+      <mat-form-field appearance="fill" class="full-width mb-16">
+        <mat-label>Search</mat-label>
+        <input matInput [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()" placeholder="Search by name, email, etc.">
+      </mat-form-field>
+
+      <!-- Filters Row -->
+      <div class="d-flex gap-16">
+        <!-- Enabled Filter -->
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Enabled</mat-label>
+          <mat-select [(value)]="enabledFilter" (selectionChange)="applyFilters()">
+            <mat-option [value]="null">All</mat-option>
+            <mat-option [value]="true">Enabled</mat-option>
+            <mat-option [value]="false">Disabled</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Age Filter -->
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Age</mat-label>
+          <input matInput type="number" [(ngModel)]="ageFilter" (ngModelChange)="applyFilters()" placeholder="Filter by age">
+        </mat-form-field>
+      </div>
+
+      <!-- Report Generation Button -->
+      <div class="mt-16">
+        <button mat-flat-button color="accent" (click)="generateReport()">
+          <mat-icon>download</mat-icon> Generate Report
+        </button>
+      </div>
+    </div>
+
+    <!-- User Table -->
+    <div class="table-container mb-24">
+      <table mat-table [dataSource]="users" class="mat-elevation-z8 full-width-table">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef> Name </th>
+          <td mat-cell *matCellDef="let user"> {{ user.firstName }} {{ user.lastName }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef> Email </th>
+          <td mat-cell *matCellDef="let user"> {{ user.email }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="phone">
+          <th mat-header-cell *matHeaderCellDef> Phone </th>
+          <td mat-cell *matCellDef="let user"> {{ user.phoneNumber }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="centered"> Actions </th>
+          <td mat-cell *matCellDef="let user" class="centered">
+            <button mat-icon-button color="primary" (click)="editUser(user)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteUser(user)">
+              <mat-icon>delete</mat-icon>
+            </button>
+            <button mat-icon-button color="accent" (click)="openPromotionPanel(user)">
+              <mat-icon>arrow_upward</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-controls d-flex justify-between align-center">
+      <button mat-stroked-button (click)="pageChanged(currentPage - 1)" [disabled]="currentPage === 0">
+        Previous
+      </button>
+
+      <span class="page-info">Page {{ currentPage + 1 }}</span>
+
+      <button mat-stroked-button (click)="pageChanged(currentPage + 1)" [disabled]="(currentPage + 1) * pageSize >= totalUsers">
+        Next
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<style scoped>
+  .full-width {
+    width: 100%;
+  }
+
+  .mb-16 {
+    margin-bottom: 16px;
+  }
+
+  .mb-24 {
+    margin-bottom: 24px;
+  }
+
+  .d-flex {
+    display: flex;
+  }
+
+  .gap-16 {
+    gap: 16px;
+  }
+
+  .centered {
+    text-align: center;
+  }
+
+  .page-info {
+    font-size: 14px;
+  }
+
+  .pagination-controls {
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .mat-card-content {
+    padding: 24px;
+  }
+</style>

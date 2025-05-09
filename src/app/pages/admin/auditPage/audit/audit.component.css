@@ -1,0 +1,17 @@
+.filter-bar {
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.menu-panel {
+  width: 280px;
+  padding: 16px;
+}
+
+.tab-buttons button {
+  flex: 1;
+}

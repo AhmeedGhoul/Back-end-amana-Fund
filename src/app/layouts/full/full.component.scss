@@ -1,0 +1,39 @@
+.mainWrapper {
+  height: 100vh;
+  
+  .sidebarNav {
+    width: 240px;
+    background-color: #ffffff;
+    box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+    
+    .sidebar-list {
+      padding: 0;
+      margin: 0;
+      
+      .nav-item {
+        padding: 8px 16px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        
+        &:hover {
+          background-color: #f5f5f5;
+        }
+      }
+    }
+  }
+
+  .contentWrapper {
+    padding: 20px;
+    background-color: #f4f5fa;
+    
+    .header {
+      margin-bottom: 20px;
+      
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+  }
+}

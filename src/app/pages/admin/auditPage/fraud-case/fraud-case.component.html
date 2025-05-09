@@ -1,0 +1,100 @@
+<mat-card class="cardWithShadow">
+  <mat-card-content class="p-24">
+
+    <!-- Header -->
+    <div class="d-flex w-100 align-center mb-24">
+      <mat-card-title>Fraud Case Management</mat-card-title>
+      <div class="m-l-auto">
+        <button mat-flat-button color="primary" (click)="openAddFraudCaseDialog()">
+          <mat-icon>add</mat-icon> Add Fraud Case
+        </button>
+        <button mat-flat-button color="accent" (click)="generateReport()">
+          <mat-icon>download</mat-icon> Report
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter Toolbar -->
+    <div class="filter-bar d-flex gap-16 mb-24 flex-wrap">
+      <mat-form-field appearance="outline" class="flex-grow-1">
+        <mat-label>Case Type</mat-label>
+        <input matInput [(ngModel)]="filters.caseType" (ngModelChange)="applyFilters()" placeholder="Search type...">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="flex-grow-1">
+        <mat-label>Status</mat-label>
+        <input matInput [(ngModel)]="filters.caseStatus" (ngModelChange)="applyFilters()" placeholder="Search status...">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Start Date</mat-label>
+        <input matInput [matDatepicker]="startPicker" [(ngModel)]="filters.startDate" (dateChange)="applyFilters()">
+        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>End Date</mat-label>
+        <input matInput [matDatepicker]="endPicker" [(ngModel)]="filters.endDate" (dateChange)="applyFilters()">
+        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <!-- Fraud Case Table -->
+    <div class="table-container mb-24">
+      <table mat-table [dataSource]="fraudCases" class="mat-elevation-z8 full-width-table">
+
+        <ng-container matColumnDef="caseType">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let fraud">{{ fraud.caseType }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="detectionDateTime">
+          <th mat-header-cell *matHeaderCellDef>Detection Date</th>
+          <td mat-cell *matCellDef="let fraud">{{ fraud.detectionDateTime | date:'medium' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="caseStatus">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let fraud">{{ fraud.caseStatus }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="centered">Actions</th>
+          <td mat-cell *matCellDef="let fraud" class="centered">
+            <button mat-icon-button color="primary" (click)="editFraudCase(fraud)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteFraudCase(fraud)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['caseType', 'detectionDateTime', 'caseStatus', 'actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['caseType', 'detectionDateTime', 'caseStatus', 'actions'];"></tr>
+
+      </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-controls d-flex justify-between align-center">
+      <button mat-stroked-button (click)="pageChanged(currentPage - 1)" [disabled]="currentPage === 0">Previous</button>
+      <span class="page-info">Page {{ currentPage + 1 }}</span>
+      <button mat-stroked-button (click)="pageChanged(currentPage + 1)" [disabled]="(currentPage + 1) * pageSize >= totalCases">Next</button>
+    </div>
+
+  </mat-card-content>
+</mat-card>
+
+<style scoped>
+  .d-flex { display: flex; }
+  .gap-16 { gap: 16px; }
+  .mb-24 { margin-bottom: 24px; }
+  .p-24 { padding: 24px; }
+  .flex-wrap { flex-wrap: wrap; }
+  .justify-between { justify-content: space-between; }
+  .full-width-table { width: 100%; }
+  .centered { text-align: center; }
+</style>

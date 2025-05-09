@@ -1,0 +1,427 @@
+<mat-card class="cardWithShadow">
+  <mat-card-content class="p-24">
+    <!-- Header + Buttons -->
+    <div class="d-flex w-100 align-center mb-24">
+      <mat-card-title>Contract Management</mat-card-title>
+      <div class="m-l-auto">
+        <button mat-flat-button color="primary" (click)="createContract()">
+          <mat-icon>add</mat-icon> Add Contract
+        </button>
+        <button mat-flat-button color="accent" (click)="displayContracts()">
+          <mat-icon>visibility</mat-icon> {{showForm ? 'Hide Form' : 'Show Form'}}
+        </button>
+      </div>
+    </div>
+
+  <!-- New Contract Form with Modern Design -->
+  <div class="form-container animate__animated animate__fadeIn" *ngIf="showForm">
+    <div class="form-card">
+      <h2 class="form-title">Create New Contract</h2>
+      <form class="modern-form">
+        <div class="form-grid">
+          <!-- Left Column -->
+          <div class="form-column">
+            <div class="form-field">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Contract Date</mat-label>
+                <mat-icon matPrefix class="form-icon">event</mat-icon>
+                <input matInput [matDatepicker]="contractDatePicker" [(ngModel)]="newContract.date_Contract" name="date_Contract" />
+                <mat-datepicker-toggle matSuffix [for]="contractDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #contractDatePicker></mat-datepicker>
+              </mat-form-field>
+            </div>
+
+            <div class="form-field">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Amount</mat-label>
+                <mat-icon matPrefix class="form-icon">attach_money</mat-icon>
+                <input matInput type="number" [(ngModel)]="newContract.amount" name="amount" />
+              </mat-form-field>
+            </div>
+
+            <div class="form-field">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Queue Number</mat-label>
+                <mat-icon matPrefix class="form-icon">format_list_numbered</mat-icon>
+                <input matInput type="number" [(ngModel)]="newContract.queue_Number" name="queue_Number" />
+              </mat-form-field>
+            </div>
+
+            <div class="form-field">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Credit Pool</mat-label>
+                <mat-icon matPrefix class="form-icon">account_balance</mat-icon>
+                <mat-select [(ngModel)]="newContract.id_credit_pool" name="id_credit_pool" required>
+                  <mat-option *ngIf="loadingCreditPools" value="">
+                    <mat-spinner diameter="20"></mat-spinner> Loading credit pools...
+                  </mat-option>
+                  <mat-option *ngFor="let pool of creditPools" [value]="pool.id_credit_pool">
+                    <span *ngIf="pool.message">{{pool.message}}</span>
+                    <span *ngIf="!pool.message" class="select-option">
+                      <strong>Pool ID:</strong> {{pool.id_credit_pool}} - <strong>Sum:</strong> {{pool.pool_sum | currency}}
+                    </span>
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="form-column">
+            <div class="form-field">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Documents</mat-label>
+                <mat-icon matPrefix class="form-icon">description</mat-icon>
+                <input matInput [(ngModel)]="newContract.documents" name="documents" placeholder="Enter document name or URL" />
+              </mat-form-field>
+            </div>
+
+            <div class="form-field">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>User</mat-label>
+                <mat-icon matPrefix class="form-icon">person</mat-icon>
+                <mat-select [(ngModel)]="newContract.userId" name="userId" required>
+                  <mat-option *ngIf="loadingUsers" value="">
+                    <mat-spinner diameter="20"></mat-spinner> Loading users...
+                  </mat-option>
+                  <mat-option *ngFor="let user of users" [value]="user.id">
+                    <span *ngIf="user.firstName === 'Error' && user.lastName === 'Loading Users'" class="error-text">
+                      User service is currently unavailable. Please contact your administrator.
+                    </span>
+                    <span *ngIf="!(user.firstName === 'Error' && user.lastName === 'Loading Users')" class="select-option">
+                      {{user.firstName}} {{user.lastName}}
+                    </span>
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="form-field">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Payed</mat-label>
+                <mat-icon matPrefix class="form-icon">payments</mat-icon>
+                <input matInput type="number" [(ngModel)]="newContract.payed" name="payed" />
+              </mat-form-field>
+            </div>
+
+            <div class="form-field">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Withdrawal Date</mat-label>
+                <mat-icon matPrefix class="form-icon">date_range</mat-icon>
+                <input matInput [matDatepicker]="withdrawalPicker" [(ngModel)]="newContract.withdrawal_date" name="withdrawal_date" />
+                <mat-datepicker-toggle matSuffix [for]="withdrawalPicker"></mat-datepicker-toggle>
+                <mat-datepicker #withdrawalPicker></mat-datepicker>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button mat-flat-button class="submit-button" (click)="createContract()">
+            <mat-icon>save</mat-icon> Save Contract
+          </button>
+          <button mat-button class="cancel-button" (click)="showForm = false">
+            <mat-icon>cancel</mat-icon> Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+    <!-- Instagram-style Story Cards -->
+    <div *ngIf="contracts.length > 0; else noContracts" class="instagram-story-container mb-24">
+      <!-- Story Navigation -->
+      <div class="story-navigation">
+        <button mat-icon-button class="nav-button prev-button" [disabled]="true">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        
+        <!-- Story Circles -->
+        <div class="story-circles-container">
+          <div *ngFor="let contract of contracts; let i = index" 
+               class="story-circle" 
+               [ngClass]="{'active-story': selectedContract && selectedContract.id_Contract === contract.id_Contract}">
+            <div class="circle-content" (click)="selectContract(contract)">
+              <span class="circle-id">{{contract.id_Contract}}</span>
+            </div>
+          </div>
+        </div>
+        
+        <button mat-icon-button class="nav-button next-button" [disabled]="true">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+      
+      <!-- Paper Contract Display -->
+      <div class="paper-contract-container">
+        <div *ngIf="selectedContract" class="paper-contract">
+          <!-- Contract Header with Stamp -->
+          <div class="contract-header">
+            <div class="contract-title-area">
+              <div class="contract-stamp">
+                <div class="stamp-content">OFFICIAL</div>
+              </div>
+              <h2 class="contract-title">CONTRACT AGREEMENT</h2>
+              <div class="contract-id">No. {{selectedContract.id_Contract}}</div>
+            </div>
+          </div>
+          
+          <!-- Contract Content -->
+          <div class="contract-content">
+            <!-- Parties Section -->
+            <div class="contract-section">
+              <h3 class="section-title">PARTIES</h3>
+              <div class="section-content">
+                <p><strong>User ID:</strong> {{selectedContract.userId}}</p>
+                <p><strong>Credit Pool ID:</strong> {{selectedContract.id_credit_pool}}</p>
+              </div>
+            </div>
+            
+            <!-- Financial Details Section -->
+            <div class="contract-section">
+              <h3 class="section-title">FINANCIAL DETAILS</h3>
+              <div class="section-content two-columns">
+                <div class="detail-item">
+                  <span class="detail-label">Contract Amount:</span>
+                  <span class="detail-value">{{selectedContract.amount | currency:'USD'}}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Amount Paid:</span>
+                  <span class="detail-value">{{selectedContract.payed | currency:'USD'}}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Queue Number:</span>
+                  <span class="detail-value">{{selectedContract.queue_Number !== null && selectedContract.queue_Number !== undefined ? selectedContract.queue_Number : 'N/A'}}</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Dates Section -->
+            <div class="contract-section">
+              <h3 class="section-title">IMPORTANT DATES</h3>
+              <div class="section-content two-columns">
+                <div class="detail-item">
+                  <span class="detail-label">Contract Date:</span>
+                  <span class="detail-value">{{selectedContract.date_Contract | date:'longDate'}}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Withdrawal Date:</span>
+                  <span class="detail-value">{{selectedContract.withdrawal_date ? (selectedContract.withdrawal_date | date:'longDate') : 'Not Specified'}}</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Documents Section -->
+            <div class="contract-section">
+              <h3 class="section-title">DOCUMENTS</h3>
+              <div class="section-content">
+                <p>{{selectedContract.documents || 'No documents attached to this contract.'}}</p>
+              </div>
+            </div>
+            
+            <!-- Signature Section -->
+            <div class="contract-section signature-section">
+              <div class="signature-line">
+                <span class="signature-label">Authorized Signature</span>
+              </div>
+              <div class="signature-line">
+                <span class="signature-label">Date</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Contract Actions -->
+          <div class="contract-actions">
+            <button class="elegant-button edit-button" (click)="selectContract(selectedContract)" matTooltip="Edit Contract">
+              <mat-icon>edit</mat-icon>
+              <span>Edit</span>
+            </button>
+            <button class="elegant-button delete-button" (click)="deleteContract(selectedContract.id_Contract)" matTooltip="Delete Contract">
+              <mat-icon>delete</mat-icon>
+              <span>Delete</span>
+            </button>
+            <button class="elegant-button pdf-button" (click)="generatePdf(selectedContract)" matTooltip="Generate PDF" [disabled]="generatingPdf">
+              <mat-icon *ngIf="!generatingPdf">picture_as_pdf</mat-icon>
+              <mat-spinner *ngIf="generatingPdf" diameter="20"></mat-spinner>
+              <span *ngIf="!generatingPdf">Download PDF</span>
+            </button>
+            <button class="elegant-button refactor-button" (click)="openRefactorSidebar(selectedContract)" matTooltip="Refactor Payment Schedule">
+              <mat-icon>update</mat-icon>
+              <span>Refactor</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- No Contract Selected State -->
+        <div *ngIf="!selectedContract" class="no-contract-selected">
+          <div class="empty-contract-icon">
+            <mat-icon>description</mat-icon>
+          </div>
+          <h3>Select a contract to view</h3>
+          <p>Click on one of the contract IDs above to view the full contract details</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <ng-template #noContracts>
+      <div class="centered">
+        <mat-icon style="font-size: 48px; height: 48px; width: 48px; margin-bottom: 16px; color: #3f51b5;">description_off</mat-icon>
+        <h3>No Contracts Available</h3>
+        <p>Create your first contract by clicking the "Add Contract" button above.</p>
+      </div>
+    </ng-template>
+
+    <!-- Refactor Sidebar -->
+    <div *ngIf="showRefactorSidebar" class="refactor-sidebar">
+      <div class="refactor-sidebar-header">
+        <h3>Payment Schedule - Contract #{{refactoringContract?.id_Contract}}</h3>
+        <button mat-icon-button class="close-sidebar-button" (click)="closeRefactorSidebar()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      
+      <div class="refactor-sidebar-content">
+        <div class="contract-summary">
+          <div class="summary-item">
+            <span class="summary-label">Contract Amount:</span>
+            <span class="summary-value">{{refactoringContract?.amount | currency:'USD'}}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Contract Date:</span>
+            <span class="summary-value">{{refactoringContract?.date_Contract | date:'mediumDate'}}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Paid Amount:</span>
+            <span class="summary-value">{{refactoringContract?.payed | currency:'USD'}}</span>
+          </div>
+        </div>
+        
+        <div class="refactor-action">
+          <button mat-raised-button color="primary" 
+                  (click)="refactorContract(refactoringContract?.id_Contract || 0)" 
+                  [disabled]="isRefactoring">
+            <mat-icon>update</mat-icon>
+            <span *ngIf="!isRefactoring">Refactor Payment Schedule</span>
+            <span *ngIf="isRefactoring">Processing...</span>
+          </button>
+          <p class="refactor-description">
+            Refactoring will recalculate payment amounts based on late payments and penalties according to the credit pool rules.  
+          </p>
+        </div>
+        
+        <div class="payments-table-container">
+          <h4>Payment Schedule</h4>
+          <table mat-table [dataSource]="refactoredPayments" class="payments-table" *ngIf="refactoredPayments.length > 0">
+            <!-- Payment ID Column -->
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef>ID</th>
+              <td mat-cell *matCellDef="let payment">{{payment.id_payment}}</td>
+            </ng-container>
+            
+            <!-- Date Column -->
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef>Due Date</th>
+              <td mat-cell *matCellDef="let payment">{{payment.date_payment | date:'mediumDate'}}</td>
+            </ng-container>
+            
+            <!-- Amount Column -->
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef>Amount</th>
+              <td mat-cell *matCellDef="let payment">{{payment.amount | currency:'USD'}}</td>
+            </ng-container>
+            
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let payment" [ngClass]="{'paid-status': payment.status, 'unpaid-status': !payment.status}">
+                {{payment.status ? 'Paid' : 'Unpaid'}}
+              </td>
+            </ng-container>
+            
+            <tr mat-header-row *matHeaderRowDef="['id', 'date', 'amount', 'status']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['id', 'date', 'amount', 'status'];"></tr>
+          </table>
+          
+          <div *ngIf="refactoredPayments.length === 0" class="no-payments">
+            <mat-icon>info</mat-icon>
+            <p>No payment schedule available</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Edit Contract Form -->
+    <div *ngIf="selectedContract" class="mb-24">
+      <h3>Edit Contract #{{selectedContract.id_Contract}}</h3>
+      <form class="d-flex gap-16 flex-wrap">
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Contract Date</mat-label>
+          <input matInput [matDatepicker]="editContractDatePicker" [(ngModel)]="selectedContract.date_Contract" name="editContractDate" />
+          <mat-datepicker-toggle matSuffix [for]="editContractDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #editContractDatePicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Documents</mat-label>
+          <input matInput [(ngModel)]="selectedContract.documents" name="editDocuments" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Amount</mat-label>
+          <input matInput type="number" [(ngModel)]="selectedContract.amount" name="editAmount" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Payed</mat-label>
+          <input matInput type="number" [(ngModel)]="selectedContract.payed" name="editPayed" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Withdrawal Date</mat-label>
+          <input matInput [matDatepicker]="editWithdrawalPicker" [(ngModel)]="selectedContract.withdrawal_date" name="editWithdrawalDate" />
+          <mat-datepicker-toggle matSuffix [for]="editWithdrawalPicker"></mat-datepicker-toggle>
+          <mat-datepicker #editWithdrawalPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Queue Number</mat-label>
+          <input matInput type="number" [(ngModel)]="selectedContract.queue_Number" name="editQueueNumber" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>User</mat-label>
+          <mat-select [(ngModel)]="selectedContract.userId" name="editUserId" required>
+            <mat-option *ngIf="loadingUsers" value="">
+              Loading users...
+            </mat-option>
+            <mat-option *ngFor="let user of users" [value]="user.id">
+              <span *ngIf="user.firstName === 'Error' && user.lastName === 'Loading Users'">
+                User service is currently unavailable. Please contact your administrator.
+              </span>
+              <span *ngIf="!(user.firstName === 'Error' && user.lastName === 'Loading Users')">
+                {{user.firstName}} {{user.lastName}}
+              </span>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Credit Pool ID</mat-label>
+          <mat-select [(ngModel)]="selectedContract.id_credit_pool" name="editCreditPoolId" required>
+            <mat-option *ngFor="let pool of creditPools" [value]="pool.id_credit_pool">
+              <span *ngIf="pool.message">{{pool.message}}</span>
+              <span *ngIf="!pool.message">Pool ID: {{pool.id_credit_pool}} - Sum: {{pool.pool_sum | number}}</span>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="d-flex gap-16 mt-16">
+          <button mat-flat-button color="primary" (click)="updateContract()">Update</button>
+          <button mat-button color="warn" (click)="selectedContract = null">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </mat-card-content>
+</mat-card>
