@@ -62,6 +62,11 @@ export class UserComponent implements OnInit {
   }
 
   applyFilters(): void {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      console.error('Auth token not found');
+      return;
+    }
     const filters = {
       firstName: this.searchQuery,
       lastName: this.searchQuery,
@@ -69,7 +74,7 @@ export class UserComponent implements OnInit {
       age: this.ageFilter,
       enabled: this.enabledFilter
     };
-    this.userService.searchUsers(filters, this.currentPage, this.pageSize).subscribe({
+    this.userService.searchUsers(filters, this.currentPage, this.pageSize,token).subscribe({
       next: (response) => {
         this.users = response.content;
         this.totalUsers = response.totalElements;

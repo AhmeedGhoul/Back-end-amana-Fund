@@ -36,7 +36,9 @@ export class UserService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.post<void>(`${this.apiUrl}/Demote`, { email, role }, { headers });
   }
-  searchUsers(filters: any, page: number, size: number): Observable<PagedResponse<User>> {
+  searchUsers(filters: any, page: number, size: number, token: string): Observable<PagedResponse<User>> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
@@ -47,7 +49,7 @@ export class UserService {
         params = params.set(key, filters[key]);
       }
     }
-    return this.http.get<PagedResponse<User>>(`${this.apiUrl}/search`, { params });
+    return this.http.get<PagedResponse<User>>(`${this.apiUrl}/search`, { params,headers });
   }
 
   // Generate User Report
