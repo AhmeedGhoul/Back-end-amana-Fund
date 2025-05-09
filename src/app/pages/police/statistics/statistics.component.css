@@ -158,20 +158,17 @@
 
 .bar-label {
   position: absolute;
-  top: -55px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%) translateX(10px);
   font-weight: 600;
   color: #333;
-  font-size: 1.6rem;
-  background: linear-gradient(135deg, #007bff, #0056b3);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  padding: 8px 12px;
+  font-size: 1.2rem;
+  white-space: nowrap;
+  background: #c6e1ff;
+  padding: 6px 10px;
   border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(5px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .bar-label::after {

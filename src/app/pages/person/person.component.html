@@ -1,0 +1,137 @@
+<mat-card class="dialog-card">
+  <mat-card-header class="dialog-header">
+    <mat-card-title>{{mode === 'edit' ? 'Edit Person' : 'Add New Person'}}</mat-card-title>
+    <div class="header-actions">
+      <button mat-icon-button 
+              color="primary"
+              [routerLink]="['/person/list']"
+              matTooltip="View Person List">
+        <mat-icon>list</mat-icon>
+      </button>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content>
+
+  <form [formGroup]="personForm" (ngSubmit)="onSubmit()">
+    <div class="form-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+      <!-- Name -->
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput type="text" 
+                 formControlName="name"
+                 [class.is-invalid]="formControls['name'].touched && formControls['name'].invalid">
+          <mat-error *ngIf="formControls['name'].hasError('required')">Name is required</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Last Name -->
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>Last Name</mat-label>
+          <input matInput type="text" 
+                 formControlName="last_name"
+                 [class.is-invalid]="formControls['last_name'].touched && formControls['last_name'].invalid">
+          <mat-error *ngIf="formControls['last_name'].hasError('required')">Last Name is required</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- CIN -->
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>CIN</mat-label>
+          <input matInput type="text" 
+                 formControlName="cin"
+                 [class.is-invalid]="formControls['cin'].touched && formControls['cin'].invalid">
+          <mat-error *ngIf="formControls['cin'].hasError('required')">CIN is required</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" 
+                 formControlName="email"
+                 [class.is-invalid]="formControls['email'].touched && formControls['email'].invalid">
+          <mat-error *ngIf="formControls['email'].hasError('required')">Email is required</mat-error>
+          <mat-error *ngIf="formControls['email'].hasError('email')">Please enter a valid email address</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Age -->
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>Age</mat-label>
+          <input matInput type="number" 
+                 formControlName="age"
+                 [class.is-invalid]="formControls['age'].touched && formControls['age'].invalid">
+          <mat-error *ngIf="formControls['age'].hasError('required')">Age is required</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Revenue -->
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>Revenue</mat-label>
+          <input matInput type="number" 
+                 formControlName="revenue"
+                 [class.is-invalid]="formControls['revenue'].touched && formControls['revenue'].invalid">
+          <mat-error *ngIf="formControls['revenue'].hasError('required')">Revenue is required</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Active -->
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>Active</mat-label>
+          <mat-select formControlName="active">
+            <mat-option value="true">Yes</mat-option>
+            <mat-option value="false">No</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Documents -->
+      <div class="form-field-wrapper">
+        <div class="file-input-container">
+          <label class="file-label">PDF Document</label>
+          <input type="file" 
+                 (change)="onFileSelected($event)"
+                 accept=".pdf"
+                 class="file-input"
+                 [class.is-invalid]="formControls['documents'].touched && formControls['documents'].invalid">
+          <div class="file-error" *ngIf="formControls['documents'].hasError('required')">Please upload a PDF document</div>
+          <div class="file-error" *ngIf="formControls['documents'].touched && !formControls['documents'].hasError('required') && !isValidFileType">Please upload a PDF file only</div>
+        </div>
+        <div *ngIf="selectedFilePath" class="file-info">
+          Selected file: {{selectedFilePath}}
+        </div>
+      </div>
+
+      <!-- Police ID -->
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>Police ID</mat-label>
+          <mat-select formControlName="police_id" required>
+            <mat-option value="">Select a Police ID</mat-option>
+            <mat-option *ngFor="let police of policeList" [value]="police.idPolice">
+              {{police.idPolice}} - {{police.amount}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="formControls['police_id'].hasError('required')">Police ID is required</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Submit Buttons -->
+      <div class="buttons-container" style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 1rem;">
+        <button mat-button type="button" (click)="resetForm()">Reset</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading || !personForm.valid">
+          {{ loading ? 'Saving...' : 'Save' }}
+        </button>
+      </div>
+    </div>
+  </form>
+</mat-card-content>
+</mat-card>

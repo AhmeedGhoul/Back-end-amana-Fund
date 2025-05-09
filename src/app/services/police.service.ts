@@ -46,6 +46,10 @@ export class PoliceService {
   getTotalActiveAmount(): Observable<number> {
     return this.http.get<number>(`${this.apiUrl}/active-total-amount`);
   }
+  getAllUsers() {
+    return this.http.get<any[]>('http://localhost:8088/api/v1/police/getall_users');
+  }
+  
 
   getTotalAmount(): Observable<number> {
     return this.http.get<number>(`${this.apiUrl}/total-amount`);
@@ -91,10 +95,13 @@ export class PoliceService {
     return this.http.get<PaginatedResponse<Police>>(`${this.apiUrl}/paginated`, { params: paramsObj });
   }
 
+  getPoliceList(): Observable<Police[]> {
+    return this.http.get<Police[]>(`${this.apiUrl}/getall_police`);
+  }
+
   searchPolice(amount: number): Observable<Police[]> {
     return this.http.get<Police[]>(`${this.apiUrl}/search?amount=${amount}`);
   }
-  
 
   removePolice(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/removepolice/${id}`);

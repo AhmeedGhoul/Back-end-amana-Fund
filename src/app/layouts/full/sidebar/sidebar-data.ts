@@ -55,12 +55,12 @@ export const navItems: NavItem[] = [
       {
         displayName: 'Person',
         iconName: 'user',
-        route: '/police/person'
+        route: '/person/add'
       },
       {
         displayName: 'Object',
         iconName: 'wallet',
-        route: '/police/object'
+        route: '/object'
       }
     ]
   },

@@ -54,6 +54,30 @@ export const routes: Routes = [
         component: ContractComponent,
         canActivate: [AuthGuard],
       },
+      {
+        path: 'police',
+        loadChildren: () =>
+          import('./pages/police/police-routing.module').then(
+            (m) => m.PoliceRoutingModule
+          ),
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'person',
+        loadChildren: () =>
+          import('./pages/person/person.module').then(
+            (m) => m.PersonModule
+          ),
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'object',
+        loadComponent: () =>
+          import('./pages/object/object.component').then(
+            (m) => m.ObjectComponent
+          ),
+        canActivate: [AuthGuard]
+      },
 
     ],
   }, {
