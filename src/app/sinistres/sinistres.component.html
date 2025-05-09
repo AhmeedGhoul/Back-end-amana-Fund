@@ -34,39 +34,41 @@
   </div>
 
   <!-- Table -->
-  <div class="card shadow-sm p-4 mb-4">
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>ID</th>
-            <th>Claim Amount</th>
-            <th>Reinsurance Share</th>
-            <th>Settlement Date</th>
-            <th>Settlement Amount</th>
-            <th>User First Name</th>
-            <th>User Last Name</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let sinistre of sinistresList">
-            <td>{{ sinistre.idSinistre }}</td>
-            <td>{{ sinistre.claimAmount | number: '1.2-2' }} DT</td>
-            <td>{{ sinistre.reinsuranceShaire | percent }}</td>
-            <td>{{ sinistre.settlementDate | date:'shortDate' }}</td>
-            <td>{{ sinistre.settlementAmount | number: '1.2-2' }} DT</td>
-            <td>{{ sinistre.user?.firstName || 'N/A' }}</td>
-            <td>{{ sinistre.user?.lastName || 'N/A' }}</td>
-            <td class="text-nowrap">
-              <button (click)="selectSinistre(sinistre)" class="btn btn-sm btn-primary me-1">Edit</button>
-              <button (click)="deleteSinistre(sinistre.idSinistre)" class="btn btn-sm btn-danger me-1">Delete</button>
-              <button (click)="downloadPdf(sinistre.idSinistre)" class="btn btn-sm btn-outline-secondary">PDF</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <!-- Table -->
+<div class="card shadow-sm p-4 mb-4">
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle text-center">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Claim Amount</th>
+          <th>Reinsurance Share</th>
+          <th>Settlement Date</th>
+          <th>Settlement Amount</th>
+          <th>User First Name</th>
+          <th>User Last Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let sinistre of sinistresList">
+          <td>{{ sinistre.idSinistre }}</td>
+          <td>{{ sinistre.claimAmount | number: '1.2-2' }} DT</td>
+          <td>{{ sinistre.reinsuranceShaire | percent }}</td>
+          <td>{{ sinistre.settlementDate | date:'shortDate' }}</td>
+          <td>{{ sinistre.settlementAmount | number: '1.2-2' }} DT</td>
+          <td>{{ sinistre.user?.firstName || 'N/A' }}</td>
+          <td>{{ sinistre.user?.lastName || 'N/A' }}</td>
+          <td class="text-nowrap">
+            <button (click)="selectSinistre(sinistre)" class="btn btn-sm btn-primary me-1">Edit</button>
+            <button (click)="deleteSinistre(sinistre.idSinistre)" class="btn btn-sm btn-danger me-1">Delete</button>
+            <button (click)="downloadPdf(sinistre.idSinistre)" class="btn btn-sm btn-outline-secondary">PDF</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
 
     <!-- Pagination -->
     <div class="d-flex justify-content-between align-items-center mt-3">

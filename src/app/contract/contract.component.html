@@ -133,6 +133,15 @@
     </form>
   </div>
 </div>
+<div class="mb-3">
+  <label for="chartMode" class="form-label">Display Mode:</label>
+  <select id="chartMode" class="form-select w-auto d-inline-block ms-2" [(ngModel)]="chartDisplayMode" (change)="updateChart()">
+    <option value="bar">Bar Only</option>
+    <option value="line">Line Only</option>
+    <option value="both">Bar & Line</option>
+  </select>
+</div>
+
 <div class="card shadow-sm p-4 mb-4">
   <h4 class="mb-3">Rentabilité des Contrats</h4>
   <canvas #rentabiliteChart style="max-height: 300px;"></canvas>

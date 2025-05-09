@@ -3,20 +3,21 @@ import { Sinistres } from '../sinistres.model';
 import { SinistresService } from '../sinistres.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { saveAs } from 'file-saver';
-import { Chart,registerables } from 'chart.js';
-import { UserService } from '../pages/admin/user/user.service';
+import { Chart, registerables } from 'chart.js';
+import { User } from '../pages/admin/user/user.model';
+
 @Component({
   selector: 'app-sinistres',
   templateUrl: './sinistres.component.html',
   styleUrls: ['./sinistres.component.scss']
 })
 export class SinistresComponent implements OnInit, AfterViewInit, OnDestroy {
-  public chart: Chart | undefined; // Make sure chart is optionally defined
+  public chart: Chart | undefined;
   sinistresList: Sinistres[] = [];
   selectedSinistre: Sinistres | null = null;
   sinistreForm: FormGroup;
   showForm: boolean = false;
-  usersList: any[] = [];
+  usersList: User[] = [];
   page: number = 0;
   size: number = 5;
   totalElements: number = 0;
@@ -24,15 +25,10 @@ export class SinistresComponent implements OnInit, AfterViewInit, OnDestroy {
 
   searchClaimAmount: number | null = null;
   searchSettlementDate: string = '';
-
   userId: number | null = null;
-
-  sinistreId: number | null = null;
-  indemnisationAmount: number | null = null;
   errorMessage: string = '';
   fondsDeReserve: number | null = null;
   risqueMessage: string = '';
-
 
   @ViewChild('myChart') myChartRef!: ElementRef<HTMLCanvasElement>;
 
@@ -47,15 +43,15 @@ export class SinistresComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-
   ngOnInit(): void {
     this.loadSinistres();
-
-      this.createChart(); // Ensure this is called
-
+    this.createChart();
+    this.loadUsers(); // Load users
   }
 
-  ngAfterViewInit() {  this.createChart(); }
+  ngAfterViewInit() {
+    this.createChart();
+  }
 
   ngOnDestroy() {
     if (this.chart) {
@@ -75,15 +71,27 @@ export class SinistresComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  loadSinistresByUserId(): void {
-    if (this.userId) {
-      this.sinistresService.getSinistresByUserId(this.userId).subscribe(
-        (data: Sinistres[]) => {
-          this.sinistresList = data;
-          this.totalElements = data.length; // Adjust if implementing pagination
+  loadUsers(): void {
+    this.sinistresService.getAllUsers().subscribe(
+      (users: User[]) => {
+        this.usersList = users;
+      },
+      (error) => {
+        console.error('Error fetching users:', error);
+      }
+    );
+  }
+
+  evaluateRisk(): void {
+    if (this.userId !== null) {
+      this.sinistresService.evaluerRisque(this.userId).subscribe(
+        (message: string) => {
+          this.risqueMessage = message; // Store the risk message
+          this.updateChart(); // Update the chart based on the risk evaluation
         },
         (error) => {
-          console.error('Error fetching sinistres for user:', error);
+          console.error('Error evaluating risk:', error);
+          this.risqueMessage = 'Erreur lors de l\'évaluation du risque'; // Set a fallback error message
         }
       );
     }
@@ -104,7 +112,6 @@ export class SinistresComponent implements OnInit, AfterViewInit, OnDestroy {
       formattedSettlementDate,
       formValue.settlementAmount,
       formValue.user ? formValue.user : null,
-
     );
 
     if (this.selectedSinistre) {
@@ -146,8 +153,9 @@ export class SinistresComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sinistreForm.reset();
   }
 
-  cancelAddSinistre() {
-    this.showForm = false;
+  cancelAddSinistre(): void {
+    this.showForm = false; // Hide the form
+    this.selectedSinistre = null; // Deselect any selected sinistre
   }
 
   selectSinistre(sinistre: Sinistres): void {
@@ -239,6 +247,7 @@ export class SinistresComponent implements OnInit, AfterViewInit, OnDestroy {
       alert('Please enter a User ID.');
     }
   }
+
   fetchFondsDeReserve(): void {
     this.sinistresService.getFondsDeReserve().subscribe(
       (fonds) => {
@@ -248,21 +257,6 @@ export class SinistresComponent implements OnInit, AfterViewInit, OnDestroy {
         console.error('Error fetching fonds de reserve:', error);
       }
     );
-  }
-
-  evaluateRisk(): void {
-    if (this.userId !== null) {
-      this.sinistresService.evaluerRisque(this.userId).subscribe(
-        (message: string) => {
-          this.risqueMessage = message; // Store the risk message
-          this.updateChart(); // Update the chart based on the risk evaluation
-        },
-        (error) => {
-          console.error('Error evaluating risk:', error);
-          this.risqueMessage = 'Erreur lors de l\'évaluation du risque'; // Set a fallback error message
-        }
-      );
-    }
   }
 
   createChart(): void {
@@ -317,6 +311,4 @@ export class SinistresComponent implements OnInit, AfterViewInit, OnDestroy {
       console.error('Chart is not initialized'); // Log if chart is not created
     }
   }
-
-  }
-
+}

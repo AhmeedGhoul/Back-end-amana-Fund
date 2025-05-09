@@ -12,6 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import Chart from 'chart.js/auto';
+import { MaterialModule } from '@app/material.module';
 function pastOrPresentDateValidator(
   control: AbstractControl
 ): { [key: string]: any } | null {
@@ -34,6 +35,7 @@ contractsList: Contract[] = [];
   contractForm: FormGroup;
   showForm: boolean = false;
   sinistresList: any[] = [];
+chartDisplayMode: 'bar' | 'line' | 'both' = 'both';
 
   page: number = 0;
   size: number = 5;
@@ -75,36 +77,55 @@ contractsList: Contract[] = [];
     return contract.coverageLimit ? (contract.premium / contract.coverageLimit) * 100 : 0;
   }
 
-  initChart(): void {
-    this.rentabiliteChart = new Chart(this.rentabiliteChartRef.nativeElement, {
-      type: 'bar',
-      data: {
-        labels: [],
-        datasets: [{
-          label: 'Rentabilité (%)',
+ initChart(): void {
+  this.rentabiliteChart = new Chart(this.rentabiliteChartRef.nativeElement, {
+    type: 'bar',
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: 'Rentabilité (%) - Bar',
+          type: 'bar',
           data: [],
           backgroundColor: '#42a5f5',
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true
-          }
+        },
+        {
+          label: 'Rentabilité (%) - Line',
+          type: 'line',
+          data: [],
+          borderColor: '#ff6384',
+          borderWidth: 2,
+          fill: false,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
         }
       }
-    });
-  }
+    }
+  });
+}
 
-  updateChart(): void {
-    const labels = this.contractsList.map(c => `#${c.idContrat}`);
-    const data = this.contractsList.map(c => this.getRentabilite(c));
+updateChart(): void {
+  const labels = this.contractsList.map(c => `#${c.idContrat}`);
+  const data = this.contractsList.map(c => this.getRentabilite(c));
 
-    this.rentabiliteChart.data.labels = labels;
-    this.rentabiliteChart.data.datasets[0].data = data;
-    this.rentabiliteChart.update();
-  }
+  this.rentabiliteChart.data.labels = labels;
+
+  const showBar = this.chartDisplayMode === 'bar' || this.chartDisplayMode === 'both';
+  const showLine = this.chartDisplayMode === 'line' || this.chartDisplayMode === 'both';
+
+  this.rentabiliteChart.data.datasets[0].data = showBar ? data : [];
+  this.rentabiliteChart.data.datasets[1].data = showLine ? data : [];
+
+  this.rentabiliteChart.update();
+}
+
+
 
 
   loadContracts(): void {
@@ -218,10 +239,12 @@ contractsList: Contract[] = [];
     this.contractForm.reset();
   }
 
-  cancelAddContract() {
-    this.showForm = false;
-    this.contractForm.reset();
-  }
+ cancelAddContract() {
+  this.showForm = false; // Hide the form
+  this.contractForm.reset(); // Reset the form fields
+  this.selectedContract = null; // Clear the selected contract
+  this.loadContracts(); // Reload contracts list to ensure it is up-to-date
+}
 
   selectContract(contract: Contract): void {
     this.selectedContract = contract;
