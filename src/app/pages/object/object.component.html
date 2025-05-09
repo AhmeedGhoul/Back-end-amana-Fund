@@ -93,9 +93,12 @@
         <ng-container matColumnDef="active">
           <th mat-header-cell *matHeaderCellDef> Active </th>
           <td mat-cell *matCellDef="let element">
-            <mat-icon [ngClass]="{'text-success': element.active, 'text-danger': !element.active}">
+            <mat-icon [color]="element.active ? 'primary' : 'warn'">
               {{element.active ? 'check_circle' : 'cancel'}}
             </mat-icon>
+            <!--<mat-icon [ngClass]="{'text-success': element.active, 'text-danger': !element.active}">
+              {{element.active ? 'check_circle' : 'cancel'}}
+            </mat-icon> -->
           </td>
         </ng-container>
 
