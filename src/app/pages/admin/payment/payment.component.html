@@ -1,0 +1,374 @@
+<mat-card class="payment-card">
+  <mat-card-header>
+    <div class="header-content">
+      <div class="title-section">
+        <mat-icon class="header-icon">payments</mat-icon>
+        <mat-card-title>Payment Management</mat-card-title>
+      </div>
+      <div class="action-buttons">
+        <button mat-flat-button color="primary" (click)="showAddForm = !showAddForm" [disabled]="isLoading" class="action-button">
+          <mat-icon>{{ showAddForm ? 'close' : 'add' }}</mat-icon>
+          {{ showAddForm ? 'Cancel' : 'Add Payment' }}
+        </button>
+        <button mat-flat-button color="accent" (click)="loadPayments()" [disabled]="isLoading" class="action-button">
+          <mat-icon>refresh</mat-icon>
+          Refresh
+        </button>
+      </div>
+    </div>
+  </mat-card-header>
+
+  <mat-divider></mat-divider>
+
+  <mat-card-content>
+    <!-- Add Payment Form -->
+    <div *ngIf="showAddForm" class="form-container slide-in-top">
+      <div class="form-header">
+        <mat-icon class="form-icon">add_card</mat-icon>
+        <h3 class="form-title">Create New Payment</h3>
+      </div>
+      
+      <form (ngSubmit)="createPayment()" #paymentForm="ngForm" class="payment-form">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Agent</mat-label>
+            <input matInput type="text" [(ngModel)]="newPayment.agent"
+                  name="agent" required>
+            <mat-icon matSuffix>person</mat-icon>
+            <mat-error *ngIf="paymentForm.submitted && !newPayment.agent">
+              Agent is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Amount</mat-label>
+            <input matInput type="number" [(ngModel)]="newPayment.amount"
+                  name="amount" required>
+            <span matPrefix>$&nbsp;</span>
+            <mat-icon matSuffix>attach_money</mat-icon>
+            <mat-error *ngIf="paymentForm.submitted && !newPayment.amount">
+              Amount is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Payment Date</mat-label>
+            <input matInput [matDatepicker]="picker"
+                  [(ngModel)]="newPayment.date_payment" name="date_payment" required>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error *ngIf="paymentForm.submitted && !newPayment.date_payment">
+              Date is required
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Payment Method</mat-label>
+            <mat-select [(ngModel)]="newPayment.method" name="method">
+              <mat-option value="cash">Cash</mat-option>
+              <mat-option value="credit">Credit Card</mat-option>
+              <mat-option value="bank">Bank Transfer</mat-option>
+              <mat-option value="check">Check</mat-option>
+            </mat-select>
+            <mat-icon matSuffix>payment</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <div class="form-actions">
+          <button mat-stroked-button type="button" (click)="resetForm()" class="cancel-button">
+            <mat-icon>close</mat-icon> Cancel
+          </button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="isLoading || !paymentForm.form.valid" class="submit-button">
+            <mat-icon *ngIf="!isLoading">save</mat-icon>
+            <mat-spinner *ngIf="isLoading" diameter="20" class="spinner"></mat-spinner>
+            {{ isLoading ? 'Processing...' : 'Create Payment' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Loading Indicator -->
+    <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+
+    <!-- Payments Table Section -->
+    <div class="table-section" *ngIf="!isLoading && payments.length > 0">
+      <div class="table-header">
+        <div class="table-title">
+          <mat-icon class="table-icon">list_alt</mat-icon>
+          <h3>Payment Records</h3>
+        </div>
+        <div class="table-actions">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Search Payments</mat-label>
+            <input matInput placeholder="Search by agent or amount..." #searchInput>
+            <button *ngIf="searchInput.value" matSuffix mat-icon-button aria-label="Clear" (click)="searchInput.value=''">
+              <mat-icon>close</mat-icon>
+            </button>
+            <mat-icon matPrefix>search</mat-icon>
+          </mat-form-field>
+          <button mat-stroked-button color="primary" class="filter-button">
+            <mat-icon>filter_list</mat-icon> Filter
+          </button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table mat-table [dataSource]="payments" class="mat-elevation-z2 payment-table">
+          <!-- ID Column -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let payment" class="id-cell">{{ payment.id_payment }}</td>
+          </ng-container>
+
+          <!-- Date Column -->
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <td mat-cell *matCellDef="let payment" class="date-cell">
+              <div class="date-display">
+                <mat-icon class="cell-icon">event</mat-icon>
+                {{ payment.date_payment | date:'mediumDate' }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Agent Column -->
+          <ng-container matColumnDef="agent">
+            <th mat-header-cell *matHeaderCellDef>Agent</th>
+            <td mat-cell *matCellDef="let payment" class="agent-cell">
+              <div class="agent-display">
+                <mat-icon class="cell-icon">person</mat-icon>
+                {{ payment.agent }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Amount Column -->
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef>Amount</th>
+            <td mat-cell *matCellDef="let payment" class="amount-cell">
+              <div class="amount-display" [ngClass]="{'high-amount': payment.amount > 1000}">
+                <span class="currency-symbol">$</span>
+                {{ payment.amount | number:'1.2-2' }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let payment" class="status-cell">
+              <div class="status-badge" [ngClass]="payment.status ? 'status-success' : 'status-pending'">
+                <mat-icon class="status-icon">{{ payment.status ? 'check_circle' : 'pending' }}</mat-icon>
+                <span>{{ payment.statusText || (payment.status ? 'Completed' : 'Pending') }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Method Column (New) -->
+          <ng-container matColumnDef="method">
+            <th mat-header-cell *matHeaderCellDef>Method</th>
+            <td mat-cell *matCellDef="let payment" class="method-cell">
+              <div class="method-display">
+                <mat-icon class="method-icon">
+                  {{ payment.method === 'credit' ? 'credit_card' : 
+                     payment.method === 'bank' ? 'account_balance' : 
+                     payment.method === 'check' ? 'money' : 'payments' }}
+                </mat-icon>
+                <span>{{ payment.method || 'Cash' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let payment" class="actions-cell">
+              <div class="action-buttons">
+                <button mat-icon-button color="primary" (click)="selectPayment(payment)" 
+                        [disabled]="isLoading" matTooltip="Edit Payment">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deletePayment(payment)" 
+                        [disabled]="isLoading" matTooltip="Delete Payment">
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" matTooltip="View Details">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+              class="payment-row" [ngClass]="{'selected-row': selectedPayment?.id_payment === row.id_payment}"></tr>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && payments.length === 0">
+      <div class="empty-state-content">
+        <mat-icon class="empty-icon">payments</mat-icon>
+        <h3>No Payments Found</h3>
+        <p>There are no payment records in the system yet.</p>
+        <button mat-flat-button color="primary" (click)="showAddForm = true" class="add-button">
+          <mat-icon>add</mat-icon> Create Your First Payment
+        </button>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-state" *ngIf="error">
+      <div class="error-content">
+        <mat-icon class="error-icon">error_outline</mat-icon>
+        <div class="error-details">
+          <h3>Error Occurred</h3>
+          <p>{{ error }}</p>
+        </div>
+        <button mat-stroked-button color="warn" (click)="clearError()" class="dismiss-button">
+          <mat-icon>close</mat-icon> Dismiss
+        </button>
+      </div>
+    </div>
+
+    <!-- Edit Form -->
+    <div *ngIf="isEditing && selectedPayment" class="edit-form-container slide-in-top">
+      <div class="edit-header">
+        <mat-icon class="edit-icon">edit</mat-icon>
+        <h3>Edit Payment #{{selectedPayment.id_payment}}</h3>
+      </div>
+      
+      <form #editForm="ngForm" (ngSubmit)="updatePayment(selectedPayment)" class="edit-payment-form">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Agent</mat-label>
+            <input matInput type="text" [(ngModel)]="selectedPayment.agent" name="editAgent" required>
+            <mat-icon matSuffix>person</mat-icon>
+            <mat-error *ngIf="editForm.submitted && !selectedPayment.agent">
+              Agent is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Amount</mat-label>
+            <input matInput type="number" [(ngModel)]="selectedPayment.amount" name="editAmount" required>
+            <span matPrefix>$&nbsp;</span>
+            <mat-icon matSuffix>attach_money</mat-icon>
+            <mat-error *ngIf="editForm.submitted && !selectedPayment.amount">
+              Amount is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Date</mat-label>
+            <input matInput [matDatepicker]="editPicker" [(ngModel)]="selectedPayment.date_payment" name="editDate" required>
+            <mat-datepicker-toggle matSuffix [for]="editPicker"></mat-datepicker-toggle>
+            <mat-datepicker #editPicker></mat-datepicker>
+            <mat-error *ngIf="editForm.submitted && !selectedPayment.date_payment">
+              Date is required
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Payment Method</mat-label>
+            <mat-select [(ngModel)]="selectedPayment.method" name="editMethod">
+              <mat-option value="cash">Cash</mat-option>
+              <mat-option value="credit">Credit Card</mat-option>
+              <mat-option value="bank">Bank Transfer</mat-option>
+              <mat-option value="check">Check</mat-option>
+            </mat-select>
+            <mat-icon matSuffix>payment</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-slide-toggle [(ngModel)]="selectedPayment.status" name="editStatus" color="primary" class="status-toggle">
+            Mark as {{ selectedPayment.status ? 'Completed' : 'Pending' }}
+          </mat-slide-toggle>
+        </div>
+
+        <div class="form-actions">
+          <button mat-stroked-button type="button" (click)="cancelEdit()" class="cancel-button">
+            <mat-icon>close</mat-icon> Cancel
+          </button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="!validatePayment(selectedPayment) || isLoading" class="save-button">
+            <mat-icon *ngIf="!isLoading">save</mat-icon>
+            <mat-spinner *ngIf="isLoading" diameter="20" class="spinner"></mat-spinner>
+            {{ isLoading ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Empty State -->
+    <ng-template #emptyState>
+      <div class="empty-state">
+        <mat-icon class="empty-icon">payments</mat-icon>
+        <h3>No Payments Found</h3>
+        <p *ngIf="!isLoading">Click "Add Payment" to create a new one</p>
+      </div>
+    </ng-template>
+    <!-- Payments Table -->
+    <div class="payments-table">
+      <table mat-table [dataSource]="payments" class="mat-elevation-z8">
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let payment">
+            {{ payment.date_payment | date:'mediumDate' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="agent">
+          <th mat-header-cell *matHeaderCellDef>Agent</th>
+          <td mat-cell *matCellDef="let payment">{{ payment.agent }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>Amount</th>
+          <td mat-cell *matCellDef="let payment">
+            {{ payment.amount | currency:'USD':'symbol' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let payment">
+            <span [class]="payment.status ? 'status-success' : 'status-warning'">
+              {{ payment.status ? 'Paid' : 'Pending' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let payment">
+            <button mat-icon-button (click)="selectPayment(payment)" matTooltip="Edit">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button (click)="deletePayment(payment)" matTooltip="Delete" color="warn">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <!-- Loading spinner -->
+      <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+
+      <!-- Error message -->
+      <p class="error-message" *ngIf="error">{{ error }}</p>
+    </div>
+
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,672 @@
+<mat-card class="credit-pool-card animate__animated animate__fadeIn">
+  <div class="card-header-wrapper">
+    <mat-card-header>
+      <div class="header-content">
+        <div class="title-section">
+          <div class="icon-container">
+            <mat-icon class="header-icon pulse-animation">account_balance</mat-icon>
+          </div>
+          <div class="title-container">
+            <mat-card-title class="gradient-text">Credit Pool Management</mat-card-title>
+            <mat-card-subtitle>Manage your credit pools and interest rates</mat-card-subtitle>
+          </div>
+        </div>
+        <div class="action-buttons">
+          <button mat-flat-button color="primary" (click)="showAddForm = !showAddForm" [disabled]="isLoading" class="action-button scale-on-hover">
+            <mat-icon class="button-icon">{{ showAddForm ? 'close' : 'add' }}</mat-icon>
+            <span class="button-text">{{ showAddForm ? 'Cancel' : 'Add Credit Pool' }}</span>
+          </button>
+          <button mat-flat-button color="accent" (click)="loadCreditPools()" [disabled]="isLoading" class="action-button scale-on-hover">
+            <mat-icon class="button-icon spin-on-click">refresh</mat-icon>
+            <span class="button-text">Refresh</span>
+          </button>
+        </div>
+      </div>
+    </mat-card-header>
+  </div>
+
+  <mat-divider class="fancy-divider"></mat-divider>
+
+  <mat-card-content>
+    <!-- Interest Rates Display -->
+    <div *ngIf="selectedPoolForRates" class="interest-rates-container animate__animated animate__fadeInUp">
+      <div class="rates-header">
+        <div class="rates-title">
+          <mat-icon class="rates-icon shimmer-effect">percent</mat-icon>
+          <h3 class="gradient-text">Interest Rates for Credit Pool #{{ selectedPoolForRates.id_credit_pool }}</h3>
+        </div>
+        <button mat-icon-button color="primary" (click)="clearInterestRates()" class="close-button scale-on-hover" matTooltip="Close rates view">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      
+      <mat-progress-bar *ngIf="isLoadingRates" mode="indeterminate" class="fancy-progress"></mat-progress-bar>
+      
+      <div *ngIf="!isLoadingRates && interestRates.size > 0" class="rates-table animate__animated animate__fadeIn">
+        <table mat-table [dataSource]="Array.from(interestRates.entries())" class="mat-elevation-z4 modern-table" style="width: 100%;">
+          <ng-container matColumnDef="contractId">
+            <th mat-header-cell *matHeaderCellDef class="table-header rates-header-cell">Contract ID</th>
+            <td mat-cell *matCellDef="let entry" class="contract-id-cell">{{ entry[0] }}</td>
+          </ng-container>
+          
+          <ng-container matColumnDef="interestRate">
+            <th mat-header-cell *matHeaderCellDef class="table-header rates-header-cell">Interest Rate</th>
+            <td mat-cell *matCellDef="let entry" class="interest-rate-cell">
+              <div class="rate-indicator" [ngClass]="{
+                'high-rate': entry[1] > 10,
+                'medium-rate': entry[1] >= 5 && entry[1] <= 10,
+                'low-rate': entry[1] < 5
+              }">
+                <span class="rate-value">{{ formatInterestRate(entry[1]) }}</span>
+                <mat-icon class="rate-icon" *ngIf="entry[1] > 10">trending_up</mat-icon>
+                <mat-icon class="rate-icon" *ngIf="entry[1] >= 5 && entry[1] <= 10">trending_flat</mat-icon>
+                <mat-icon class="rate-icon" *ngIf="entry[1] < 5">trending_down</mat-icon>
+              </div>
+            </td>
+          </ng-container>
+          
+          <tr mat-header-row *matHeaderRowDef="['contractId', 'interestRate']" class="rates-header-row"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['contractId', 'interestRate'];" class="table-row hover-effect"></tr>
+        </table>
+        
+        <div class="rates-summary">
+          <div class="summary-item">
+            <span class="summary-label">Average Rate:</span>
+            <span class="summary-value">{{ calculateAverageRate() | number:'1.2-2' }}%</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Total Contracts:</span>
+            <span class="summary-value">{{ interestRates.size }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="!isLoadingRates && interestRates.size === 0 && !ratesError" class="empty-rates animate__animated animate__fadeIn">
+        <mat-icon class="empty-icon pulse-animation">info</mat-icon>
+        <div class="empty-content">
+          <h4>No Interest Rates Available</h4>
+          <p>There are no contracts associated with this credit pool yet.</p>
+        </div>
+      </div>
+      
+      <div *ngIf="ratesError" class="rates-error animate__animated animate__shakeX">
+        <mat-icon color="warn" class="error-icon">error_outline</mat-icon>
+        <div class="error-content">
+          <h4>Error Loading Rates</h4>
+          <p>{{ ratesError }}</p>
+          <button mat-stroked-button color="warn" (click)="calculateInterestRates(selectedPoolForRates)" class="retry-button">
+            <mat-icon>refresh</mat-icon> Retry
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Search Container -->
+    <div class="search-container animate__animated animate__fadeIn">
+      <div class="search-header">
+        <div class="search-title">
+          <mat-icon class="search-icon pulse-animation">search</mat-icon>
+          <h3 class="gradient-text">Find Credit Pool</h3>
+        </div>
+      </div>
+      <div class="search-form">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search Credit Pool by ID</mat-label>
+          <input matInput type="number" [(ngModel)]="searchId" placeholder="Enter Credit Pool ID" (keyup.enter)="searchCreditPoolById()" class="search-input">
+          <mat-icon matPrefix>credit_card</mat-icon>
+          <button *ngIf="searchId" matSuffix mat-icon-button aria-label="Clear" (click)="clearSearch()" class="clear-button scale-on-hover">
+            <mat-icon>close</mat-icon>
+          </button>
+          <mat-hint>Press Enter to search or click the Search button</mat-hint>
+        </mat-form-field>
+        <button mat-flat-button color="primary" (click)="searchCreditPoolById()" [disabled]="isSearching || !searchId" class="search-button scale-on-hover">
+          <mat-icon class="{{ isSearching ? 'spin-animation' : '' }}">{{ isSearching ? 'hourglass_top' : 'search' }}</mat-icon>
+          <span>{{ isSearching ? 'Searching...' : 'Search' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Search Results -->
+    <div *ngIf="searchResult" class="search-result animate__animated animate__fadeInUp">
+      <mat-card class="result-card">
+        <div class="result-header">
+          <div class="result-title">
+            <mat-icon class="result-icon shimmer-effect">account_balance_wallet</mat-icon>
+            <h3 class="gradient-text">Credit Pool #{{ searchResult.id_credit_pool }}</h3>
+          </div>
+          <button mat-icon-button color="primary" (click)="clearSearch()" class="close-button scale-on-hover" matTooltip="Close result">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        
+        <mat-divider class="fancy-divider"></mat-divider>
+        
+        <mat-card-content>
+          <div class="result-details">
+            <div class="detail-card">
+              <div class="detail-icon-container">
+                <mat-icon class="detail-icon">monetization_on</mat-icon>
+              </div>
+              <div class="detail-content">
+                <span class="detail-label">Pool Sum</span>
+                <span class="detail-value highlight-text">{{ searchResult.pool_Sum | currency:'USD' }}</span>
+              </div>
+            </div>
+            
+            <div class="detail-card">
+              <div class="detail-icon-container">
+                <mat-icon class="detail-icon">arrow_downward</mat-icon>
+              </div>
+              <div class="detail-content">
+                <span class="detail-label">Min Value</span>
+                <span class="detail-value">{{ searchResult.minValue | currency:'USD' }}</span>
+              </div>
+            </div>
+            
+            <div class="detail-card">
+              <div class="detail-icon-container">
+                <mat-icon class="detail-icon">arrow_upward</mat-icon>
+              </div>
+              <div class="detail-content">
+                <span class="detail-label">Max Value</span>
+                <span class="detail-value">{{ searchResult.maxValue | currency:'USD' }}</span>
+              </div>
+            </div>
+            
+            <div class="detail-card">
+              <div class="detail-icon-container">
+                <mat-icon class="detail-icon">calendar_today</mat-icon>
+              </div>
+              <div class="detail-content">
+                <span class="detail-label">Installments</span>
+                <span class="detail-value">{{ searchResult.n_Echeance }}</span>
+              </div>
+            </div>
+            
+            <div class="detail-card">
+              <div class="detail-icon-container">
+                <mat-icon class="detail-icon">event_available</mat-icon>
+              </div>
+              <div class="detail-content">
+                <span class="detail-label">Open Date</span>
+                <span class="detail-value">{{ searchResult.open_Date | date:'mediumDate' }}</span>
+              </div>
+            </div>
+            
+            <div class="detail-card">
+              <div class="detail-icon-container">
+                <mat-icon class="detail-icon">event_busy</mat-icon>
+              </div>
+              <div class="detail-content">
+                <span class="detail-label">Close Date</span>
+                <span class="detail-value">{{ searchResult.close_Date | date:'mediumDate' }}</span>
+              </div>
+            </div>
+            
+            <div class="detail-card status-card">
+              <div class="detail-icon-container" [ngClass]="searchResult.full ? 'full-status' : 'available-status'">
+                <mat-icon class="detail-icon">{{ searchResult.full ? 'block' : 'check_circle' }}</mat-icon>
+              </div>
+              <div class="detail-content">
+                <span class="detail-label">Status</span>
+                <span class="detail-value status-badge" [ngClass]="searchResult.full ? 'full-badge' : 'available-badge'">
+                  {{ getStatusText(searchResult) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+        
+        <mat-divider class="fancy-divider"></mat-divider>
+        
+        <mat-card-actions class="result-actions">
+          <button mat-flat-button color="primary" (click)="selectCreditPool(searchResult)" class="action-button scale-on-hover">
+            <mat-icon>edit</mat-icon> Edit
+          </button>
+          <button mat-flat-button color="warn" (click)="deleteCreditPool(searchResult.id_credit_pool)" class="action-button scale-on-hover">
+            <mat-icon>delete</mat-icon> Delete
+          </button>
+          <button mat-flat-button color="accent" (click)="calculateInterestRates(searchResult)" class="action-button scale-on-hover">
+            <mat-icon>calculate</mat-icon> Calculate Rates
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <!-- Search Error -->
+    <div *ngIf="searchError" class="search-error">
+      <mat-card>
+        <mat-card-content>
+          <mat-icon color="warn">error</mat-icon>
+          <span>{{ searchError }}</span>
+          <button mat-button color="primary" (click)="clearSearch()">
+            Clear Search
+          </button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <!-- Add Credit Pool Form -->
+    <form *ngIf="showAddForm" (ngSubmit)="createCreditPool()" #creditPoolForm="ngForm">
+      <div class="form-row">
+        <mat-form-field>
+          <mat-label>Pool Sum</mat-label>
+          <input matInput type="number" [(ngModel)]="newCreditPool.pool_Sum"
+                name="pool_Sum" required>
+          <mat-error *ngIf="creditPoolForm.submitted && !newCreditPool.pool_Sum">
+            Pool sum is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Minimum Value</mat-label>
+          <input matInput type="number" [(ngModel)]="newCreditPool.minValue" name="minValue">
+
+          <mat-error *ngIf="creditPoolForm.submitted && !newCreditPool.minValue">
+            Minimum value is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field>
+          <mat-label>Maximum Value</mat-label>
+          <input matInput type="number" [(ngModel)]="newCreditPool.maxValue"
+                name="maxValue" required>
+          <mat-error *ngIf="creditPoolForm.submitted && !newCreditPool.maxValue">
+            Maximum value is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Number of Installments</mat-label>
+          <input matInput type="number" [(ngModel)]="newCreditPool.n_Echeance"
+                name="n_Echeance" required>
+          <mat-error *ngIf="creditPoolForm.submitted && !newCreditPool.n_Echeance">
+            Number of installments is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field>
+          <mat-label>Open Date</mat-label>
+          <input matInput [matDatepicker]="openPicker"
+                [(ngModel)]="newCreditPool.open_Date" name="open_Date" required>
+          <mat-datepicker-toggle matSuffix [for]="openPicker"></mat-datepicker-toggle>
+          <mat-datepicker #openPicker></mat-datepicker>
+          <mat-error *ngIf="creditPoolForm.submitted && !newCreditPool.open_Date">
+            Open date is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Close Date</mat-label>
+          <input matInput [matDatepicker]="closePicker"
+                [(ngModel)]="newCreditPool.close_Date" name="close_Date" required>
+          <mat-datepicker-toggle matSuffix [for]="closePicker"></mat-datepicker-toggle>
+          <mat-datepicker #closePicker></mat-datepicker>
+          <mat-error *ngIf="creditPoolForm.submitted && !newCreditPool.close_Date">
+            Close date is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field>
+          <mat-label>Grace Period</mat-label>
+          <input matInput [matDatepicker]="gracePicker"
+                [(ngModel)]="newCreditPool.grace_Period" name="grace_Period" required>
+          <mat-datepicker-toggle matSuffix [for]="gracePicker"></mat-datepicker-toggle>
+          <mat-datepicker #gracePicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Period</mat-label>
+          <input matInput [matDatepicker]="periodPicker"
+                [(ngModel)]="newCreditPool.Period" name="Period" required>
+          <mat-datepicker-toggle matSuffix [for]="periodPicker"></mat-datepicker-toggle>
+          <mat-datepicker #periodPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-slide-toggle [(ngModel)]="newCreditPool.full" name="full">
+          Is Full
+        </mat-slide-toggle>
+      </div>
+
+      <div class="form-actions">
+        <button mat-button type="button" (click)="resetForm()">Cancel</button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="isLoading">
+          {{ isLoading ? 'Processing...' : 'Create Credit Pool' }}
+        </button>
+      </div>
+    </form>
+
+    <!-- Loading Indicator -->
+    <mat-progress-bar *ngIf="isLoading" mode="indeterminate" class="fancy-progress animate__animated animate__fadeIn"></mat-progress-bar>
+
+    <!-- Credit Pools Table Section -->
+    <div class="table-section animate__animated animate__fadeIn" *ngIf="!isLoading && creditPools.length > 0">
+      <div class="table-header">
+        <div class="table-title">
+          <mat-icon class="table-icon pulse-animation">list_alt</mat-icon>
+          <h3 class="gradient-text">Credit Pool List</h3>
+        </div>
+        <div class="table-actions">
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Filter Credit Pools</mat-label>
+            <input matInput placeholder="Search by any field..." #filterInput (keyup)="applyFilter(filterInput.value)">
+            <button *ngIf="filterInput.value" matSuffix mat-icon-button aria-label="Clear" (click)="filterInput.value=''; applyFilter('')">
+              <mat-icon>close</mat-icon>
+            </button>
+            <mat-icon matPrefix>filter_list</mat-icon>
+          </mat-form-field>
+          <button mat-stroked-button color="primary" (click)="loadCreditPools()" class="refresh-button scale-on-hover" matTooltip="Refresh data">
+            <mat-icon>refresh</mat-icon> Refresh
+          </button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z4 modern-table" matSort style="width: 100%;">
+          <!-- ID Column -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">ID</th>
+            <td mat-cell *matCellDef="let creditPool" class="id-cell">{{ creditPool.id_credit_pool }}</td>
+          </ng-container>
+
+          <!-- Pool Sum Column -->
+          <ng-container matColumnDef="poolSum">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Pool Sum</th>
+            <td mat-cell *matCellDef="let creditPool" class="pool-sum-cell">
+              <div class="amount-display">
+                <span class="currency-symbol">$</span>
+                <span class="amount-value">{{ creditPool.pool_Sum | number:'1.2-2' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Min Value Column -->
+          <ng-container matColumnDef="minValue">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Min Value</th>
+            <td mat-cell *matCellDef="let creditPool" class="min-value-cell">
+              <div class="amount-display small-amount">
+                <span class="currency-symbol">$</span>
+                <span class="amount-value">{{ creditPool.minValue | number:'1.2-2' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Max Value Column -->
+          <ng-container matColumnDef="maxValue">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Max Value</th>
+            <td mat-cell *matCellDef="let creditPool" class="max-value-cell">
+              <div class="amount-display small-amount">
+                <span class="currency-symbol">$</span>
+                <span class="amount-value">{{ creditPool.maxValue | number:'1.2-2' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Installments Column -->
+          <ng-container matColumnDef="installments">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Installments</th>
+            <td mat-cell *matCellDef="let creditPool" class="installments-cell">
+              <div class="installments-display">
+                <mat-icon class="cell-icon">payments</mat-icon>
+                <span>{{ creditPool.n_Echeance }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Open Date Column -->
+          <ng-container matColumnDef="openDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Open Date</th>
+            <td mat-cell *matCellDef="let creditPool" class="date-cell">
+              <div class="date-display">
+                <mat-icon class="cell-icon">event_available</mat-icon>
+                <span>{{ creditPool.open_Date | date:'mediumDate' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Close Date Column -->
+          <ng-container matColumnDef="closeDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Close Date</th>
+            <td mat-cell *matCellDef="let creditPool" class="date-cell">
+              <div class="date-display">
+                <mat-icon class="cell-icon">event_busy</mat-icon>
+                <span>{{ creditPool.close_Date | date:'mediumDate' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Status</th>
+            <td mat-cell *matCellDef="let creditPool" class="status-cell">
+              <div class="status-badge" [ngClass]="creditPool.full ? 'full-badge' : 'available-badge'">
+                <mat-icon class="status-icon">{{ creditPool.full ? 'block' : 'check_circle' }}</mat-icon>
+                <span>{{ getStatusText(creditPool) }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="table-header actions-header">Actions</th>
+            <td mat-cell *matCellDef="let creditPool" class="actions-cell">
+              <div class="action-buttons">
+                <button mat-icon-button color="primary" (click)="selectCreditPool(creditPool)" 
+                        matTooltip="Edit Credit Pool" class="action-icon scale-on-hover">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteCreditPool(creditPool.id_credit_pool)" 
+                        matTooltip="Delete Credit Pool" class="action-icon scale-on-hover">
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" (click)="calculateInterestRates(creditPool)" 
+                        matTooltip="Calculate Interest Rates" class="action-icon scale-on-hover">
+                  <mat-icon>calculate</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="header-row"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+              class="table-row hover-effect" 
+              [ngClass]="{'selected-row': selectedCreditPool?.id_credit_pool === row.id_credit_pool}"></tr>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons 
+                     class="modern-paginator"></mat-paginator>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state animate__animated animate__fadeIn" *ngIf="!isLoading && creditPools.length === 0">
+      <div class="empty-state-content">
+        <mat-icon class="empty-icon pulse-animation">account_balance</mat-icon>
+        <h3 class="gradient-text">No Credit Pools Found</h3>
+        <p>There are no credit pools in the system yet.</p>
+        <button mat-flat-button color="primary" (click)="showAddForm = true" class="add-button scale-on-hover">
+          <mat-icon>add</mat-icon> Create Your First Credit Pool
+        </button>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-state animate__animated animate__shakeX" *ngIf="error">
+      <div class="error-content">
+        <mat-icon class="error-icon">error_outline</mat-icon>
+        <div class="error-details">
+          <h3 class="error-title">An Error Occurred</h3>
+          <p class="error-message">{{ error }}</p>
+        </div>
+        <div class="error-actions">
+          <button mat-stroked-button color="warn" (click)="clearError()" class="dismiss-button scale-on-hover">
+            <mat-icon>close</mat-icon> Dismiss
+          </button>
+          <button mat-flat-button color="primary" (click)="loadCreditPools()" class="retry-button scale-on-hover">
+            <mat-icon>refresh</mat-icon> Retry
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Form -->
+    <div *ngIf="isEditing && selectedCreditPool" class="edit-form-container animate__animated animate__fadeInUp">
+      <div class="edit-header">
+        <div class="edit-title">
+          <mat-icon class="edit-icon pulse-animation">edit</mat-icon>
+          <h3 class="gradient-text">Edit Credit Pool #{{selectedCreditPool.id_credit_pool}}</h3>
+        </div>
+        <button mat-icon-button color="primary" (click)="cancelEdit()" class="close-button scale-on-hover" matTooltip="Cancel editing">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      
+      <mat-divider class="fancy-divider"></mat-divider>
+      
+      <form #editForm="ngForm" (ngSubmit)="updateCreditPool()" class="edit-form">
+        <div class="form-grid">
+          <!-- Pool Sum Field -->
+          <div class="form-field-container">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Pool Sum</mat-label>
+              <input matInput type="number" [(ngModel)]="selectedCreditPool.pool_Sum" name="editPoolSum" required>
+              <span matPrefix>$&nbsp;</span>
+              <mat-icon matSuffix>monetization_on</mat-icon>
+              <mat-error *ngIf="editForm.controls['editPoolSum']?.invalid && (editForm.controls['editPoolSum']?.dirty || editForm.controls['editPoolSum']?.touched)">
+                Pool Sum is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+          
+          <!-- Min Value Field -->
+          <div class="form-field-container">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Minimum Value</mat-label>
+              <input matInput type="number" [(ngModel)]="selectedCreditPool.minValue" name="editMinValue" required>
+              <span matPrefix>$&nbsp;</span>
+              <mat-icon matSuffix>arrow_downward</mat-icon>
+              <mat-error *ngIf="editForm.controls['editMinValue']?.invalid && (editForm.controls['editMinValue']?.dirty || editForm.controls['editMinValue']?.touched)">
+                Minimum Value is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+          
+          <!-- Max Value Field -->
+          <div class="form-field-container">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Maximum Value</mat-label>
+              <input matInput type="number" [(ngModel)]="selectedCreditPool.maxValue" name="editMaxValue" required>
+              <span matPrefix>$&nbsp;</span>
+              <mat-icon matSuffix>arrow_upward</mat-icon>
+              <mat-error *ngIf="editForm.controls['editMaxValue']?.invalid && (editForm.controls['editMaxValue']?.dirty || editForm.controls['editMaxValue']?.touched)">
+                Maximum Value is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+          
+          <!-- Installments Field -->
+          <div class="form-field-container">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Number of Installments</mat-label>
+              <input matInput type="number" [(ngModel)]="selectedCreditPool.n_Echeance" name="editNEcheance" required>
+              <mat-icon matSuffix>payments</mat-icon>
+              <mat-error *ngIf="editForm.controls['editNEcheance']?.invalid && (editForm.controls['editNEcheance']?.dirty || editForm.controls['editNEcheance']?.touched)">
+                Number of Installments is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+          
+          <!-- Open Date Field -->
+          <div class="form-field-container">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Open Date</mat-label>
+              <input matInput [matDatepicker]="editOpenPicker" [(ngModel)]="selectedCreditPool.open_Date" name="editOpenDate" required>
+              <mat-datepicker-toggle matSuffix [for]="editOpenPicker"></mat-datepicker-toggle>
+              <mat-datepicker #editOpenPicker></mat-datepicker>
+              <mat-icon matPrefix>event_available</mat-icon>
+              <mat-error *ngIf="editForm.controls['editOpenDate']?.invalid && (editForm.controls['editOpenDate']?.dirty || editForm.controls['editOpenDate']?.touched)">
+                Open Date is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+          
+          <!-- Close Date Field -->
+          <div class="form-field-container">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Close Date</mat-label>
+              <input matInput [matDatepicker]="editClosePicker" [(ngModel)]="selectedCreditPool.close_Date" name="editCloseDate" required>
+              <mat-datepicker-toggle matSuffix [for]="editClosePicker"></mat-datepicker-toggle>
+              <mat-datepicker #editClosePicker></mat-datepicker>
+              <mat-icon matPrefix>event_busy</mat-icon>
+              <mat-error *ngIf="editForm.controls['editCloseDate']?.invalid && (editForm.controls['editCloseDate']?.dirty || editForm.controls['editCloseDate']?.touched)">
+                Close Date is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+          
+          <!-- Grace Period Field -->
+          <div class="form-field-container">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Grace Period</mat-label>
+              <input matInput [matDatepicker]="editGracePicker" [(ngModel)]="selectedCreditPool.grace_Period" name="editGracePeriod" required>
+              <mat-datepicker-toggle matSuffix [for]="editGracePicker"></mat-datepicker-toggle>
+              <mat-datepicker #editGracePicker></mat-datepicker>
+              <mat-icon matPrefix>hourglass_top</mat-icon>
+              <mat-error *ngIf="editForm.controls['editGracePeriod']?.invalid && (editForm.controls['editGracePeriod']?.dirty || editForm.controls['editGracePeriod']?.touched)">
+                Grace Period is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+          
+          <!-- Period Field -->
+          <div class="form-field-container">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Period</mat-label>
+              <input matInput [matDatepicker]="editPeriodPicker" [(ngModel)]="selectedCreditPool.Period" name="editPeriod" required>
+              <mat-datepicker-toggle matSuffix [for]="editPeriodPicker"></mat-datepicker-toggle>
+              <mat-datepicker #editPeriodPicker></mat-datepicker>
+              <mat-icon matPrefix>date_range</mat-icon>
+              <mat-error *ngIf="editForm.controls['editPeriod']?.invalid && (editForm.controls['editPeriod']?.dirty || editForm.controls['editPeriod']?.touched)">
+                Period is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+        
+        <!-- Status Toggle -->
+        <div class="status-toggle-container">
+          <mat-slide-toggle [(ngModel)]="selectedCreditPool.full" name="editFull" color="warn" class="status-toggle scale-on-hover">
+            <div class="toggle-label">
+              <mat-icon>{{ selectedCreditPool.full ? 'block' : 'check_circle' }}</mat-icon>
+              <span>Mark as {{ selectedCreditPool.full ? 'Full' : 'Available' }}</span>
+            </div>
+          </mat-slide-toggle>
+        </div>
+        
+        <mat-divider class="fancy-divider"></mat-divider>
+        
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button mat-stroked-button type="button" (click)="cancelEdit()" class="cancel-button scale-on-hover">
+            <mat-icon>close</mat-icon> Cancel
+          </button>
+          <button mat-flat-button color="primary" type="submit" 
+                  [disabled]="!validateCreditPool(selectedCreditPool) || isLoading" 
+                  class="save-button scale-on-hover">
+            <mat-icon *ngIf="!isLoading">save</mat-icon>
+            <mat-spinner *ngIf="isLoading" diameter="20" class="spinner"></mat-spinner>
+            {{ isLoading ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </mat-card-content>
+</mat-card>

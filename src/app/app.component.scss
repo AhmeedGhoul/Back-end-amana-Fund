@@ -1,0 +1,24 @@
+.app-container {
+  min-height: 100vh;
+  background-color: #f4f5fa;
+  
+  .mat-toolbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .mat-sidenav-container {
+    height: 100%;
+  }
+
+  .mat-drawer {
+    width: 240px;
+    background-color: #ffffff;
+    box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+  }
+
+  .mat-drawer-content {
+    padding: 20px;
+    background-color: #f4f5fa;
+  }
+}

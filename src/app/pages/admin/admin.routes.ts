@@ -11,6 +11,9 @@ import { AccountPaymentsComponent } from './account-page/account-payments/accoun
 import { AccountFullDetailsComponent } from './account-page/account-details/account-full-details/account-full-details.component';
 import {PoliceComponent} from "../police/police.component";
 import {PoliceaddComponent} from "../police/add/policeadd.component";
+import { PaymentComponent } from "./payment/payment.component";
+import { ContractComponent } from "./contract/ContractComponent";
+import { CreditPoolComponent } from "./credit-pool/CreditPoolComponent";
 
 
 export const AdminRoutes: Routes = [
@@ -45,6 +48,21 @@ export const AdminRoutes: Routes = [
   {
     path: 'payments',
     component: AccountPaymentsComponent
+  },
+  {
+    path: 'payment',
+    component: PaymentComponent,
+    data: { title: 'Payments' }
+  },
+  {
+    path: 'contract',
+    component: ContractComponent,
+    data: { title: 'Contracts' }
+  },
+  {
+    path: 'credit-pool',
+    component: CreditPoolComponent,
+    data: { title: 'Credit Pools' }
   },
   {
     path: 'police',

@@ -65,10 +65,20 @@ export const navItems: NavItem[] = [
     ]
   },
   {
+    displayName: 'Contracts',
+    iconName: 'file-text', // changed from 'contract' to a valid icon
+    route: '/admin/contract',
+  },
+  {
+    displayName: 'Payments',
+    iconName: 'file-text', // changed from 'contract' to a valid icon
+    route: '/admin/payment',
+  },
+
+  {
     displayName: 'Credit Pools',
     iconName: 'receipt', // changed from 'credit' to valid financial icon
-    route: '/ui-components/menu',
-    roles: ['ADMIN','AGENT']
+    route: '/admin/credit-pool',
   },
   {
     displayName: 'Agencies',
