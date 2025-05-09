@@ -1,11 +1,9 @@
-import { CreditPool } from './CreditPool';
-import { Payment } from './Payment';
-import { User } from 'src/app/pages/admin/user/user.model';
+import { Payment } from '@app/models/Payment';
 
 export class Contract {
   // Primary key field - matches the Spring Boot entity
   id_Contract: number = 0;
-  
+
   // Basic contract properties - matching Spring Boot entity field names
   date_Contract: Date | null = new Date(); // LocalDateTime in Spring Boot
   documents: string = '';
@@ -13,21 +11,21 @@ export class Contract {
   queue_Number: number = 0; // public int in Spring Boot
   amount: number = 0; // Double in Spring Boot
   payed: number = 0; // Double in Spring Boot
-  
+
   // Foreign key fields for frontend convenience
   id_credit_pool: number = 0; // Derived from creditPool.id_credit_pool
   userId: number = 0; // Derived from user.id
-  
+
   // Collection fields
   payments: Payment[] = []; // Set<Payment> in Spring Boot (JsonIgnore)
-  
+
   // Nested objects to match backend structure with JPA relationships
   user: { id: number; firstName?: string; lastName?: string } = { id: 0 }; // ManyToOne relationship
   creditPool: { id_credit_pool: number; pool_sum?: number } = { id_credit_pool: 0 }; // ManyToOne relationship
-  
+
   // Additional fields that might be present in the backend response
   id?: number; // For compatibility with generic REST conventions
-  
+
   /**
    * Generates a PDF file name based on contract details
    * @returns A string with the generated file name
@@ -36,7 +34,7 @@ export class Contract {
     const contractId = this.id_Contract || 'new';
     const today = new Date();
     const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD format
-    
+
     return `contract_${contractId}_${dateStr}.pdf`;
   }
 
@@ -67,10 +65,10 @@ export class Contract {
       contract.id_Contract = Number(json.Id);
       contract.id = Number(json.Id);
     }
-    
+
     // Log the ID assignment
     console.log(`Contract ID assignment: id_Contract=${contract.id_Contract}, id=${contract.id}`);
-    
+
     // Check for different variations of queue number field name
     if (json.queue_Number !== undefined && json.queue_Number !== null) {
       contract.queue_Number = Number(json.queue_Number);
@@ -83,13 +81,13 @@ export class Contract {
     } else if (json.QUEUE_NUMBER !== undefined && json.QUEUE_NUMBER !== null) {
       contract.queue_Number = Number(json.QUEUE_NUMBER);
     }
-  
+
     // Log the queue number assignment
     console.log(`Queue number assignment: ${contract.queue_Number}`);
     // Handle numeric fields with proper type conversion
     contract.amount = typeof json.amount === 'string' ? parseFloat(json.amount) : (json.amount || 0);
     contract.payed = typeof json.payed === 'string' ? parseFloat(json.payed) : (json.payed || 0);
-    
+
     // Log numeric field values for debugging
     console.log('Parsed numeric values:', {
       id_Contract: contract.id_Contract,
@@ -97,7 +95,7 @@ export class Contract {
       amount: contract.amount,
       payed: contract.payed
     });
-    
+
     // Preserve the original nested objects for backend compatibility
     if (json.user) {
       contract.user = json.user;
@@ -113,9 +111,9 @@ export class Contract {
       // Create a user object for backend compatibility
       contract.user = { id: Number(json.userId) };
     }
-    
+
     console.log(`User assignment: userId=${contract.userId}, user=${JSON.stringify(contract.user)}`);
-    
+
     // Handle credit pool - preserve the nested object
     if (json.creditPool) {
       contract.creditPool = json.creditPool;
@@ -139,7 +137,7 @@ export class Contract {
       contract.id_credit_pool = Number(json.creditPoolId);
       contract.creditPool = { id_credit_pool: Number(json.creditPoolId) };
     }
-    
+
     console.log(`CreditPool assignment: id_credit_pool=${contract.id_credit_pool}, creditPool=${JSON.stringify(contract.creditPool)}`);
 
     // Handle string fields
@@ -155,7 +153,7 @@ export class Contract {
           contract.date_Contract = new Date(json.date_Contract);
         }
         console.log('Parsed date_Contract:', contract.date_Contract);
-        
+
         // Validate the date is valid
         if (contract.date_Contract && isNaN(contract.date_Contract.getTime())) {
           console.warn('Invalid date after parsing date_Contract:', json.date_Contract);
@@ -174,7 +172,7 @@ export class Contract {
           contract.date_Contract = new Date(json.dateContract);
         }
         console.log('Parsed dateContract:', contract.date_Contract);
-        
+
         // Validate the date is valid
         if (contract.date_Contract && isNaN(contract.date_Contract.getTime())) {
           console.warn('Invalid date after parsing dateContract:', json.dateContract);
@@ -197,7 +195,7 @@ export class Contract {
           contract.withdrawal_date = new Date(json.withdrawal_date);
         }
         console.log('Parsed withdrawal_date:', contract.withdrawal_date);
-        
+
         // Validate the date is valid
         if (contract.withdrawal_date && isNaN(contract.withdrawal_date.getTime())) {
           console.warn('Invalid date after parsing withdrawal_date:', json.withdrawal_date);
@@ -216,7 +214,7 @@ export class Contract {
           contract.withdrawal_date = new Date(json.withdrawalDate);
         }
         console.log('Parsed withdrawalDate:', contract.withdrawal_date);
-        
+
         // Validate the date is valid
         if (contract.withdrawal_date && isNaN(contract.withdrawal_date.getTime())) {
           console.warn('Invalid date after parsing withdrawalDate:', json.withdrawalDate);
