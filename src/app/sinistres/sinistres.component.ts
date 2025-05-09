@@ -146,9 +146,10 @@ export class SinistresComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sinistreForm.reset();
   }
 
-  cancelAddSinistre() {
-    this.showForm = false;
-  }
+ cancelAddSinistre(): void {
+  this.showForm = false; // Hide the form
+  this.selectedSinistre = null; // Deselect any selected sinistre
+}
 
   selectSinistre(sinistre: Sinistres): void {
     this.selectedSinistre = sinistre;

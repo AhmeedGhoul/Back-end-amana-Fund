@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
-import { CommonModule, DatePipe, NgIf, NgForOf } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { RecaptchaModule } from "ng-recaptcha";
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'; // Import FormsModule and ReactiveFormsModule
 
 // Material Form Controls
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -13,13 +12,11 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-
 import { MatNativeDateModule } from '@angular/material/core'; // Import MatNativeDateModule
 // Material Navigation
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-
 // Material Layout
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
@@ -29,7 +26,6 @@ import { MatListModule } from '@angular/material/list';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTreeModule } from '@angular/material/tree';
-
 // Material Buttons & Indicators
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -39,35 +35,25 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatRippleModule } from '@angular/material/core';
-
 // Material Popups & Modals
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
 // Material Data tables
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-
-// Components
-import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { AuditComponent } from './pages/admin/auditPage/audit/audit.component';
 import { AddAuditDialogComponent } from './pages/admin/auditPage/audit/add-audit-dialog/add-audit-dialog.component';
 import { ActivityLogComponent } from './pages/admin/auditPage/activity-log/activity-log.component';
 import { FraudCaseComponent } from './pages/admin/auditPage/fraud-case/fraud-case.component';
 import { AddFraudCaseDialogComponent } from './pages/admin/auditPage/fraud-case/add-fraud-case-dialog/add-fraud-case-dialog.component';
-import { RequestComponent } from './pages/admin/agency/request/request.component';
-import { AddRequestDialogComponent } from './pages/admin/agency/request/add-request-dialog/add-request-dialog.component';
-import { AuditDetailsComponent } from './pages/admin/auditPage/audit/audit-details/audit-details.component';
-import { VisitorComponent } from './pages/visitor/visitor.component';
 import { SinistresComponent } from './sinistres/sinistres.component';
 import { ContractComponent, ConfirmationDialogComponent } from './contract/contract.component'; // Import ConfirmationDialogComponent
 
 @NgModule({
   declarations: [
-    NotFoundComponent,
 
     SinistresComponent,
     ContractComponent,
@@ -112,59 +98,9 @@ import { ContractComponent, ConfirmationDialogComponent } from './contract/contr
     MatPaginatorModule,
     MatSortModule,
     MatTableModule,
-    MatNativeDateModule,
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatAutocompleteModule,
-    MatCheckboxModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatRadioModule,
-    MatSelectModule,
-    MatSliderModule,
-    MatSlideToggleModule,
-    MatMenuModule,
-    MatSidenavModule,
-    MatToolbarModule,
-    MatCardModule,
-    MatDividerModule,
-    MatExpansionModule,
-    MatGridListModule,
-    MatListModule,
-    MatStepperModule,
-    MatTabsModule,
-    MatTreeModule,
-    MatButtonModule,
-    MatButtonToggleModule,
-    MatBadgeModule,
-    MatChipsModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatProgressBarModule,
-    MatRippleModule,
-    MatBottomSheetModule,
-    MatDialogModule,
-    MatSnackBarModule,
-    MatTooltipModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatTableModule,
-    RecaptchaModule,
-    DatePipe,
-    NgIf,
-    AddAuditDialogComponent,
-    AddFraudCaseDialogComponent,
-    RequestComponent,
-    AddRequestDialogComponent,
-    VisitorComponent,
     MatNativeDateModule
   ],
   exports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
     CommonModule, // Export CommonModule
     FormsModule, // Export FormsModule
     ReactiveFormsModule, // Export ReactiveFormsModule
@@ -203,11 +139,7 @@ import { ContractComponent, ConfirmationDialogComponent } from './contract/contr
     MatPaginatorModule,
     MatSortModule,
     MatTableModule,
-    RecaptchaModule,
-    DatePipe,
-    NgForOf,
-    NgIf
-  ],
-
+    MatNativeDateModule
+  ]
 })
 export class MaterialModule { }
