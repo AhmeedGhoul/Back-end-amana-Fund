@@ -10,7 +10,12 @@
 
     <!-- Payment Statistics Chart -->
     <app-account-stats-chart [rib]="account?.rib" [periodType]="periodType"></app-account-stats-chart>
-
+    <div class="container">
+      <h2>My Payment Section</h2>
+      <app-credit-card-animation></app-credit-card-animation>
+      
+      <!-- Other content -->
+    </div>
     <mat-card-content>
       <div *ngIf="loading" class="loading-container">
         <mat-spinner></mat-spinner>

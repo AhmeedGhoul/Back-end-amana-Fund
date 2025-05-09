@@ -63,7 +63,9 @@ import { AddRequestDialogComponent } from './pages/admin/agency/request/add-requ
 import { AuditDetailsComponent } from './pages/admin/auditPage/audit/audit-details/audit-details.component';
 import { VisitorComponent } from './pages/visitor/visitor.component';
 import { SinistresComponent } from './sinistres/sinistres.component';
-import { ContractComponent, ConfirmationDialogComponent } from './contract/contract.component'; // Import ConfirmationDialogComponent
+import { ContractComponent, ConfirmationDialogComponent } from './contract/contract.component';
+import { ThreeDCardComponent } from './components/three-dcard/three-dcard.component';
+import { CreditCardAnimationComponent } from './credit-card-animation/credit-card-animation.component'; // Import ConfirmationDialogComponent
 
 @NgModule({
   declarations: [
@@ -71,9 +73,10 @@ import { ContractComponent, ConfirmationDialogComponent } from './contract/contr
 
     SinistresComponent,
     ContractComponent,
-    ConfirmationDialogComponent // Declare ConfirmationDialogComponent
+    ConfirmationDialogComponent
   ],
-  imports: [  // Add these imports
+  imports: [
+    CreditCardAnimationComponent,  // Add these imports
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -159,9 +162,11 @@ import { ContractComponent, ConfirmationDialogComponent } from './contract/contr
     RequestComponent,
     AddRequestDialogComponent,
     VisitorComponent,
-    MatNativeDateModule
+    MatNativeDateModule,
+    ThreeDCardComponent
   ],
   exports: [
+    ThreeDCardComponent, // if you want to use it in other modules
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

@@ -14,13 +14,20 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { BaseChartDirective } from 'ng2-charts';
 
 import { AccountFullDetailsComponent } from './account-full-details/account-full-details.component';
 import { AccountPaymentDialogComponent } from './account-payment-dialog/account-payment-dialog.component';
-import { NgChartsModule } from 'ng2-charts';
-
+import { AccountDetailsComponent } from './account-details.component';
+import { ThreeDCardComponent } from '@app/components/three-dcard/three-dcard.component';
+import { CreditCardAnimationComponent } from '@app/credit-card-animation/credit-card-animation.component';
 @NgModule({
+  declarations: [
+    
+  ],
   imports: [
+    AccountDetailsComponent,
+    CreditCardAnimationComponent,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -35,21 +42,15 @@ import { NgChartsModule } from 'ng2-charts';
     MatTableModule,
     MatFormFieldModule,
     MatSelectModule,
-    NgChartsModule,
     MatDatepickerModule,
-    MatButtonModule,
-    MatInputModule,
-    MatSnackBarModule,
-    MatProgressSpinnerModule,
-    MatIconModule,
-    MatDialogModule,
-    MatTableModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    NgChartsModule,
-    MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    BaseChartDirective,
+    ThreeDCardComponent
   ],
-  schemas: []
+  exports: [
+    AccountDetailsComponent,
+    ThreeDCardComponent,
+    CreditCardAnimationComponent
+  ]
 })
 export class AccountDetailsModule { }

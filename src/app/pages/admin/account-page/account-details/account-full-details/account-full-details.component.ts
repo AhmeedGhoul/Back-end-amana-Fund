@@ -24,6 +24,7 @@ import { AccountPayment } from '@app/models/account-payment.model';
 import { AccountPaymentDialogComponent } from '../account-payment-dialog/account-payment-dialog.component';
 import {BaseChartDirective} from "ng2-charts";
 import { AccountStatsChartComponent } from './account-stats-chart.component';
+import { CreditCardAnimationComponent } from '@app/credit-card-animation/credit-card-animation.component';
 
 // Register Chart.js components to avoid 'category is not a registered scale' error
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineController, PointElement, LineElement, BarController);
@@ -35,6 +36,7 @@ Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, L
   styleUrls: ['./account-full-details.component.scss'],
   standalone: true,
   imports: [
+    CreditCardAnimationComponent,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

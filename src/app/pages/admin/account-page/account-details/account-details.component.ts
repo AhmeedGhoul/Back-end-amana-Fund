@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,14 +14,15 @@ import { Router } from '@angular/router';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { HttpClientModule } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
-import { RouterLink } from '@angular/router';
+import { RouterModule, RouterLink } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
+
 import { Account, Page } from '@app/models/account.model';
 import { AddAccountDialogComponent } from './add-account-dialog/add-account-dialog.component';
 import { AccountActionsComponent } from './account-actions/account-actions.component';
 import { AccountService } from '../../../../services/account.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ThreeDCardComponent } from '@app/components/three-dcard/three-dcard.component';
 
 @Component({
   selector: 'app-account-details',
@@ -44,7 +45,8 @@ import { HttpErrorResponse } from '@angular/common/http';
     HttpClientModule,
     RouterModule,
     RouterLink,
-    AccountActionsComponent
+    AccountActionsComponent,
+    ThreeDCardComponent
   ],
   templateUrl: './account-details.component.html',
   styleUrls: ['./account-details.component.scss']
