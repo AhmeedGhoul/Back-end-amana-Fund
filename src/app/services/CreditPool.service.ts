@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { CreditPool } from '../Models/CreditPool';
+import { CreditPool } from '@app/models/CreditPool';
 
 @Injectable({
   providedIn: 'root',
@@ -10,11 +10,14 @@ export class CreditPoolService {
   private apiUrl = 'http://localhost:8088/api/v1/creditpool';
 
   constructor(private http: HttpClient) {}
-
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('authToken');
+    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  }
   addCreditPool(pool: any): Observable<CreditPool> {
     // Envoyer les données telles quelles sans transformation supplémentaire
     // Utiliser any pour le type de retour pour éviter les erreurs de conversion
-    return this.http.post<any>(`${this.apiUrl}/createCreditPool`, pool)
+    return this.http.post<any>(`${this.apiUrl}/createCreditPool`, pool,{ headers: this.getAuthHeaders() })
       .pipe(
         map(response => {
           console.log('API response:', response);
@@ -24,18 +27,18 @@ export class CreditPoolService {
   }
 
   retrieveCreditPools(): Observable<CreditPool[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/all`)
+    return this.http.get<any[]>(`${this.apiUrl}/all`,{ headers: this.getAuthHeaders() })
       .pipe(map(pools => pools.map(pool => CreditPool.fromJson(pool))));
   }
 
   retrieveCreditPool(id: number): Observable<CreditPool> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`)
+    return this.http.get<any>(`${this.apiUrl}/${id}`,{ headers: this.getAuthHeaders() })
       .pipe(map(response => CreditPool.fromJson(response)));
   }
 
   retrieveCreditPoolById(id: number): Observable<CreditPool> {
     // This method is specifically for the search functionality
-    return this.http.get<any>(`${this.apiUrl}/${id}`)
+    return this.http.get<any>(`${this.apiUrl}/${id}`,{ headers: this.getAuthHeaders() })
       .pipe(
         map(response => {
           if (!response) {
@@ -48,12 +51,12 @@ export class CreditPoolService {
 
   updateCreditPool(creditPool: CreditPool): Observable<CreditPool> {
     const creditPoolForApi = this.convertDatesToStrings(creditPool);
-    return this.http.put<any>(`${this.apiUrl}/update`, creditPoolForApi)
+    return this.http.put<any>(`${this.apiUrl}/update`, creditPoolForApi,{ headers: this.getAuthHeaders() })
       .pipe(map(response => CreditPool.fromJson(response)));
   }
 
   removeCreditPool(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/delete/${id}`)
+    return this.http.delete<any>(`${this.apiUrl}/delete/${id}`,{ headers: this.getAuthHeaders() })
       .pipe(
         map(response => {
           // Si la réponse est vide ou null, renvoyer un objet vide pour éviter les erreurs
@@ -63,7 +66,7 @@ export class CreditPoolService {
   }
 
   calculateInterestRatesForPool(creditPoolId: number): Observable<Record<string, number>> {
-    return this.http.get<Record<string, number>>(`${this.apiUrl}/${creditPoolId}/interest-rates`);
+    return this.http.get<Record<string, number>>(`${this.apiUrl}/${creditPoolId}/interest-rates`,{ headers: this.getAuthHeaders() });
   }
 
   /**
@@ -72,7 +75,7 @@ export class CreditPoolService {
    */
   private convertDatesToStrings(creditPool: CreditPool): any {
     const now = new Date();
-    
+
     // Create a new object with the exact field names expected by the backend
     const result = {
       id_credit_pool: creditPool.id_credit_pool,
@@ -82,7 +85,7 @@ export class CreditPoolService {
       pool_Sum: creditPool.pool_Sum,
       full: creditPool.full,
       contracts: creditPool.contracts,
-      
+
       // Format dates according to backend's expected format
       open_Date: creditPool.open_Date instanceof Date && !isNaN(creditPool.open_Date.getTime())
         ? creditPool.open_Date.toISOString().slice(0, 19)
@@ -100,7 +103,7 @@ export class CreditPoolService {
         ? creditPool.Period.toISOString().slice(0, 19)
         : new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000).toISOString().slice(0, 19),
     };
-    
+
     console.log('Converted credit pool for API:', result);
     return result;
   }

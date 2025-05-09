@@ -1,11 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CreditPoolService } from '../../../services/CreditPool.service';
-import { CreditPool } from '../../../Models/CreditPool';
+import { CreditPool } from '@app/models/CreditPool';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TablerIconsModule } from 'angular-tabler-icons';
-import { IconPlus, IconRefresh } from 'angular-tabler-icons/icons';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -70,7 +68,7 @@ export class CreditPoolComponent implements OnInit {
   searchResult: CreditPool | null = null;
   isSearching = false;
   searchError: string | null = null;
-  
+
   // Interest rates properties
   interestRates: Map<number, number> = new Map<number, number>();
   selectedPoolForRates: CreditPool | null = null;
@@ -85,7 +83,7 @@ export class CreditPoolComponent implements OnInit {
   selectedCreditPool: CreditPool | null = null;
   error: string | null = null;
   dataSource: MatTableDataSource<CreditPool> = new MatTableDataSource<CreditPool>();
-  
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -106,12 +104,12 @@ export class CreditPoolComponent implements OnInit {
       next: (creditPools) => {
         // Convert string dates to Date objects for each credit pool
         this.creditPools = creditPools.map(pool => CreditPool.fromJson(pool));
-        
+
         // Set up the MatTableDataSource
         this.dataSource = new MatTableDataSource(this.creditPools);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-        
+
         // Set up custom filtering
         this.dataSource.filterPredicate = (data: CreditPool, filter: string) => {
           const searchTerms = filter.toLowerCase().split(' ');
@@ -125,14 +123,14 @@ export class CreditPoolComponent implements OnInit {
             closeDate: this.datePipe.transform(data.close_Date, 'mediumDate') || '',
             status: this.getStatusText(data)
           };
-          
+
           return searchTerms.every(term => {
-            return Object.values(poolData).some(val => 
+            return Object.values(poolData).some(val =>
               val.toLowerCase().includes(term)
             );
           });
         };
-        
+
         this.isLoading = false;
       },
       error: (error) => {
@@ -162,11 +160,11 @@ export class CreditPoolComponent implements OnInit {
       grace_Period: this.newCreditPool.grace_Period instanceof Date ? this.formatDateForBackend(this.newCreditPool.grace_Period) : null,
       Period: this.newCreditPool.Period instanceof Date ? this.formatDateForBackend(this.newCreditPool.Period) : null
     };
-    
+
     console.log('Prepared credit pool payload:', payload);
     return payload;
   }
-  
+
   // Format date to match backend's expected format (yyyy-MM-dd'T'HH:mm:ss)
   formatDateForBackend(date: Date | null): string | null {
     if (!date) return null;
@@ -325,36 +323,36 @@ export class CreditPoolComponent implements OnInit {
     // Convert to number to ensure proper typing
     const numericId = Number(id);
     this.isLoading = true;
-    
+
     this.creditPoolService.removeCreditPool(numericId).subscribe({
       next: (response) => {
         // Même si la réponse est vide, on considère l'opération comme réussie si on arrive ici
         this.creditPools = this.creditPools.filter(p => p.id_credit_pool !== numericId);
-        this.snackBar.open('Credit pool deleted successfully', 'Close', { 
+        this.snackBar.open('Credit pool deleted successfully', 'Close', {
           duration: 3000,
           panelClass: ['success-snackbar']
         });
-        
+
         // Recharger la liste pour s'assurer qu'elle est à jour
         this.loadCreditPools();
       },
       error: (err) => {
         console.error('Error deleting credit pool:', err);
-        
+
         // Vérifier si l'erreur est un statut 200 (ce qui n'est pas vraiment une erreur)
         if (err.status === 200) {
           // Traiter comme un succès malgré l'erreur Angular
           this.creditPools = this.creditPools.filter(p => p.id_credit_pool !== id);
-          this.snackBar.open('Credit pool deleted successfully', 'Close', { 
+          this.snackBar.open('Credit pool deleted successfully', 'Close', {
             duration: 3000,
             panelClass: ['success-snackbar']
           });
-          
+
           // Recharger la liste pour s'assurer qu'elle est à jour
           this.loadCreditPools();
         } else {
           // C'est une vraie erreur
-          this.snackBar.open('Error deleting credit pool: ' + (err.error?.message || err.message || 'Unknown error'), 'Close', { 
+          this.snackBar.open('Error deleting credit pool: ' + (err.error?.message || err.message || 'Unknown error'), 'Close', {
             duration: 5000,
             panelClass: ['error-snackbar']
           });
@@ -369,10 +367,10 @@ export class CreditPoolComponent implements OnInit {
 
   selectCreditPool(creditPool: CreditPool): void {
     this.isEditing = true;
-    
+
     // Create a deep copy using JSON to ensure all properties are properly copied
     this.selectedCreditPool = JSON.parse(JSON.stringify(creditPool));
-    
+
     console.log('Selected credit pool for editing:', this.selectedCreditPool);
   }
 
@@ -402,11 +400,11 @@ export class CreditPoolComponent implements OnInit {
       this.setError('Please enter a valid Credit Pool ID');
       return;
     }
-    
+
     this.isSearching = true;
     this.searchError = null;
     this.searchResult = null;
-    
+
     this.creditPoolService.retrieveCreditPoolById(this.searchId).subscribe({
       next: (creditPool) => {
         this.searchResult = creditPool;
@@ -425,17 +423,17 @@ export class CreditPoolComponent implements OnInit {
     this.searchResult = null;
     this.searchError = null;
   }
-  
+
   calculateInterestRates(creditPool: CreditPool): void {
     if (!creditPool || !creditPool.id_credit_pool) {
       this.setError('Invalid credit pool selected');
       return;
     }
-    
+
     this.isLoadingRates = true;
     this.ratesError = null;
     this.selectedPoolForRates = creditPool;
-    
+
     this.creditPoolService.calculateInterestRatesForPool(creditPool.id_credit_pool).subscribe({
       next: (rates: Record<string, number>) => {
         console.log('Interest rates received:', rates);
@@ -453,13 +451,13 @@ export class CreditPoolComponent implements OnInit {
       }
     });
   }
-  
+
   clearInterestRates(): void {
     this.interestRates = new Map<number, number>();
     this.selectedPoolForRates = null;
     this.ratesError = null;
   }
-  
+
   formatInterestRate(rate: number): string {
     return rate ? rate.toFixed(1) + '%' : 'N/A';
   }
@@ -488,7 +486,7 @@ export class CreditPoolComponent implements OnInit {
   getStatusColor(creditPool: CreditPool): string {
     return creditPool.full ? 'warn' : 'primary';
   }
-  
+
   /**
    * Applies filter to the data source
    * @param filterValue Text to filter by
@@ -500,7 +498,7 @@ export class CreditPoolComponent implements OnInit {
       this.dataSource.paginator.firstPage();
     }
   }
-  
+
   /**
    * Calculates the average interest rate from all rates in the map
    * @returns The average interest rate or 0 if no rates exist
@@ -509,12 +507,12 @@ export class CreditPoolComponent implements OnInit {
     if (!this.interestRates || this.interestRates.size === 0) {
       return 0;
     }
-    
+
     let sum = 0;
     this.interestRates.forEach((rate) => {
       sum += rate;
     });
-    
+
     return sum / this.interestRates.size;
   }
 }

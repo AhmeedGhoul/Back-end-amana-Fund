@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Contract } from '../Models/Contract';
+import { Contract } from '@app/models/Contract';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +19,7 @@ export class PdfService {
   generateContractPdf(contract: Contract): Observable<Blob> {
     // Ensure the contract has the proper structure for the backend
     const contractDto = this.prepareContractForBackend(contract);
-    
+
     // Call the backend API with responseType 'blob' to handle binary data
     return this.http.post(`${this.baseUrl}/generate-pdf`, contractDto, {
       responseType: 'blob'
@@ -40,7 +40,7 @@ export class PdfService {
       amount: contract.amount || 0,
       payed: contract.payed || 0
     };
-    
+
     // Handle user reference correctly
     if (contract.userId) {
       contractDto.user = {
@@ -51,7 +51,7 @@ export class PdfService {
         id: contract.user.id
       };
     }
-    
+
     // Handle credit pool reference correctly
     if (contract.id_credit_pool) {
       contractDto.creditPool = {
@@ -62,7 +62,7 @@ export class PdfService {
         id_credit_pool: contract.creditPool.id_credit_pool
       };
     }
-    
+
     // Format dates properly for Java LocalDateTime
     if (contract.date_Contract instanceof Date && !isNaN(contract.date_Contract.getTime())) {
       contractDto.date_Contract = contract.date_Contract.toISOString().slice(0, 19);
@@ -76,7 +76,7 @@ export class PdfService {
         console.warn('Error parsing date_Contract string:', e);
       }
     }
-    
+
     if (contract.withdrawal_date instanceof Date && !isNaN(contract.withdrawal_date.getTime())) {
       contractDto.withdrawal_date = contract.withdrawal_date.toISOString().slice(0, 19);
     } else if (typeof contract.withdrawal_date === 'string' && contract.withdrawal_date) {
@@ -89,7 +89,7 @@ export class PdfService {
         console.warn('Error parsing withdrawal_date string:', e);
       }
     }
-    
+
     return contractDto;
   }
 }

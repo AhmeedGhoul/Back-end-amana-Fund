@@ -13,12 +13,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Contract } from '../../../Models/Contract';
+import { Contract } from '@app/models/Contract';
 import { ContractService } from '../../../services/Contract.service';
 import { UserService } from '../user/user.service';
 import { User } from '../user/user.model';
 import { CreditPoolService } from '../../../services/CreditPool.service';
-import { CreditPool } from '../../../Models/CreditPool';
+import { CreditPool } from '@app/models/CreditPool';
 import { PdfService } from '../../../services/pdf.service';
 
 @Component({
@@ -44,7 +44,7 @@ import { PdfService } from '../../../services/pdf.service';
   templateUrl: './contract.component.html',
   styleUrls: ['./contract.component.scss']
 })
-export class ContractComponent implements OnInit {  
+export class ContractComponent implements OnInit {
   // Refactor functionality
   showRefactorSidebar = false;
   refactoringContract: Contract | null = null;
@@ -91,12 +91,12 @@ export class ContractComponent implements OnInit {
   loadUsers(): void {
     this.loadingUsers = true;
     console.log('Attempting to load users...');
-    
+
     // Try with a larger page size to get all users
     this.userService.getUsers(0, 1000).subscribe(
       (response) => {
         console.log('Full user response:', response);
-        
+
         if (response && Array.isArray(response.content) && response.content.length > 0) {
           this.users = response.content;
           console.log('Users loaded successfully:', this.users.length);
@@ -107,22 +107,22 @@ export class ContractComponent implements OnInit {
         } else {
           console.warn('User response was empty or invalid format:', response);
           // Add a placeholder to indicate the issue
-          this.users = [{ 
-            id: -1, 
-            firstName: 'Error', 
-            lastName: 'Loading Users', 
-            email: '', 
-            phoneNumber: '', 
-            age: 0, 
-            address: '', 
-            civilStatus: '', 
-            createdDate: '', 
-            dateOfBirth: '', 
-            enabled: false, 
-            accountLocked: false, 
-            accountDeleted: false, 
-            lastModifiedDate: '', 
-            userScore: 0 
+          this.users = [{
+            id: -1,
+            firstName: 'Error',
+            lastName: 'Loading Users',
+            email: '',
+            phoneNumber: '',
+            age: 0,
+            address: '',
+            civilStatus: '',
+            createdDate: '',
+            dateOfBirth: '',
+            enabled: false,
+            accountLocked: false,
+            accountDeleted: false,
+            lastModifiedDate: '',
+            userScore: 0
           }];
         }
         this.loadingUsers = false;
@@ -130,22 +130,22 @@ export class ContractComponent implements OnInit {
       (error) => {
         console.error('Error loading users:', error);
         // Add a placeholder to indicate the error
-        this.users = [{ 
-          id: -1, 
-          firstName: 'Error', 
-          lastName: 'Loading Users', 
-          email: '', 
-          phoneNumber: '', 
-          age: 0, 
-          address: '', 
-          civilStatus: '', 
-          createdDate: '', 
-          dateOfBirth: '', 
-          enabled: false, 
-          accountLocked: false, 
-          accountDeleted: false, 
-          lastModifiedDate: '', 
-          userScore: 0 
+        this.users = [{
+          id: -1,
+          firstName: 'Error',
+          lastName: 'Loading Users',
+          email: '',
+          phoneNumber: '',
+          age: 0,
+          address: '',
+          civilStatus: '',
+          createdDate: '',
+          dateOfBirth: '',
+          enabled: false,
+          accountLocked: false,
+          accountDeleted: false,
+          lastModifiedDate: '',
+          userScore: 0
         }];
         this.loadingUsers = false;
       }
@@ -156,12 +156,12 @@ export class ContractComponent implements OnInit {
     this.contractService.retrieveContracts().subscribe(
       (contracts) => {
         console.log('Contracts received:', contracts);
-        
+
         // Inspect the first contract to understand the structure
         if (contracts.length > 0) {
           console.log('First contract structure:', JSON.stringify(contracts[0], null, 2));
           console.log('First contract ID:', contracts[0].id_Contract);
-          
+
           // Check for nested objects and ID fields
           if (contracts[0].user) {
             console.log('User object found:', contracts[0].user);
@@ -169,7 +169,7 @@ export class ContractComponent implements OnInit {
           if (contracts[0].creditPool) {
             console.log('CreditPool object found:', contracts[0].creditPool);
           }
-          
+
           // Check for other ID-related fields
           console.log('Contract raw properties:', Object.keys(contracts[0]));
           for (const key of Object.keys(contracts[0])) {
@@ -178,8 +178,8 @@ export class ContractComponent implements OnInit {
               console.log(`ID field found: ${key} = ${(contracts[0] as any)[key]}`);
             }
           }
-        }  
-        
+        }
+
         // Ensure all contracts are properly transformed to Contract objects
         this.contracts = contracts.map(contract => {
           // Make sure dates are properly handled
@@ -201,7 +201,7 @@ export class ContractComponent implements OnInit {
             // If date is null or undefined, set a default date
             contract.date_Contract = new Date();
           }
-          
+
           if (typeof contract.withdrawal_date === 'string' && contract.withdrawal_date) {
             try {
               contract.withdrawal_date = new Date(contract.withdrawal_date);
@@ -226,15 +226,15 @@ export class ContractComponent implements OnInit {
             futureDate.setMonth(futureDate.getMonth() + 1);
             contract.withdrawal_date = futureDate;
           }
-          
+
           // Debug contract IDs and dates
           console.log(`Contract ID: ${contract.id_Contract}, type: ${typeof contract.id_Contract}`);
           console.log(`Contract dates: date_Contract=${contract.date_Contract}, withdrawal_date=${contract.withdrawal_date}`);
-          
+
           if (contract.id_Contract === null || contract.id_Contract === undefined) {
             console.warn('Contract has null or undefined ID:', contract);
           }
-          
+
           return contract;
         });
         console.log('Processed contracts:', this.contracts);
@@ -251,34 +251,34 @@ export class ContractComponent implements OnInit {
       alert('Please enter an amount for the contract');
       return;
     }
-    
+
     if (!this.newContract.userId) {
       alert('Please select a user for the contract');
       return;
     }
-    
+
     if (!this.newContract.id_credit_pool) {
       alert('Please select a credit pool for the contract');
       return;
     }
-    
+
     // Ensure contract date is in the future (tomorrow)
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
-    
+
     // Only set the date if it's not already set or if it's in the past
     if (!this.newContract.date_Contract || this.newContract.date_Contract <= new Date()) {
       this.newContract.date_Contract = tomorrow;
     }
-    
+
     // Set withdrawal date to a future date if not set
     if (!this.newContract.withdrawal_date) {
       const futureDate = new Date(tomorrow);
       futureDate.setMonth(futureDate.getMonth() + 1); // One month in the future
       this.newContract.withdrawal_date = futureDate;
     }
-    
+
     console.log('Sending contract with dates:', {
       date_Contract: this.newContract.date_Contract,
       withdrawal_date: this.newContract.withdrawal_date,
@@ -286,13 +286,13 @@ export class ContractComponent implements OnInit {
       id_credit_pool: this.newContract.id_credit_pool,
       amount: this.newContract.amount
     });
-    
+
     this.contractService.addContract(this.newContract).subscribe(
       (response) => {
         console.log('Contract created successfully, raw response:', response);
         console.log('Response type:', typeof response);
         console.log('Response properties:', Object.keys(response));
-        
+
         // Check if the response has an ID
         if (response && response.id_Contract) {
           console.log('New contract ID received:', response.id_Contract);
@@ -306,17 +306,17 @@ export class ContractComponent implements OnInit {
             }
           }
         }
-        
+
         this.loadContracts();
         this.showForm = false;
         this.newContract = new Contract();
       },
       (error) => {
         console.error('Error creating contract:', error);
-        
+
         // Extract detailed error message
         let errorMessage = 'Unknown error';
-        
+
         if (error.error && typeof error.error === 'string') {
           // Direct error message from backend
           errorMessage = error.error;
@@ -329,10 +329,10 @@ export class ContractComponent implements OnInit {
         } else if (error.status === 500) {
           errorMessage = 'Server error (500): The contract could not be created. This might be due to: Missing required fields, invalid date format, invalid credit pool ID, or database constraints violation.';
         }
-        
+
         // Log the contract data that was sent for debugging
         console.log('Contract data that caused the error:', JSON.stringify(this.newContract, null, 2));
-        
+
         // Show error message to user
         alert('Error creating contract: ' + errorMessage);
       }
@@ -342,13 +342,13 @@ export class ContractComponent implements OnInit {
   updateContract(): void {
     if (this.selectedContract) {
       console.log('Attempting to update contract:', this.selectedContract);
-      
+
       // Validate contract has an ID
       if (!this.selectedContract.id_Contract) {
         alert('Cannot update contract: Missing contract ID');
         return;
       }
-      
+
       this.contractService.updateContract(this.selectedContract).subscribe(
         (updatedContract) => {
           console.log('Contract updated successfully:', updatedContract);
@@ -358,10 +358,10 @@ export class ContractComponent implements OnInit {
         },
         (error) => {
           console.error('Error updating contract', error);
-          
+
           // Extract detailed error message
           let errorMessage = 'Unknown error';
-          
+
           if (error.error && typeof error.error === 'string') {
             // Direct error message from backend
             errorMessage = error.error;
@@ -374,7 +374,7 @@ export class ContractComponent implements OnInit {
           } else if (error.status === 500) {
             errorMessage = 'Server error (500): The contract could not be updated. This might be due to: Missing required fields, invalid date format, invalid IDs, or database constraints violation.';
           }
-          
+
           alert('Error updating contract: ' + errorMessage);
         }
       );
@@ -384,14 +384,14 @@ export class ContractComponent implements OnInit {
   deleteContract(id: number): void {
     // Get the contract object from the contracts array to get more information
     const contractToDelete = this.contracts.find(c => c.id_Contract === id);
-    
+
     if (!contractToDelete) {
       alert('Contract not found in the current list.');
       return;
     }
-    
+
     console.log('Contract to delete:', contractToDelete);
-    
+
     // Check if the contract has a valid ID
     if (!id || id === 0) {
       alert('Invalid contract ID. Cannot delete contract.');
@@ -399,20 +399,20 @@ export class ContractComponent implements OnInit {
     }
 
     console.log('Attempting to delete contract with ID:', id);
-    
+
     this.contractService.removeContract(id).subscribe(
       (response) => {
         console.log('Delete response:', response);
-        
+
         // Reload the contracts list from the server to ensure we have the latest data
         this.loadContracts();
-        
+
         // Show success message
         alert('Contract deleted successfully');
       },
       (error) => {
         console.error('Error deleting contract', error);
-        
+
         // Even with a 200 status, it might be treated as an error due to response type
         if (error.status === 200) {
           // This is actually a success case
@@ -427,33 +427,33 @@ export class ContractComponent implements OnInit {
 
   selectContract(contract: Contract): void {
     console.log('Original contract being selected:', contract);
-    
+
     // Create a deep copy to ensure we don't lose any properties
     this.selectedContract = JSON.parse(JSON.stringify(contract));
-    
+
     // Double check that the ID is preserved
     if (this.selectedContract && (!this.selectedContract.id_Contract || this.selectedContract.id_Contract === 0)) {
       console.warn('Contract ID was lost during selection, original ID was:', contract.id_Contract);
-      
+
       // Try to recover the ID
       if (contract.id_Contract) {
         this.selectedContract.id_Contract = contract.id_Contract;
       }
     }
-    
+
     console.log('Selected contract after processing:', this.selectedContract);
   }
 
   displayContracts(): void {
     this.showForm = !this.showForm;
-    
+
     // If showing the form, reload users and credit pools
     if (this.showForm) {
       this.loadUsers();
       this.loadCreditPools();
     }
   }
-  
+
   /**
    * Opens the refactor sidebar for a contract and loads its payment schedule
    * @param contract The contract to refactor
@@ -507,7 +507,7 @@ export class ContractComponent implements OnInit {
           duration: 3000,
           panelClass: ['success-snackbar']
         });
-        
+
         // Reload the payments to show the updated schedule
         this.loadPayments(contractId);
       },
@@ -540,43 +540,43 @@ export class ContractComponent implements OnInit {
       alert('Cannot generate PDF: Invalid contract');
       return;
     }
-    
+
     console.log('Generating PDF for contract:', contract);
     this.generatingPdf = true;
-    
+
     // Create a deep copy to ensure we don't lose any properties
     const contractCopy = JSON.parse(JSON.stringify(contract));
-    
+
     this.pdfService.generateContractPdf(contractCopy).subscribe(
       (pdfBlob: Blob) => {
         console.log('PDF generated successfully');
         this.generatingPdf = false;
-        
+
         // Create a file name for the PDF
         const contractId = contract.id_Contract || 'new';
         const today = new Date();
         const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD format
         const fileName = `contract_${contractId}_${dateStr}.pdf`;
-        
+
         // Create a download link and trigger the download
         const url = window.URL.createObjectURL(pdfBlob);
         const link = document.createElement('a');
         link.href = url;
         link.download = fileName;
         link.click();
-        
+
         // Clean up
         window.URL.revokeObjectURL(url);
-        
+
         alert('PDF generated successfully');
       },
       (error) => {
         console.error('Error generating PDF', error);
         this.generatingPdf = false;
-        
+
         // Extract detailed error message
         let errorMessage = 'Unknown error';
-        
+
         if (error.error && typeof error.error === 'string') {
           // Direct error message from backend
           errorMessage = error.error;
@@ -589,7 +589,7 @@ export class ContractComponent implements OnInit {
         } else if (error.status === 500) {
           errorMessage = 'Server error (500): The PDF could not be generated. This might be due to missing required fields or invalid data.';
         }
-        
+
         alert('Error generating PDF: ' + errorMessage);
       }
     );

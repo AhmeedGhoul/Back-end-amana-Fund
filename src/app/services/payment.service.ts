@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Payment } from '../Models/Payment';
+import { Payment } from '../models/Payment';
 
 interface FraudCheckResult {
   isFraudulent: boolean;
@@ -14,17 +14,22 @@ interface FraudCheckResult {
 })
 export class PaymentService {
   private apiUrl = '/api/v1/payments';
-
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('authToken');
+    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  }
   constructor(private http: HttpClient) {}
 
   getPayments(): Observable<Payment[]> {
-    return this.http.get<Payment[]>(`${this.apiUrl}/all`).pipe(
+    return this.http.get<Payment[]>(`${this.apiUrl}/all`,
+        { headers: this.getAuthHeaders() }).pipe(
       catchError(this.handleError)
     );
   }
 
   getPaymentById(id: number): Observable<Payment> {
-    return this.http.get<Payment>(`${this.apiUrl}/${id}`).pipe(
+    return this.http.get<Payment>(`${this.apiUrl}/${id}`,
+        { headers: this.getAuthHeaders() }).pipe(
       catchError(this.handleError)
     );
   }
@@ -32,18 +37,20 @@ export class PaymentService {
   createPayment(payment: Payment): Observable<Payment> {
     const payload = {
       ...payment,
-      date_payment: payment.date_payment ? 
-                   new Date(payment.date_payment).toISOString() : 
+      date_payment: payment.date_payment ?
+                   new Date(payment.date_payment).toISOString() :
                    new Date().toISOString()
     };
 
-    return this.http.post<Payment>(`${this.apiUrl}/add`, payload).pipe(
+    return this.http.post<Payment>(`${this.apiUrl}/add`, payload,
+        { headers: this.getAuthHeaders() }).pipe(
       catchError(this.handleError)
     );
   }
 
   updatePayment(payment: Payment): Observable<Payment> {
-    return this.http.put<Payment>(`${this.apiUrl}/update/${payment.id_payment}`, payment).pipe(
+    return this.http.put<Payment>(`${this.apiUrl}/update/${payment.id_payment}`, payment,
+        { headers: this.getAuthHeaders() }).pipe(
       catchError(this.handleError)
     );
   }
@@ -53,13 +60,15 @@ export class PaymentService {
       return throwError(() => new Error('Invalid payment ID'));
     }
 
-    return this.http.delete<void>(`${this.apiUrl}/delete/${id}`).pipe(
+    return this.http.delete<void>(`${this.apiUrl}/delete/${id}`,
+        { headers: this.getAuthHeaders() }).pipe(
       catchError(this.handleError)
     );
   }
 
   checkFraud(payment: Payment): Observable<FraudCheckResult> {
-    return this.http.post<FraudCheckResult>(`${this.apiUrl}/check`, payment).pipe(
+    return this.http.post<FraudCheckResult>(`${this.apiUrl}/check`, payment,
+        { headers: this.getAuthHeaders() }).pipe(
       catchError(this.handleError)
     );
   }

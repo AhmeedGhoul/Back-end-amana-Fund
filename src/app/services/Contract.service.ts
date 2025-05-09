@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map, throwError, catchError, tap } from 'rxjs';
-import { Contract } from '../Models/Contract';
+import { Contract } from '@app/models/Contract';
 
 // Define Payment interface if it doesn't exist elsewhere
 interface Payment {
@@ -17,7 +17,10 @@ interface Payment {
 })
 export class ContractService {
   private baseUrl = 'http://localhost:8088/api/v1/contracts'; // Using proxy configuration
-
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('authToken');
+    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  }
   constructor(private http: HttpClient) {}
 
   addContract(contract: Contract): Observable<Contract> {
@@ -30,7 +33,7 @@ export class ContractService {
       amount: contract.amount || 0,
       payed: contract.payed || 0
     };
-    
+
     // Handle user reference correctly - Spring Boot expects a user object with just the ID
     if (contract.userId) {
       contractDto.user = {
@@ -46,7 +49,7 @@ export class ContractService {
         id: 1
       };
     }
-    
+
     // Handle credit pool reference correctly - Spring Boot expects a creditPool object with just the ID
     if (contract.id_credit_pool) {
       contractDto.creditPool = {
@@ -62,14 +65,14 @@ export class ContractService {
         id_credit_pool: 1
       };
     }
-    
+
     // Set dates with proper formatting for Java LocalDateTime
     const now = new Date();
     now.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
-    
+
     const futureDate = new Date(now);
     futureDate.setMonth(futureDate.getMonth() + 1);
-    
+
     // Format dates as expected by Java's LocalDateTime (yyyy-MM-dd'T'HH:mm:ss)
     // The backend expects this exact format for proper parsing
     if (contract.date_Contract instanceof Date && !isNaN(contract.date_Contract.getTime())) {
@@ -77,19 +80,19 @@ export class ContractService {
     } else {
       contractDto.date_Contract = now.toISOString().slice(0, 19);
     }
-      
+
     if (contract.withdrawal_date instanceof Date && !isNaN(contract.withdrawal_date.getTime())) {
       contractDto.withdrawal_date = contract.withdrawal_date.toISOString().slice(0, 19);
     } else {
       contractDto.withdrawal_date = futureDate.toISOString().slice(0, 19);
     }
-    
+
     // Log the exact structure we're sending
     console.log('Contract DTO structure being sent to backend:', JSON.stringify(contractDto, null, 2));
-    
+
     console.log('Sending contract to backend:', JSON.stringify(contractDto, null, 2));
-    
-    return this.http.post<any>(`${this.baseUrl}/add`, contractDto)
+
+    return this.http.post<any>(`${this.baseUrl}/add`, contractDto,{ headers: this.getAuthHeaders() })
       .pipe(
         map(newContract => {
           console.log('Contract created successfully:', newContract);
@@ -99,16 +102,16 @@ export class ContractService {
   }
 
   retrieveContracts(): Observable<Contract[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/all`)
+    return this.http.get<any[]>(`${this.baseUrl}/all`,{ headers: this.getAuthHeaders() })
       .pipe(
         map(response => {
           console.log('Raw contract response from backend:', response);
-          
+
           // Check if the response is an array
           if (Array.isArray(response)) {
             return response.map(contract => {
               console.log('Processing contract:', contract);
-              
+
               // Ensure date fields are properly formatted before passing to fromJson
               if (contract.date_Contract) {
                 try {
@@ -120,7 +123,7 @@ export class ContractService {
                   console.warn('Error formatting date_Contract:', e);
                 }
               }
-              
+
               if (contract.withdrawal_date) {
                 try {
                   // If it's already a string, keep it as is
@@ -131,7 +134,7 @@ export class ContractService {
                   console.warn('Error formatting withdrawal_date:', e);
                 }
               }
-              
+
               return Contract.fromJson(contract);
             });
           } else {
@@ -143,7 +146,7 @@ export class ContractService {
   }
 
   retrieveContract(id: number): Observable<Contract> {
-    return this.http.get<any>(`${this.baseUrl}/${id}`)
+    return this.http.get<any>(`${this.baseUrl}/${id}`,{ headers: this.getAuthHeaders() })
       .pipe(
         map(contract => {
           console.log('Retrieved contract by ID:', contract);
@@ -159,7 +162,7 @@ export class ContractService {
    */
   refactorEcheances(contractId: number): Observable<any> {
     // Use responseType: 'text' to handle string responses from the backend
-    return this.http.post(`${this.baseUrl}/refactor/${contractId}`, {}, { responseType: 'text' })
+    return this.http.post(`${this.baseUrl}/refactor/${contractId}`, {}, { responseType: 'text',headers: this.getAuthHeaders() })
       .pipe(
         tap(response => console.log('Refactor response:', response)),
         // Map the text response to an object with a message property
@@ -184,7 +187,7 @@ export class ContractService {
    * @returns An observable with the updated payment list
    */
   getRefactoredPayments(contractId: number): Observable<Payment[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/${contractId}/payments`)
+    return this.http.get<any[]>(`${this.baseUrl}/${contractId}/payments`,{ headers: this.getAuthHeaders() })
       .pipe(
         map(payments => {
           console.log('Retrieved payments for contract:', payments);
@@ -205,7 +208,7 @@ export class ContractService {
         })
       );
   }
-  
+
   // This method is properly implemented above - removing duplicate
 
   updateContract(contract: Contract): Observable<Contract> {
@@ -214,19 +217,19 @@ export class ContractService {
       console.error('Cannot update contract without a valid ID');
       return throwError('Contract ID is required for update operations');
     }
-    
+
     // Create a properly structured DTO for updating that matches the Spring Boot entity exactly
     const contractDto: any = {
       // Primary key - must be present and valid
       id_Contract: contract.id_Contract,
-      
+
       // Basic properties
       documents: contract.documents || '',
       queue_Number: contract.queue_Number || 0,
       amount: contract.amount || 0,
       payed: contract.payed || 0
     };
-    
+
     // Handle user reference correctly - Spring Boot expects a user object with just the ID
     if (contract.userId) {
       contractDto.user = {
@@ -242,7 +245,7 @@ export class ContractService {
         id: 1
       };
     }
-    
+
     // Handle credit pool reference correctly - Spring Boot expects a creditPool object with just the ID
     if (contract.id_credit_pool) {
       contractDto.creditPool = {
@@ -258,14 +261,14 @@ export class ContractService {
         id_credit_pool: 1
       };
     }
-    
+
     // Set dates with proper formatting for Java LocalDateTime
     const now = new Date();
     now.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
-    
+
     const futureDate = new Date(now);
     futureDate.setMonth(futureDate.getMonth() + 1);
-    
+
     // Format dates as expected by Java's LocalDateTime (yyyy-MM-dd'T'HH:mm:ss)
     if (contract.date_Contract instanceof Date && !isNaN(contract.date_Contract.getTime())) {
       contractDto.date_Contract = contract.date_Contract.toISOString().slice(0, 19);
@@ -285,7 +288,7 @@ export class ContractService {
     } else {
       contractDto.date_Contract = now.toISOString().slice(0, 19);
     }
-    
+
     if (contract.withdrawal_date instanceof Date && !isNaN(contract.withdrawal_date.getTime())) {
       contractDto.withdrawal_date = contract.withdrawal_date.toISOString().slice(0, 19);
     } else if (typeof contract.withdrawal_date === 'string' && contract.withdrawal_date) {
@@ -304,12 +307,12 @@ export class ContractService {
     } else {
       contractDto.withdrawal_date = futureDate.toISOString().slice(0, 19);
     }
-    
+
     console.log('Updating contract with ID:', contract.id_Contract);
     console.log('Update DTO:', JSON.stringify(contractDto, null, 2));
-    
+
     // Add error handling
-    return this.http.put<any>(`${this.baseUrl}/update`, contractDto)
+    return this.http.put<any>(`${this.baseUrl}/update`, contractDto,{ headers: this.getAuthHeaders() })
       .pipe(
         catchError(error => {
           console.error('Error in update contract request:', error);
@@ -324,6 +327,6 @@ export class ContractService {
 
   removeContract(id: number): Observable<any> {
     // Set responseType to 'text' to handle plain text responses
-    return this.http.delete(`${this.baseUrl}/delete/${id}`, { responseType: 'text' });
+    return this.http.delete(`${this.baseUrl}/delete/${id}`, { responseType: 'text', headers: this.getAuthHeaders() });
   }
 }

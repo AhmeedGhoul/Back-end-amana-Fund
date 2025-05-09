@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PaymentService } from '../../../services/payment.service';
-import { Payment } from '../../../Models/Payment';
+import { Payment } from '@app/models/Payment';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -180,7 +180,7 @@ export class PaymentComponent implements OnInit {
       },
     });
   }
-  
+
   deletePayment(payment: Payment): void {
     if (!confirm('Are you sure you want to delete this payment?')) {
       return;
