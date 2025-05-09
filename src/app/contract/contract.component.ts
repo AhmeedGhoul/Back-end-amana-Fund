@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Contract } from '../contract.model';
 import { ContractService } from '../contract.service';
 import {
@@ -11,7 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-
+import Chart from 'chart.js/auto';
 function pastOrPresentDateValidator(
   control: AbstractControl
 ): { [key: string]: any } | null {
@@ -29,32 +29,22 @@ function pastOrPresentDateValidator(
   styleUrls: ['./contract.component.scss'],
 })
 export class ContractComponent implements OnInit {
-  contractsList: Contract[] = [];
-
+contractsList: Contract[] = [];
   selectedContract: Contract | null = null;
   contractForm: FormGroup;
   showForm: boolean = false;
   sinistresList: any[] = [];
-  displayedColumns: string[] = [
-    'idContrat',
-    'date',
-    'name',
-    'contact',
-    'coverageLimit',
-    'premium',
-    'sinistre',
-    'actions',
-  ];
 
-  // Pagination properties
   page: number = 0;
   size: number = 5;
   totalElements: number = 0;
 
-  // Search properties
   searchIdContrat: number | null = null;
   searchName: string = '';
   searchDate: string = '';
+
+  @ViewChild('rentabiliteChart') rentabiliteChartRef!: ElementRef;
+  rentabiliteChart: any;
 
   constructor(
     private contractService: ContractService,
@@ -76,38 +66,74 @@ export class ContractComponent implements OnInit {
     this.loadContracts();
     this.loadSinistres();
   }
+  ngAfterViewInit(): void {
+    // Initial empty chart
+    this.initChart();
+  }
+
   getRentabilite(contract: Contract): number {
-    if (contract.coverageLimit && contract.coverageLimit !== 0) {
-      return (contract.premium / contract.coverageLimit) * 100;
-    }
-    return 0;
+    return contract.coverageLimit ? (contract.premium / contract.coverageLimit) * 100 : 0;
+  }
+
+  initChart(): void {
+    this.rentabiliteChart = new Chart(this.rentabiliteChartRef.nativeElement, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Rentabilité (%)',
+          data: [],
+          backgroundColor: '#42a5f5',
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+
+  updateChart(): void {
+    const labels = this.contractsList.map(c => `#${c.idContrat}`);
+    const data = this.contractsList.map(c => this.getRentabilite(c));
+
+    this.rentabiliteChart.data.labels = labels;
+    this.rentabiliteChart.data.datasets[0].data = data;
+    this.rentabiliteChart.update();
   }
 
 
   loadContracts(): void {
-    this.contractService
-      .getContractsPaginatedAndSearch(
-        this.page,
-        this.size,
-        this.searchIdContrat,
-        this.searchName,
-        this.searchDate
-      )
-      .subscribe(
-        (data: any) => {
-          this.contractsList = data.content;
-          this.totalElements = data.totalElements;
-          this.page = data.number; // Current page number
-          this.size = data.size;   // Page size
-        },
-        (error: any) => {
-          console.error('Error fetching contracts:', error);
-          this.snackBar.open('Error fetching contracts', 'Close', {
-            duration: 3000,
-          });
-        }
-      );
-  }
+  this.contractService
+    .getContractsPaginatedAndSearch(
+      this.page,
+      this.size,
+      this.searchIdContrat,
+      this.searchName,
+      this.searchDate
+    )
+    .subscribe(
+      (data: any) => {
+        this.contractsList = data.content;
+        this.totalElements = data.totalElements;
+        this.page = data.number;
+        this.size = data.size;
+
+        // 👇 Update chart with new data
+        this.updateChart();
+      },
+      (error: any) => {
+        console.error('Error fetching contracts:', error);
+        this.snackBar.open('Error fetching contracts', 'Close', {
+          duration: 3000,
+        });
+      }
+    );
+}
 
   loadSinistres(): void {
     this.contractService.getSinistres().subscribe(
