@@ -51,7 +51,6 @@ Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, L
     MatRippleModule,
     RouterModule,
     DatePipe,
-    BaseChartDirective,
     AccountStatsChartComponent
   ]
 })

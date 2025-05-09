@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AccountService, PaymentStatisticsDTO } from '@app/services/account.service';
 import { Chart, ChartData, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, LineController } from 'chart.js';
-import zoomPlugin from 'chartjs-plugin-zoom';
 import { BaseChartDirective } from 'ng2-charts';
 import { format, parseISO, compareAsc, differenceInDays } from 'date-fns';
+import zoomPlugin from 'chartjs-plugin-zoom';
 
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, LineController, zoomPlugin);
 
@@ -77,20 +77,20 @@ export class AccountStatsChartComponent implements OnInit, OnChanges {
 
   onChartZoom({ chart }: any): void {
     if (!chart.scales['x']) return;
-    
+
     const visibleRange = chart.scales['x'].max - chart.scales['x'].min;
     const prevPeriodType = this.periodType;
-    
+
     // Calculate zoom level based on visible range
     this.zoomLevel = this.paymentStats.length / visibleRange;
-    
+
     // Determine the appropriate period type based on zoom level
     if (this.zoomLevel > 5 && this.periodType === 'MONTH') {
       this.periodType = 'DAY';
     } else if (this.zoomLevel <= 5 && this.periodType === 'DAY') {
       this.periodType = 'MONTH';
     }
-    
+
     // Only fetch new data if period type changed
     if (prevPeriodType !== this.periodType && this.rib) {
       this.fetchPaymentStatistics(this.rib);
@@ -103,14 +103,14 @@ export class AccountStatsChartComponent implements OnInit, OnChanges {
     this.accountService.getPaymentStatistics(rib, this.periodType).subscribe({
       next: (stats: PaymentStatisticsDTO[]) => {
         // Sort stats by date in ascending order
-        this.paymentStats = stats.sort((a, b) => 
+        this.paymentStats = stats.sort((a, b) =>
           compareAsc(parseISO(a.period), parseISO(b.period))
         );
-        
+
         // Format labels based on periodType
         const formattedLabels = this.paymentStats.map(s => {
           const date = parseISO(s.period);
-          return this.periodType === 'DAY' 
+          return this.periodType === 'DAY'
             ? format(date, 'MMM dd, yyyy')
             : format(date, 'MMM yyyy');
         });
@@ -149,7 +149,7 @@ export class AccountStatsChartComponent implements OnInit, OnChanges {
         };
         this.loading = false;
         this.chart?.update();
-        
+
         // Reset zoom after data update
         setTimeout(() => {
           if (this.chart && this.chart.chart) {

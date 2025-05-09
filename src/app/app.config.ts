@@ -31,6 +31,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 // services & interceptors
 import { ObjectService } from './services/object.service';
 import { LoaderInterceptor } from './pages/loader/loader.interceptor';
+import {routes} from "@app/app.routes";
 
 // translation (optional)
 /*
