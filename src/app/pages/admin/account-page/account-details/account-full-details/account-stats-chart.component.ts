@@ -1,11 +1,13 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AccountService, PaymentStatisticsDTO } from '@app/services/account.service';
-import { Chart, ChartType, ChartData, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineController, PointElement, LineElement, BarController } from 'chart.js';
+import { Chart, ChartData, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, LineController } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom';
 import { BaseChartDirective } from 'ng2-charts';
+import { format, parseISO, compareAsc, differenceInDays } from 'date-fns';
 
-Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineController, PointElement, LineElement, BarController);
+Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, LineController, zoomPlugin);
 
 @Component({
   selector: 'app-account-stats-chart',
@@ -21,16 +23,39 @@ Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, L
 export class AccountStatsChartComponent implements OnInit, OnChanges {
   @Input() rib: string | undefined;
   @Input() periodType: string = 'MONTH';
+  @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   paymentStats: PaymentStatisticsDTO[] = [];
-  statsChartData: ChartData<'bar' | 'line'> = { labels: [], datasets: [] };
+  statsChartData: ChartData<'line'> = {
+    labels: [],
+    datasets: [
+      {
+        label: 'Balance',
+        data: [],
+        fill: true,
+        borderColor: '#00ff99',
+        backgroundColor: 'rgba(0,255,153,0.15)',
+        type: 'line' as const,
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        borderWidth: 2,
+        order: 1
+      }
+    ]
+  };
   statsChartOptions: any;
-  loading = true;
+  loading = false;
+  errorMessage: string | null = null;
+  private zoomLevel: number = 1;
 
   constructor(private accountService: AccountService) {}
 
   ngOnInit(): void {
     this.initChartOptions();
+    if (this.rib) {
+      this.fetchPaymentStatistics(this.rib);
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -39,21 +64,66 @@ export class AccountStatsChartComponent implements OnInit, OnChanges {
     }
   }
 
+  resetZoom(): void {
+    if (this.chart && this.chart.chart) {
+      this.chart.chart.resetZoom();
+      this.zoomLevel = 1;
+      if (this.periodType !== 'MONTH' && this.rib) {
+        this.periodType = 'MONTH';
+        this.fetchPaymentStatistics(this.rib);
+      }
+    }
+  }
+
+  onChartZoom({ chart }: any): void {
+    if (!chart.scales['x']) return;
+    
+    const visibleRange = chart.scales['x'].max - chart.scales['x'].min;
+    const prevPeriodType = this.periodType;
+    
+    // Calculate zoom level based on visible range
+    this.zoomLevel = this.paymentStats.length / visibleRange;
+    
+    // Determine the appropriate period type based on zoom level
+    if (this.zoomLevel > 5 && this.periodType === 'MONTH') {
+      this.periodType = 'DAY';
+    } else if (this.zoomLevel <= 5 && this.periodType === 'DAY') {
+      this.periodType = 'MONTH';
+    }
+    
+    // Only fetch new data if period type changed
+    if (prevPeriodType !== this.periodType && this.rib) {
+      this.fetchPaymentStatistics(this.rib);
+    }
+  }
+
   fetchPaymentStatistics(rib: string): void {
     this.loading = true;
+    this.errorMessage = null;
     this.accountService.getPaymentStatistics(rib, this.periodType).subscribe({
       next: (stats: PaymentStatisticsDTO[]) => {
-        this.paymentStats = stats;
+        // Sort stats by date in ascending order
+        this.paymentStats = stats.sort((a, b) => 
+          compareAsc(parseISO(a.period), parseISO(b.period))
+        );
+        
+        // Format labels based on periodType
+        const formattedLabels = this.paymentStats.map(s => {
+          const date = parseISO(s.period);
+          return this.periodType === 'DAY' 
+            ? format(date, 'MMM dd, yyyy')
+            : format(date, 'MMM yyyy');
+        });
+
         this.statsChartData = {
-          labels: stats.map(s => s.period),
+          labels: formattedLabels,
           datasets: [
             {
               label: 'Balance',
-              data: stats.map(s => s.totalAmount),
+              data: this.paymentStats.map(s => s.totalAmount),
               fill: true,
               borderColor: (ctx: any) => {
-                const chart = ctx.chart;
-                const {ctx: canvasCtx, chartArea} = chart;
+                const { ctx: canvasCtx, chartArea } = ctx.chart;
                 if (!chartArea) return '#00ff99';
                 const gradient = canvasCtx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
                 gradient.addColorStop(0, 'rgba(0,255,153,0.1)');
@@ -61,27 +131,34 @@ export class AccountStatsChartComponent implements OnInit, OnChanges {
                 return gradient;
               },
               backgroundColor: (ctx: any) => {
-                const chart = ctx.chart;
-                const {ctx: canvasCtx, chartArea} = chart;
-                if (!chartArea) return 'rgba(0,0,0,0.8)';
+                const { ctx: canvasCtx, chartArea } = ctx.chart;
+                if (!chartArea) return 'rgba(0,255,153,0.15)';
                 const gradient = canvasCtx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
                 gradient.addColorStop(0, 'rgba(0,255,153,0.05)');
-                gradient.addColorStop(1, 'rgba(0,255,153,0.15)');
+                gradient.addColorStop(1, 'rgba(0,255,153,0.3)');
                 return gradient;
               },
               type: 'line' as const,
-              tension: 0.3,
+              tension: 0.4,
               pointRadius: 0,
               pointHoverRadius: 6,
-              borderWidth: 3,
+              borderWidth: 2,
               order: 1
             }
           ]
         };
-
         this.loading = false;
+        this.chart?.update();
+        
+        // Reset zoom after data update
+        setTimeout(() => {
+          if (this.chart && this.chart.chart) {
+            this.chart.chart.resetZoom();
+          }
+        }, 100);
       },
-      error: () => {
+      error: (err) => {
+        this.errorMessage = 'Failed to load payment statistics. Please try again.';
         this.loading = false;
       }
     });
@@ -90,66 +167,87 @@ export class AccountStatsChartComponent implements OnInit, OnChanges {
   initChartOptions(): void {
     this.statsChartOptions = {
       responsive: true,
-      animation: {
-        duration: 900,
-        easing: 'easeInOutQuart'
-      },
+      maintainAspectRatio: false,
       plugins: {
+        zoom: {
+          zoom: {
+            wheel: {
+              enabled: true,
+              speed: 0.1
+            },
+            pinch: {
+              enabled: true
+            },
+            mode: 'x',
+            onZoom: (ctx: any) => this.onChartZoom(ctx)
+          },
+          pan: {
+            enabled: true,
+            mode: 'x',
+            threshold: 10
+          },
+          limits: {
+            x: { min: 'original', max: 'original', minRange: 3 }
+          }
+        },
         legend: { display: false },
         tooltip: {
           enabled: true,
           mode: 'index',
           intersect: false,
-          backgroundColor: '#191c24',
+          backgroundColor: 'rgba(25,28,36,0.9)',
           titleColor: '#00ff99',
-          bodyColor: '#fff',
+          bodyColor: '#ffffff',
           borderColor: '#00ff99',
           borderWidth: 1,
-          padding: 14,
+          padding: 12,
           callbacks: {
-            label: (ctx: any) => `Balance: ${ctx.parsed.y?.toLocaleString()} TND`,
-            title: (ctx: any) => `Date: ${ctx[0].label}`
+            label: (ctx: any) => `Balance: ${ctx.parsed.y.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} TND`,
+            title: (ctx: any) => `Period: ${ctx[0].label}`
           }
         }
       },
       scales: {
         x: {
-          display: true,
+          type: 'category',
           grid: {
             display: false,
             drawBorder: false
           },
           ticks: {
             color: '#b0b0b0',
-            font: { size: 13 }
+            font: { size: 12 },
+            maxTicksLimit: 8,
+            autoSkip: true,
+            maxRotation: 45,
+            minRotation: 0
           }
         },
         y: {
-          display: true,
           grid: {
-            color: 'rgba(0,255,153,0.07)',
-            borderDash: [2, 4],
+            color: 'rgba(255,255,255,0.1)',
+            borderDash: [5, 5],
             drawBorder: false
           },
           ticks: {
             color: '#b0b0b0',
-            font: { size: 13 },
-            callback: (val: number) => val.toLocaleString()
+            font: { size: 12 },
+            callback: (val: number) => Number(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
           }
-        }
-      },
-      layout: {
-        padding: {
-          left: 0,
-          right: 0,
-          top: 16,
-          bottom: 0
         }
       },
       elements: {
         line: {
           borderJoinStyle: 'round',
           borderCapStyle: 'round'
+        }
+      },
+      transitions: {
+        zoom: {
+          animation: {
+            duration: 500,
+            easing: 'easeOutCubic'
+          }
         }
       }
     };

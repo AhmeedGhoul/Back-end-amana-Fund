@@ -1,12 +1,16 @@
 <div class="chart-card">
-  <div *ngIf="loading" class="chart-loading">
-    <mat-spinner diameter="48"></mat-spinner>
+  <div class="chart-header">
+    <span class="chart-title">Balance Trend</span>
+    <span class="period-indicator">{{ periodType | titlecase }}</span>
   </div>
-  <div *ngIf="!loading">
-    <div class="chart-header">
-      <span class="chart-title">Balance Trend</span>
+  <div *ngIf="loading" class="chart-loading">
+    <mat-spinner diameter="50" color="accent"></mat-spinner>
+  </div>
+  <div *ngIf="!loading" class="chart-content">
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
     </div>
-    <div class="chart-area">
+    <div class="chart-area" *ngIf="!errorMessage">
       <canvas baseChart
         [data]="statsChartData"
         [options]="statsChartOptions"
