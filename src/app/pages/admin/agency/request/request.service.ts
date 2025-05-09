@@ -23,13 +23,17 @@ export class RequestService {
       .set('page', page.toString())
       .set('size', size.toString());
 
+    // Loop through filters and add them as query parameters
     Object.keys(filters).forEach(key => {
-      if (filters[key]) {
+      if (filters[key] != null && filters[key] !== '') {  // Ensure no empty values are added
         params = params.set(key, filters[key]);
       }
     });
-    return this.http.get<any>(`${this.apiUrl}/search`, { params });
+
+    // Send the GET request with the query parameters
+    return this.http.get<any>(`${this.apiUrl}/filter/product`, { params }); // Adjust URL as needed
   }
+
 
   createRequest(request: Request): Observable<Request> {
     return this.http.post<Request>(`${this.apiUrl}/add_request`, request);  // Ensure correct API endpoint
