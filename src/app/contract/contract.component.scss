@@ -178,3 +178,28 @@ input:focus, select:focus {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
+/* Chart Container Styles */
+.card {
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Chart Title Styles */
+.card h4 {
+  font-weight: 600;
+  color: #343a40; /* Darker text for better visibility */
+}
+
+/* Canvas Styles */
+canvas {
+  background-color: #ffffff; /* White background for the chart */
+  border-radius: 0.5rem; /* Rounded corners for the canvas */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  canvas {
+    max-height: 250px; /* Reduce height on smaller screens */
+  }
+}
