@@ -49,6 +49,19 @@ export class PoliceService {
   getAllUsers() {
     return this.http.get<any[]>('http://localhost:8088/api/v1/police/getall_users');
   }
+
+  getAmountSumByStartDate(): Observable<Map<Date, number>> {
+    return this.http.get<{ [key: string]: number }>(`${this.apiUrl}/amount-by-start-date`).pipe(
+      map(response => {
+        const map = new Map<Date, number>();
+        Object.entries(response).forEach(([key, value]) => {
+          const date = new Date(key);
+          map.set(date, value);
+        });
+        return map;
+      })
+    );
+  }
   
 
   getTotalAmount(): Observable<number> {

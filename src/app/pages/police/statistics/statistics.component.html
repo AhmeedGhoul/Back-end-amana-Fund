@@ -32,6 +32,23 @@
     </div>
   </div>
 
+  <!-- Amount by Start Date -->
+  <div class="row g-4 mt-4" *ngIf="!loading && !error">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Amount by Start Date</h5>
+          <div class="chart-container">
+            <canvas baseChart
+                    [data]="chartData"
+                    [options]="chartOptions">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Charts -->
   <div class="row g-4 mt-4" *ngIf="!loading && !error">
     <!-- Active Percentage Chart -->
