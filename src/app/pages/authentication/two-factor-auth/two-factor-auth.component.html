@@ -1,24 +1,53 @@
-<div class="blank-layout-container justify-content-center align-items-center bg-light">
-  <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
-    <div class="col-lg-4 d-flex align-items-center">
-      <mat-card class="cardWithShadow boxed-auth">
-        <mat-card-content class="p-32">
-          <div class="text-center">
-            <img src="./assets/images/logos/dark-logo.svg" class="align-middle m-2" alt="logo" />
+<div class="modern-2fa-container">
+  <div class="animated-background">
+    <!-- Floating shapes for gradient effect -->
+    <div class="shape shape1"></div>
+    <div class="shape shape2"></div>
+    <div class="shape shape3"></div>
+    
+    <!-- Floating money symbols with better spacing -->
+    <div class="money-symbol" style="left: 15%; top: 20%; font-size: 70px; animation-delay: 0s;">$</div>
+    <div class="money-symbol" style="right: 20%; top: 65%; font-size: 85px; animation-delay: 3s;">€</div>
+    <div class="money-symbol" style="left: 25%; bottom: 25%; font-size: 65px; animation-delay: 6s;">£</div>
+    <div class="money-symbol" style="right: 25%; top: 25%; font-size: 75px; animation-delay: 9s;">¥</div>
+    
+    <!-- Financial icons with improved spacing -->
+    <div class="financial-icon credit-card-icon" style="right: 15%; top: 15%; transform: rotate(10deg); animation-delay: 2s;"></div>
+    <div class="financial-icon coin-stack-icon" style="left: 10%; bottom: 30%; animation-delay: 5s;"></div>
+    <div class="financial-icon chart-icon" style="right: 18%; bottom: 35%; transform: rotate(-5deg); animation-delay: 8s;"></div>
+    <div class="financial-icon bank-icon" style="left: 20%; top: 60%; transform: rotate(-8deg); animation-delay: 11s;"></div>
+    <div class="financial-icon wallet-icon" style="right: 30%; top: 40%; animation-delay: 7s;"></div>
+    <div class="financial-icon safe-icon" style="left: 60%; top: 18%; transform: rotate(5deg); animation-delay: 10s;"></div>
+  </div>
+  
+  <div class="login-content-wrapper">
+    <mat-card class="cardWithShadow">
+      <mat-card-content class="p-32">
+        <div class="text-center">
+          <a [routerLink]="['/dashboard']">
+            <img src="../../../assets/images/Front/logo.png" alt="logo" style="width: 200px; height: auto;" class="align-middle" />
+          </a>
+        </div>
+
+        <h2 class="auth-title">Two-Factor Authentication</h2>
+        <p class="auth-subtitle">Please enter the verification code to continue</p>
+
+        <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()">
+          <div class="form-field-container">
+            <mat-label class="form-label">Verification Code</mat-label>
+            <mat-form-field appearance="outline" class="w-100" color="primary">
+              <input matInput formControlName="token" placeholder="Enter your 6-digit code" />
+              <mat-icon matSuffix>security</mat-icon>
+            </mat-form-field>
           </div>
 
-          <form class="m-t-30" [formGroup]="form" (ngSubmit)="submit()">
-            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">2FA Code</mat-label>
-            <mat-form-field appearance="outline" class="w-100" color="primary">
-              <input matInput formControlName="token" placeholder="Enter your code" />
-            </mat-form-field>
+          <button mat-flat-button class="verify-btn" [disabled]="form.invalid">
+            <mat-icon>verified_user</mat-icon>&nbsp; Verify & Continue
+          </button>
+        </form>
 
-            <button mat-flat-button color="primary" class="w-100" [disabled]="form.invalid">
-              Verify
-            </button>
-          </form>
-        </mat-card-content>
-      </mat-card>
-    </div>
+        <p class="security-note">Protecting your financial data with enhanced security</p>
+      </mat-card-content>
+    </mat-card>
   </div>
 </div>

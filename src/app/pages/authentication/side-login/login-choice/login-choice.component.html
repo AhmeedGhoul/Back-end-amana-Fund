@@ -1,25 +1,53 @@
-<div class="blank-layout-container justify-content-center align-items-center bg-light">
-  <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
-    <div class="col-lg-4 d-flex align-items-center">
-      <mat-card class="cardWithShadow boxed-auth">
-        <mat-card-content class="p-32 text-center">
-
-          <div class="text-center">
-            <a [routerLink]="['/dashboard']">
-              <img src="../../assets/images/Front/logo.png" alt="logo" style="width: 240px; height: auto;" />
+<div class="modern-login-container">
+  <div class="animated-background">
+    <div class="shape shape1"></div>
+    <div class="shape shape2"></div>
+    <div class="shape shape3"></div>
+    
+    <!-- Floating money symbols -->
+    <div class="money-symbol" style="left: 15%; top: 20%; font-size: 70px;">$</div>
+    <div class="money-symbol" style="right: 20%; top: 65%; font-size: 80px; animation-delay: 2s;">€</div>
+    <div class="money-symbol" style="left: 30%; bottom: 15%; font-size: 65px; animation-delay: 4s;">£</div>
+    <div class="money-symbol" style="right: 25%; top: 25%; font-size: 75px; animation-delay: 6s;">¥</div>
+    
+    <!-- Financial icons -->
+    <div class="financial-icon credit-card-icon" style="right: 15%; top: 15%; transform: rotate(10deg);"></div>
+    <div class="financial-icon coin-stack-icon" style="left: 10%; bottom: 20%; animation-delay: 3s;"></div>
+    <div class="financial-icon chart-icon" style="right: 12%; bottom: 25%; transform: rotate(-5deg); animation-delay: 5s;"></div>
+  </div>
+  
+  <div class="login-content-wrapper">
+    <div class="login-card-container">
+      <mat-card class="modern-card">
+        <mat-card-content class="card-content">
+          <div class="logo-container">
+            <a [routerLink]="['/dashboard']" class="logo-link">
+              <img src="../../assets/images/Front/logo.png" alt="logo" class="logo-image" />
             </a>
           </div>
 
-          <h2 class="m-t-24 mb-4">Choose Login Method</h2>
+          <h2 class="login-title">Welcome to Amana Fund</h2>
+          <p class="login-subtitle">Choose your preferred login method</p>
 
-          <button mat-flat-button color="primary" class="w-100 mb-3" (click)="goToEmailLogin()">
-            <mat-icon>email</mat-icon>&nbsp; Login with Email
-          </button>
+          <div class="login-buttons">
+            <button mat-flat-button class="email-login-btn" (click)="goToEmailLogin()">
+              <div class="btn-content">
+                <mat-icon>email</mat-icon>
+                <span>Login with Email</span>
+              </div>
+            </button>
 
-          <button mat-flat-button color="accent" class="w-100" (click)="goToFaceLogin()">
-            <mat-icon>face</mat-icon>&nbsp; Login with Face Recognition
-          </button>
+            <button mat-flat-button class="face-login-btn" (click)="goToFaceLogin()">
+              <div class="btn-content">
+                <mat-icon>face</mat-icon>
+                <span>Login with Face Recognition</span>
+              </div>
+            </button>
+          </div>
 
+          <div class="footer-text">
+            <p>Secure access to your account</p>
+          </div>
         </mat-card-content>
       </mat-card>
     </div>

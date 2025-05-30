@@ -1,33 +1,54 @@
-<div class="blank-layout-container justify-content-center align-items-center bg-light">
-  <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
-    <div class="col-lg-4 d-flex align-items-center">
-      <mat-card class="cardWithShadow boxed-auth" style="width: 100%; max-width: 640px;">
+<div class="modern-login-container">
+  <div class="animated-background">
+    <!-- Floating shapes for gradient effect -->
+    <div class="shape shape1"></div>
+    <div class="shape shape2"></div>
+    <div class="shape shape3"></div>
+    
+    <!-- Floating money symbols with better spacing -->
+    <div class="money-symbol" style="left: 12%; top: 18%; font-size: 70px; animation-delay: 0s;">$</div>
+    <div class="money-symbol" style="right: 18%; top: 68%; font-size: 85px; animation-delay: 3s;">€</div>
+    <div class="money-symbol" style="left: 28%; bottom: 22%; font-size: 65px; animation-delay: 6s;">£</div>
+    <div class="money-symbol" style="right: 22%; top: 22%; font-size: 75px; animation-delay: 9s;">¥</div>
+    
+    <!-- Financial icons with improved spacing -->
+    <div class="financial-icon credit-card-icon" style="right: 12%; top: 12%; transform: rotate(10deg); animation-delay: 2s;"></div>
+    <div class="financial-icon coin-stack-icon" style="left: 8%; bottom: 28%; animation-delay: 5s;"></div>
+    <div class="financial-icon chart-icon" style="right: 15%; bottom: 32%; transform: rotate(-5deg); animation-delay: 8s;"></div>
+    <div class="financial-icon bank-icon" style="left: 18%; top: 65%; transform: rotate(-8deg); animation-delay: 11s;"></div>
+    <div class="financial-icon wallet-icon" style="right: 28%; top: 42%; animation-delay: 7s;"></div>
+    <div class="financial-icon safe-icon" style="left: 65%; top: 15%; transform: rotate(5deg); animation-delay: 10s;"></div>
+  </div>
+  
+  <div class="login-content-wrapper">
+    <mat-card class="cardWithShadow">
       <mat-card-content class="p-32 text-center">
+        <div class="text-center">
+          <a [routerLink]="['/dashboard']">
+            <img src="../../assets/images/Front/logo.png" alt="logo" style="width: 200px; height: auto;" class="align-middle" />
+          </a>
+        </div>
 
-          <div class="text-center">
-            <a [routerLink]="['/dashboard']">
-              <img src="../../../../../assets/images/logos/dark-logo.svg" class="align-middle m-2" alt="logo" />
-            </a>
-          </div>
+        <h2 style="font-size: 28px; font-weight: 700; margin: 24px 0 8px; color: #333;">Face Recognition Login</h2>
+        <p style="font-size: 16px; color: #666; margin-bottom: 24px;">Please position your face in the camera frame</p>
 
-          <h2 class="m-t-24 mb-4">Face Recognition Login</h2>
-
-          <div class="text-danger mb-2" *ngIf="errorMessage">{{ errorMessage }}</div>
+        <div class="text-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
 
         <div class="webcam-wrapper">
           <webcam [trigger]="triggerObservable" (imageCapture)="handleImage($event)"></webcam>
         </div>
-          <div class="m-t-12">
-            <button mat-stroked-button color="warn" class="m-r-2" (click)="cancel()">
-              Cancel
-            </button>
-            <button mat-flat-button color="primary" (click)="capture()">
-              <mat-icon>photo_camera</mat-icon>&nbsp; Capture
-            </button>
-          </div>
+        
+        <div style="margin-top: 24px; display: flex; justify-content: center; gap: 16px;">
+          <button mat-flat-button class="cancel-btn" (click)="cancel()">
+            <mat-icon>cancel</mat-icon>&nbsp; Cancel
+          </button>
+          <button mat-flat-button class="primary-btn" (click)="capture()">
+            <mat-icon>photo_camera</mat-icon>&nbsp; Capture
+          </button>
+        </div>
 
-        </mat-card-content>
-      </mat-card>
-    </div>
+        <p style="margin-top: 24px; font-size: 14px; color: #777;">Secure access to your financial services</p>
+      </mat-card-content>
+    </mat-card>
   </div>
 </div>

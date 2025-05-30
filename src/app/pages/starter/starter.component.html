@@ -1,11 +1,67 @@
-<div class="container-fluid">
+<div class="container-fluid modern-dashboard">
+  <!-- Animated background elements -->
+  <div class="animated-background">
+    <div class="floating-shape shape1"></div>
+    <div class="floating-shape shape2"></div>
+    <div class="floating-shape shape3"></div>
+    <div class="floating-icon icon1">$</div>
+    <div class="floating-icon icon2">€</div>
+    <div class="floating-icon icon3">£</div>
+  </div>
+
+  <!-- Welcome Banner -->
+  <div class="welcome-banner">
+    <div class="banner-content">
+      <h1 class="welcome-title">Welcome to Amana Fund</h1>
+      <p class="welcome-subtitle">Your secure financial management dashboard</p>
+      <div class="banner-stats">
+        <div class="stat-item">
+          <div class="stat-icon">
+            <mat-icon>account_balance</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>$2.4M</h3>
+            <p>Total Assets</p>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <mat-icon>trending_up</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>+8.2%</h3>
+            <p>Growth Rate</p>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <mat-icon>verified_user</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>100%</h3>
+            <p>Secure</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="banner-decoration">
+      <div class="decoration-shape shape1"></div>
+      <div class="decoration-shape shape2"></div>
+      <div class="decoration-shape shape3"></div>
+    </div>
+  </div>
+
   <!-- Row for Fraud Cases, Audits, and Activity Log Charts -->
   <div class="row justify-content-center mb-4">
     <!-- Fraud Cases Chart -->
     <div class="col-lg-4 col-md-4 col-sm-12 mb-4">
-      <div class="card shadow-sm border-0 rounded-lg">
-        <div class="card-header bg-primary text-white">
-          <h4 class="card-title mb-0 text-center">Fraud Cases Distribution</h4>
+      <div class="modern-card fraud-card">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="header-icon">
+            <mat-icon>security</mat-icon>
+          </div>
+          <h4 class="card-title">Fraud Cases Distribution</h4>
         </div>
         <div class="card-body">
           <apx-chart
@@ -18,14 +74,21 @@
             [xaxis]="fraudCasesChartOptions.xaxis">
           </apx-chart>
         </div>
+        <div class="card-footer">
+          <button mat-button class="action-button">View Details</button>
+        </div>
       </div>
     </div>
 
     <!-- Audits Chart -->
     <div class="col-lg-4 col-md-4 col-sm-12 mb-4">
-      <div class="card shadow-sm border-0 rounded-lg">
-        <div class="card-header bg-success text-white">
-          <h4 class="card-title mb-0 text-center">Audits Data</h4>
+      <div class="modern-card audit-card">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="header-icon">
+            <mat-icon>assessment</mat-icon>
+          </div>
+          <h4 class="card-title">Audits Data</h4>
         </div>
         <div class="card-body">
           <apx-chart
@@ -38,14 +101,21 @@
             [xaxis]="auditsChartOptions.xaxis">
           </apx-chart>
         </div>
+        <div class="card-footer">
+          <button mat-button class="action-button">View Details</button>
+        </div>
       </div>
     </div>
 
     <!-- Activity Log Chart -->
     <div class="col-lg-4 col-md-4 col-sm-12 mb-4">
-      <div class="card shadow-sm border-0 rounded-lg">
-        <div class="card-header bg-warning text-white">
-          <h4 class="card-title mb-0 text-center">Activity Log Data</h4>
+      <div class="modern-card activity-card">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="header-icon">
+            <mat-icon>timeline</mat-icon>
+          </div>
+          <h4 class="card-title">Activity Log Data</h4>
         </div>
         <div class="card-body">
           <apx-chart
@@ -58,6 +128,40 @@
             [xaxis]="activityLogChartOptions.xaxis">
           </apx-chart>
         </div>
+        <div class="card-footer">
+          <button mat-button class="action-button">View Details</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions Section -->
+  <div class="quick-actions-section">
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="quick-actions">
+      <div class="action-item">
+        <div class="action-icon">
+          <mat-icon>add_circle</mat-icon>
+        </div>
+        <span class="action-text">New Transaction</span>
+      </div>
+      <div class="action-item">
+        <div class="action-icon">
+          <mat-icon>description</mat-icon>
+        </div>
+        <span class="action-text">Generate Report</span>
+      </div>
+      <div class="action-item">
+        <div class="action-icon">
+          <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+        <span class="action-text">Manage Accounts</span>
+      </div>
+      <div class="action-item">
+        <div class="action-icon">
+          <mat-icon>settings</mat-icon>
+        </div>
+        <span class="action-text">Settings</span>
       </div>
     </div>
   </div>

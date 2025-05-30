@@ -5,7 +5,7 @@ html, body { height: 100%; }
 body { margin: 0; font-family: 'Roboto', 'Helvetica Neue', sans-serif; }
 
 /* Main container */
-.modern-login-container {
+.modern-2fa-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -143,29 +143,29 @@ body { margin: 0; font-family: 'Roboto', 'Helvetica Neue', sans-serif; }
 
 /* Coin stack icon */
 .coin-stack-icon {
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><ellipse cx="50" cy="80" rx="40" ry="15" fill="%23FFD700" stroke="%23F09819" stroke-width="1"/><ellipse cx="50" cy="60" rx="40" ry="15" fill="%23FFD700" stroke="%23F09819" stroke-width="1"/><ellipse cx="50" cy="40" rx="40" ry="15" fill="%23FFD700" stroke="%23F09819" stroke-width="1"/><ellipse cx="50" cy="20" rx="40" ry="15" fill="%23FFD700" stroke="%23F09819" stroke-width="1"/><text x="50" y="25" font-family="Arial" font-size="15" font-weight="bold" fill="%23F09819" text-anchor="middle">$</text></svg>');
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><ellipse cx="60" cy="100" rx="40" ry="15" fill="%23FFD700" opacity="0.9"/><ellipse cx="60" cy="80" rx="40" ry="15" fill="%23FFD700" opacity="0.9"/><ellipse cx="60" cy="60" rx="40" ry="15" fill="%23FFD700" opacity="0.9"/><ellipse cx="60" cy="40" rx="40" ry="15" fill="%23FFD700" opacity="0.9"/><ellipse cx="60" cy="20" rx="40" ry="15" fill="%23FFD700" opacity="0.9"/></svg>');
   width: 80px;
   height: 80px;
 }
 
 /* Chart icon */
 .chart-icon {
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100"><rect x="10" y="10" width="100" height="80" rx="2" fill="%23FFFFFF" stroke="%23CCCCCC" stroke-width="1"/><path d="M20,65 L30,55 L40,60 L50,40 L60,45 L70,25 L80,30 L90,20 L100,25" stroke="%234776E6" stroke-width="2" fill="none"/><circle cx="20" cy="65" r="3" fill="%234776E6"/><circle cx="30" cy="55" r="3" fill="%234776E6"/><circle cx="40" cy="60" r="3" fill="%234776E6"/><circle cx="50" cy="40" r="3" fill="%234776E6"/><circle cx="60" cy="45" r="3" fill="%234776E6"/><circle cx="70" cy="25" r="3" fill="%234776E6"/><circle cx="80" cy="30" r="3" fill="%234776E6"/><circle cx="90" cy="20" r="3" fill="%234776E6"/><circle cx="100" cy="25" r="3" fill="%234776E6"/></svg>');
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect x="10" y="10" width="100" height="100" rx="5" fill="%23FFFFFF" opacity="0.1"/><path d="M20,90 L40,50 L60,70 L80,30 L100,50" stroke="%234776E6" stroke-width="4" fill="none"/><circle cx="40" cy="50" r="5" fill="%234776E6"/><circle cx="60" cy="70" r="5" fill="%234776E6"/><circle cx="80" cy="30" r="5" fill="%234776E6"/></svg>');
   width: 100px;
   height: 80px;
 }
 
 /* Bank building icon */
 .bank-icon {
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 120"><rect x="20" y="50" width="110" height="60" fill="%23ECEFF1" stroke="%23B0BEC5" stroke-width="1"/><rect x="15" y="110" width="120" height="10" fill="%23B0BEC5"/><polygon points="75,10 140,50 10,50" fill="%23B0BEC5"/><rect x="30" y="60" width="15" height="30" rx="2" fill="%23CFD8DC"/><rect x="55" y="60" width="15" height="30" rx="2" fill="%23CFD8DC"/><rect x="80" y="60" width="15" height="30" rx="2" fill="%23CFD8DC"/><rect x="105" y="60" width="15" height="30" rx="2" fill="%23CFD8DC"/><rect x="65" y="90" width="20" height="20" fill="%23CFD8DC"/><rect x="45" y="40" width="60" height="10" fill="%23CFD8DC"/></svg>');
-  width: 120px;
-  height: 100px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect x="20" y="50" width="80" height="50" fill="%23607D8B"/><rect x="10" y="100" width="100" height="10" fill="%23455A64"/><rect x="10" y="40" width="100" height="10" fill="%23455A64"/><path d="M60,10 L110,40 L10,40 Z" fill="%23607D8B"/><rect x="30" y="60" width="10" height="30" fill="%23CFD8DC"/><rect x="50" y="60" width="10" height="30" fill="%23CFD8DC"/><rect x="70" y="60" width="10" height="30" fill="%23CFD8DC"/><rect x="90" y="60" width="10" height="30" fill="%23CFD8DC"/></svg>');
+  width: 100px;
+  height: 80px;
 }
 
 /* Wallet icon */
 .wallet-icon {
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100"><path d="M10,30 L110,30 L110,90 L10,90 Z" fill="%23795548" stroke="%235D4037" stroke-width="2"/><path d="M10,30 L10,20 C10,15 15,10 20,10 L100,10 C105,10 110,15 110,20 L110,30 Z" fill="%238D6E63" stroke="%235D4037" stroke-width="2"/><rect x="80" y="50" width="40" height="30" rx="5" fill="%236D4C41"/><circle cx="100" cy="65" r="5" fill="%23FFCA28"/></svg>');
-  width: 100px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect x="10" y="30" width="100" height="60" rx="5" fill="%23795548"/><rect x="10" y="40" width="100" height="40" rx="2" fill="%235D4037"/><rect x="70" y="50" width="30" height="20" rx="2" fill="%23FFCA28"/><circle cx="85" cy="60" r="5" fill="%23FFA000"/></svg>');
+  width: 80px;
   height: 80px;
 }
 
@@ -221,39 +221,22 @@ body { margin: 0; font-family: 'Roboto', 'Helvetica Neue', sans-serif; }
               0 0 0 1px rgba(255, 255, 255, 0.2) inset;
 }
 
-/* Webcam styling */
-webcam {
+/* Form styling */
+.auth-form {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.form-field-container {
+  margin-bottom: 24px;
+}
+
+.form-label {
   display: block;
-  width: 100%;
-  height: auto;
-  max-width: 100%;
-  object-fit: cover;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.webcam-wrapper {
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
-  border-radius: 12px;
-  border: 2px solid rgba(71, 118, 230, 0.2);
-  margin: 24px 0;
-  position: relative;
-}
-
-.webcam-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 12px;
-  box-shadow: 0 0 0 2px rgba(71, 118, 230, 0.1) inset;
-  pointer-events: none;
-  z-index: 2;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #444;
 }
 
 /* Button styling */
@@ -269,40 +252,53 @@ button[mat-flat-button] {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-button[mat-flat-button].primary-btn {
+button[mat-flat-button].verify-btn {
   background: linear-gradient(45deg, #4776E6, #8E54E9);
   color: white;
   box-shadow: 0 4px 12px rgba(71, 118, 230, 0.3);
-}
-
-button[mat-flat-button].cancel-btn {
-  background: linear-gradient(45deg, #FF512F, #F09819);
-  color: white;
-  box-shadow: 0 4px 12px rgba(255, 81, 47, 0.3);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 button[mat-flat-button]:hover:not([disabled]) {
   transform: translateY(-2px);
 }
 
-button[mat-flat-button].primary-btn:hover:not([disabled]) {
+button[mat-flat-button].verify-btn:hover:not([disabled]) {
   box-shadow: 0 6px 16px rgba(71, 118, 230, 0.4);
-}
-
-button[mat-flat-button].cancel-btn:hover:not([disabled]) {
-  box-shadow: 0 6px 16px rgba(255, 81, 47, 0.4);
 }
 
 button[mat-flat-button]:active:not([disabled]) {
   transform: translateY(0);
 }
 
-button[mat-flat-button].primary-btn:active:not([disabled]) {
+button[mat-flat-button].verify-btn:active:not([disabled]) {
   box-shadow: 0 2px 8px rgba(71, 118, 230, 0.3);
 }
 
-button[mat-flat-button].cancel-btn:active:not([disabled]) {
-  box-shadow: 0 2px 8px rgba(255, 81, 47, 0.3);
+/* Typography */
+.auth-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 24px 0 8px;
+  color: #333;
+  text-align: center;
+}
+
+.auth-subtitle {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.security-note {
+  margin-top: 24px;
+  font-size: 14px;
+  color: #777;
+  text-align: center;
 }
 
 /* Logo styling */
@@ -312,16 +308,6 @@ button[mat-flat-button].cancel-btn:active:not([disabled]) {
 
 .text-center img:hover {
   transform: scale(1.05);
-}
-
-/* Error message styling */
-.text-danger {
-  color: #f44336;
-  background-color: rgba(244, 67, 54, 0.1);
-  padding: 8px 12px;
-  border-radius: 4px;
-  margin-bottom: 16px;
-  font-size: 14px;
 }
 
 /* Responsive adjustments */

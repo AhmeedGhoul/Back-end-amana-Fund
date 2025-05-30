@@ -6,7 +6,7 @@ import {
   ReactiveFormsModule,
   FormsModule,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MaterialModule } from '../../../material.module';
@@ -16,8 +16,9 @@ import {AppNotification} from "../../../notification/Notification.model";
 @Component({
   selector: 'app-two-factor-auth',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, MaterialModule],
+  imports: [FormsModule, ReactiveFormsModule, MaterialModule, RouterLink],
   templateUrl: './two-factor-auth.component.html',
+  styleUrls: ['./two-factor-auth.component.css']
 })
 export class TwoFactorAuthComponent {
   constructor(private http: HttpClient, private router: Router, private snackBar: MatSnackBar ,private notificationService: NotificationService) {}

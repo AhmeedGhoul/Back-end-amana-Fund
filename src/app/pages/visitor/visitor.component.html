@@ -1,28 +1,41 @@
 
-<nav>
-  <div class="nav__header">
-    <div class="nav__logo">
-      <a href="#">
-        <img src="../../assets/images/Front/logo.png" alt="logo" />
-      </a>
+<!-- Animated background elements -->
+<div class="floating-shape"></div>
+<div class="floating-shape"></div>
+<div class="floating-shape"></div>
+
+<!-- Floating currency symbols -->
+<div class="floating-currency">$</div>
+<div class="floating-currency">€</div>
+<div class="floating-currency">£</div>
+<div class="floating-currency">¥</div>
+
+<!-- Professional Navbar -->
+<div class="navbar-container">
+  <nav class="main-nav">
+    <div class="nav-brand">
+      <img src="../../assets/images/Front/logo.png" alt="AmanaFund Logo" />
     </div>
-    <div class="nav__menu__btn" id="menu-btn">
-      <i class="ri-menu-3-line"></i>
+    
+    <div class="nav-toggle" id="menu-btn">
+      <span></span>
+      <span></span>
+      <span></span>
     </div>
-  </div>
-  <ul class="nav__links" id="nav-links">
-    <li><a href="#home">Home</a></li>
-    <li><a href="#about">About</a></li>
-    <li><a href="#tour">Service</a></li>
-    <li><a href="#contact">Contacts</a></li>
-    <li>
-      <a routerLink="/authentication/login" class="btn">
-        Login
-        <span><i class="ri-arrow-right-long-line"></i></span>
-      </a>
-    </li>
-  </ul>
-</nav>
+    
+    <ul class="nav-menu" id="nav-links">
+      <li class="nav-item"><a href="#home" class="nav-link">Home</a></li>
+      <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
+      <li class="nav-item"><a href="#tour" class="nav-link">Services</a></li>
+      <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+      <li class="nav-item nav-cta">
+        <a routerLink="/authentication/login" class="cta-button">
+          Login <i class="ri-login-box-line"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
 
 <header class="section__container header__container" id="home">
   <div class="header__image">
@@ -30,15 +43,28 @@
   </div>
   <div class="header__content">
     <h1>
-      Save Together<br />
-      Grow Together
+      <span>Save Together</span>
+      <span>Grow Together</span>
     </h1>
     <p class="section__description">
       Join trusted money circles to save smarter and reach your goals faster.
       Whether you're planning a big purchase or need a helping hand, our platform
       connects you with your community to make financial dreams come true — one contribution at a time.
     </p>
-
+    <div class="header-stats">
+      <div class="stat-item">
+        <span class="stat-number">10K+</span>
+        <span class="stat-label">Active Users</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">$2M+</span>
+        <span class="stat-label">Saved Together</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">98%</span>
+        <span class="stat-label">Success Rate</span>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -58,6 +84,12 @@
         So why go it alone? Join a trusted circle and start building a stronger financial future today.
       </p>
       <div class="about__signature">The AmanaFund Team</div>
+      <div class="about__cta">
+        <a routerLink="/authentication/login" class="btn">
+          Get Started
+          <span><i class="ri-arrow-right-long-line"></i></span>
+        </a>
+      </div>
     </div>
   </div>
 </section>
@@ -68,6 +100,7 @@
     <h2 class="section__header">Our Top Services</h2>
     <div class="destination__grid">
       <div class="destination__card">
+        <div class="card-badge">Popular</div>
         <img src="../../assets/images/Front/moneyy.jpg" alt="service" />
         <div class="destination__card__content">
           <h4>Save Together, Grow Together</h4>
@@ -86,6 +119,7 @@
         </div>
       </div>
       <div class="destination__card">
+        <div class="card-badge">New</div>
         <img src="../../assets/images/Front/assurance.jpg" alt="service" />
         <div class="destination__card__content">
           <h4>Protect What <br>Matters</h4>
@@ -198,9 +232,16 @@
     <ul class="footer__links">
       <li><a href="#home">Home</a></li>
       <li><a href="#about">About</a></li>
-      <li><a href="#tour">Tours</a></li>
+      <li><a href="#tour">Services</a></li>
       <li><a href="#contact">Contacts</a></li>
     </ul>
+    <div class="newsletter">
+      <h3>Stay Updated</h3>
+      <div class="newsletter-form">
+        <input type="email" placeholder="Your email address" />
+        <button class="btn">Subscribe</button>
+      </div>
+    </div>
     <ul class="footer__socials">
       <li>
         <a href="#"><i class="ri-facebook-fill"></i></a>
@@ -217,6 +258,6 @@
     </ul>
   </div>
   <div class="footer__bar">
-    Copyright © 2025 Web Design Mastery. All rights reserved.
+    Copyright © 2025 AmanaFund. All rights reserved.
   </div>
 </footer>

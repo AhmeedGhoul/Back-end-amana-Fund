@@ -3,6 +3,7 @@ declare var ScrollReveal: any;
 declare var Swiper: any;
 import { ViewEncapsulation } from '@angular/core';
 import {RouterLink} from "@angular/router";
+
 @Component({
   selector: 'app-visitor',
   templateUrl: './visitor.component.html',
