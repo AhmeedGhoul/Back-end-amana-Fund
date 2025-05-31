@@ -1,98 +1,249 @@
 <mat-card class="cardWithShadow">
   <mat-card-content class="p-24">
-
-    <div class="d-flex w-100 align-center mb-24">
-      <mat-card-title>Agency Management</mat-card-title>
-      <div class="m-l-auto">
-        <button mat-flat-button color="primary" (click)="openAddAgencyDialog()">
-          <mat-icon>add</mat-icon> Add Agency
-        </button>
+    <!-- Header with Gradient Background -->
+    <div class="header-container">
+      <div class="header-content">
+        <div class="d-flex w-100 align-center mb-24">
+          <div class="header-text">
+            <h1 class="mat-headline-4 mb-8">Agency Management</h1>
+            <p class="mat-subtitle-1 text-muted">Manage and monitor all agency information in one place</p>
+          </div>
+          <div class="m-l-auto">
+            <button mat-flat-button color="primary" (click)="openAddAgencyDialog()" class="add-button">
+              <mat-icon>add</mat-icon>
+              <span>Add New Agency</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="filter-bar d-flex gap-16 mb-24 flex-wrap">
-      <mat-form-field appearance="outline" class="flex-grow-1">
-        <mat-label>Search Address</mat-label>
-        <input matInput [(ngModel)]="filters.address" (ngModelChange)="applyFilters()" placeholder="Address..." />
-      </mat-form-field>
+    <!-- Filter Section -->
+    <div class="filter-section">
+      <mat-accordion>
+        <mat-expansion-panel [expanded]="true" class="filter-panel">
+          <mat-expansion-panel-header class="filter-header">
+            <mat-panel-title>
+              <mat-icon>filter_alt</mat-icon>
+              <span>Filters</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          
+          <div class="filter-bar d-flex gap-16 flex-wrap" @stagger>
+            <mat-form-field appearance="outline" class="flex-grow-1" @fadeInUp>
+              <mat-label>Search Address</mat-label>
+              <input matInput [(ngModel)]="filters.address" (ngModelChange)="applyFilters()" placeholder="Address..." />
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
 
-      <mat-form-field appearance="outline" class="flex-grow-1">
-        <mat-label>Search City</mat-label>
-        <input matInput [(ngModel)]="filters.city" (ngModelChange)="applyFilters()" placeholder="City..." />
-      </mat-form-field>
+            <mat-form-field appearance="outline" class="flex-grow-1" @fadeInUp>
+              <mat-label>Search City</mat-label>
+              <input matInput [(ngModel)]="filters.city" (ngModelChange)="applyFilters()" placeholder="City..." />
+              <mat-icon matSuffix>location_city</mat-icon>
+            </mat-form-field>
 
-      <mat-form-field appearance="outline" class="flex-grow-1">
-        <mat-label>Search Phone</mat-label>
-        <input matInput [(ngModel)]="filters.phoneNumber" (ngModelChange)="applyFilters()" placeholder="Phone..." />
-      </mat-form-field>
+            <mat-form-field appearance="outline" class="flex-grow-1" @fadeInUp>
+              <mat-label>Search Phone</mat-label>
+              <input matInput [(ngModel)]="filters.phoneNumber" (ngModelChange)="applyFilters()" placeholder="Phone..." />
+              <mat-icon matSuffix>phone</mat-icon>
+            </mat-form-field>
 
-      <mat-form-field appearance="outline" class="flex-grow-1">
-        <mat-label>Search Email</mat-label>
-        <input matInput [(ngModel)]="filters.email" (ngModelChange)="applyFilters()" placeholder="Email..." />
-      </mat-form-field>
+            <mat-form-field appearance="outline" class="flex-grow-1" @fadeInUp>
+              <mat-label>Search Email</mat-label>
+              <input matInput [(ngModel)]="filters.email" (ngModelChange)="applyFilters()" placeholder="Email..." />
+              <mat-icon matSuffix>email</mat-icon>
+            </mat-form-field>
 
-      <mat-form-field appearance="fill">
-        <mat-label>Governorate</mat-label>
-        <mat-select [(ngModel)]="filters.governorate" (ngModelChange)="applyFilters()">
-          <mat-option *ngFor="let governorate of governorates" [value]="governorate">{{ governorate }}</mat-option>
-        </mat-select>
-      </mat-form-field>
+            <mat-form-field appearance="outline" class="flex-grow-1" @fadeInUp>
+              <mat-label>Governorate</mat-label>
+              <mat-select [(ngModel)]="filters.governorate" (selectionChange)="applyFilters()">
+                <mat-option value="">All Governorates</mat-option>
+                <mat-option *ngFor="let governorate of governorates" [value]="governorate">
+                  {{ governorate }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matSuffix>location_on</mat-icon>
+            </mat-form-field>
 
-      <button mat-flat-button color="accent" (click)="generateReport()">
-        <mat-icon>download</mat-icon> Report
-      </button>
+
+            <button mat-stroked-button color="primary" (click)="resetFilters()" class="reset-button">
+              <mat-icon>refresh</mat-icon>
+              <span>Reset</span>
+            </button>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
     </div>
 
-    <div class="table-container mb-24">
-      <table mat-table [dataSource]="agencies" class="mat-elevation-z8 full-width-table">
+    <!-- Data Table -->
+    <div class="table-container" @fadeInUp>
+      <div class="table-header">
+        <h3 class="mat-subtitle-1">Agency List</h3>
+        <div class="table-actions">
+          <button mat-stroked-button color="accent" (click)="generateReport()" class="report-button">
+            <mat-icon>download</mat-icon>
+            <span>Export Report</span>
+          </button>
+        </div>
+      </div>
 
-        <ng-container matColumnDef="governorate">
-          <th mat-header-cell *matHeaderCellDef>Governorate</th>
-          <td mat-cell *matCellDef="let agency">{{ agency.governorate }}</td>
-        </ng-container>
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="dataSource" class="full-width-table" matSort>
+          <!-- Select Column -->
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row" (click)="onRowSelected(row, $event)" class="select-cell">
+              <mat-icon>arrow_forward</mat-icon>
+            </td>
+          </ng-container>
+          <!-- Governorate Column -->
+          <ng-container matColumnDef="governorate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Governorate</th>
+            <td mat-cell *matCellDef="let agency" class="governorate-cell">
+              <div class="governorate-badge">
+                <mat-icon>location_on</mat-icon>
+                <span>{{ agency.governorate || 'N/A' }}</span>
+              </div>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="address">
-          <th mat-header-cell *matHeaderCellDef>Address</th>
-          <td mat-cell *matCellDef="let agency">{{ agency.address }}</td>
-        </ng-container>
+          <!-- Address Column -->
+          <ng-container matColumnDef="address">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
+            <td mat-cell *matCellDef="let agency" class="address-cell">
+              <div class="address-content">
+                <mat-icon>home</mat-icon>
+                <span>{{ agency.address || 'N/A' }}</span>
+              </div>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="city">
-          <th mat-header-cell *matHeaderCellDef>City</th>
-          <td mat-cell *matCellDef="let agency">{{ agency.city }}</td>
-        </ng-container>
+          <!-- City Column -->
+          <ng-container matColumnDef="city">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>City</th>
+            <td mat-cell *matCellDef="let agency" class="city-cell">
+              <div class="city-badge">
+                <mat-icon>location_city</mat-icon>
+                <span>{{ agency.city || 'N/A' }}</span>
+              </div>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="phoneNumber">
-          <th mat-header-cell *matHeaderCellDef>Phone Number</th>
-          <td mat-cell *matCellDef="let agency">{{ agency.phoneNumber }}</td>
-        </ng-container>
+          <!-- Phone Number Column -->
+          <ng-container matColumnDef="phoneNumber">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Phone Number</th>
+            <td mat-cell *matCellDef="let agency" class="phone-cell">
+              <div class="phone-content">
+                <mat-icon>phone</mat-icon>
+                <a [href]="'tel:' + agency.phoneNumber" class="phone-link">
+                  {{ agency.phoneNumber || 'N/A' }}
+                </a>
+              </div>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="email">
-          <th mat-header-cell *matHeaderCellDef>Email</th>
-          <td mat-cell *matCellDef="let agency">{{ agency.email }}</td>
-        </ng-container>
+          <!-- Email Column -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+            <td mat-cell *matCellDef="let agency" class="email-cell">
+              <div class="email-content">
+                <mat-icon>email</mat-icon>
+                <a [href]="'mailto:' + agency.email" class="email-link">
+                  {{ agency.email || 'N/A' }}
+                </a>
+              </div>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="centered">Actions</th>
-          <td mat-cell *matCellDef="let agency" class="centered">
-            <button mat-icon-button color="primary" (click)="editAgency(agency)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" (click)="deleteAgency(agency)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
+            <td mat-cell *matCellDef="let agency" class="actions-cell">
+              <div class="actions-container">
+                <button mat-icon-button color="primary" (click)="editAgency(agency)" 
+                        matTooltip="Edit Agency" class="action-button edit-button">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteAgency(agency)"
+                        matTooltip="Delete Agency" class="action-button delete-button">
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" (click)="viewAgencyDetails(agency)"
+                        matTooltip="View Details" class="action-button view-button">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          <!-- Loading State -->
+          <tr *matNoDataRow class="no-data-row">
+            <td class="no-data-cell" [attr.colspan]="displayedColumns.length">
+              <div class="no-data-content">
+                <mat-icon>search_off</mat-icon>
+                <p>No agencies found matching your criteria</p>
+                <button mat-stroked-button color="primary" (click)="resetFilters()">
+                  Clear Filters
+                </button>
+              </div>
+            </td>
+          </tr>
 
-      </table>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns" class="table-row"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+              class="table-row"
+              [class.selected]="selectedAgency?.id_agency === row.id_agency"
+              (click)="onRowSelected(row, $event)"
+              [@rowAnimation]="'in'"></tr>
+        </table>
+      </div>
     </div>
 
-    <div class="pagination-controls d-flex justify-between align-center">
-      <button mat-stroked-button (click)="pageChanged(currentPage - 1)" [disabled]="currentPage === 0">Previous</button>
-      <span class="page-info">Page {{ currentPage + 1 }}</span>
-      <button mat-stroked-button (click)="pageChanged(currentPage + 1)" [disabled]="(currentPage + 1) * pageSize >= totalAgencies">Next</button>
+    <!-- Pagination -->
+    <div class="pagination-controls" @fadeInUp>
+      <div class="pagination-info">
+        Showing <strong>{{ (currentPage * pageSize) + 1 }}</strong> to 
+        <strong>{{ min((currentPage + 1) * pageSize, totalAgencies) }}</strong> of 
+        <strong>{{ totalAgencies }}</strong> agencies
+      </div>
+      
+      <div class="pagination-actions">
+        <button mat-stroked-button 
+                (click)="onPageChange({pageIndex: currentPage - 1, pageSize: pageSize, length: totalAgencies})" 
+                [disabled]="currentPage === 0"
+                class="pagination-button">
+          <mat-icon>chevron_left</mat-icon>
+          <span>Previous</span>
+        </button>
+        
+        <div class="page-indicators">
+          <button mat-button *ngFor="let page of getPageNumbers()" 
+                  [class.active]="page === currentPage + 1"
+                  (click)="onPageChange({pageIndex: page - 1, pageSize: pageSize, length: totalAgencies})"
+                  class="page-number">
+            {{ page }}
+          </button>
+        </div>
+        
+        <button mat-stroked-button 
+                (click)="onPageChange({pageIndex: currentPage + 1, pageSize: pageSize, length: totalAgencies})" 
+                [disabled]="(currentPage + 1) * pageSize >= totalAgencies"
+                class="pagination-button">
+          <span>Next</span>
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+      
+      <div class="page-size-selector">
+        <span>Rows per page:</span>
+        <mat-form-field appearance="outline" class="page-size-field">
+          <mat-select [(ngModel)]="pageSize" (selectionChange)="onPageSizeChange($event.value)">
+            <mat-option *ngFor="let size of pageSizeOptions" [value]="size">
+              {{ size }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
     </div>
 
   </mat-card-content>

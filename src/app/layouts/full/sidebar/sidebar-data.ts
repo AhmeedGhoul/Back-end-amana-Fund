@@ -3,14 +3,20 @@ import { NavItem } from './nav-item/nav-item';
 export const navItems: NavItem[] = [
   {
     navCap: 'Home',
+    displayName: '', // Empty display name for section headers
+    iconName: 'home',
+    route: ''
   },
   {
     displayName: 'Dashboard',
-    iconName: 'layout-dashboard', // corrected
-    route: '/dashboard',
+    iconName: 'layout-dashboard',
+    route: '/dashboard'
   },
   {
     navCap: 'Admin',
+    displayName: '', // Empty display name for section headers
+    iconName: 'settings',
+    route: ''
   },
   {
     displayName: 'Users',

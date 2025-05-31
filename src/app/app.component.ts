@@ -1,42 +1,44 @@
 import { Component } from '@angular/core';
-import {RouterModule, RouterOutlet} from '@angular/router';
-import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
-import {MaterialModule} from "./material.module";
+import { RouterModule, RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
+import { MaterialModule } from "./material.module";
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { MatOptionModule } from '@angular/material/core';
-import {AuthInterceptor} from "./pages/authentication/auth.interceptor";
-import { MatNativeDateModule } from '@angular/material/core';
-import {MatSnackBarModule} from "@angular/material/snack-bar";
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { AuthInterceptor } from "./pages/authentication/auth.interceptor";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { SidebarComponent } from './layouts/full/sidebar/sidebar.component';
+
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
+    CommonModule,
     RouterModule,
-    MatNativeDateModule,// For routing
-    HttpClientModule, // For HTTP requests
+    RouterOutlet,
+    HttpClientModule,
     MaterialModule,
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatOptionModule,// For Material UI (if needed)
-    MatSnackBarModule
+    MatSidenavModule,
+    MatToolbarModule,
+    MatSnackBarModule,
+    SidebarComponent
   ],
   templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,  // Add interceptor
+      useClass: AuthInterceptor,
       multi: true,
     },
-
   ],
 })
 export class AppComponent {
-  title = 'Modernize Angular Admin Template';
+  title = 'Amana Fund';
 }

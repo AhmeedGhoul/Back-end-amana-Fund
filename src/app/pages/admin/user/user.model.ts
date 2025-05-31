@@ -4,16 +4,17 @@ export interface User {
   lastName: string;
   email: string;
   phoneNumber: string;
-  age: number;
-  address: string;
-  civilStatus: string;
-  createdDate: string;
-  dateOfBirth: string;
+  age?: number;
+  address?: string;
+  civilStatus?: string;
+  createdDate?: string;
+  dateOfBirth?: string;
   enabled: boolean;
-  accountLocked: boolean;
-  accountDeleted: boolean; // Change to match the backend field
-  lastModifiedDate: string;
-  userScore: number;
+  accountLocked?: boolean;
+  accountDeleted?: boolean;
+  lastModifiedDate?: string;
+  userScore?: number;
+  roles?: string[];
 }
 
 export interface PagedResponse<T> {

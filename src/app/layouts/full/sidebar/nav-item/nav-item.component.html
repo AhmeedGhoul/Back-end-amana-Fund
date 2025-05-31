@@ -1,23 +1,88 @@
-<div *ngIf="item.navCap" mat-subheader class="nav-caption">
-  {{ item.navCap }}
-</div>
+<ng-container>
+  <!-- Section Header -->
+  <div *ngIf="item.navCap" class="nav-section">
+    <div class="nav-section-header">
+      <span class="nav-section-title">{{ item.navCap }}</span>
+    </div>
+  </div>
+  
+  <!-- Regular Menu Item or Parent with Children -->
+  <div *ngIf="!item.navCap" class="nav-item" [class.has-children]="hasChildren">
+    <!-- Regular Menu Item -->
+    <a *ngIf="!hasChildren"
+       [routerLink]="item.route"
+       routerLinkActive="active"
+       [routerLinkActiveOptions]="{exact: true}"
+       (click)="onItemClick($event)"
+       class="menu-item"
+       [attr.aria-current]="item.route ? null : 'false'">
+      
+      <span class="menu-item__icon" *ngIf="item.iconName">
+        <i-tabler [name]="item.iconName" class="icon"></i-tabler>
+      </span>
+      
+      <span class="menu-item__text">
+        {{ item.displayName }}
+        <span *ngIf="item.badge !== undefined" class="menu-item__badge" [ngClass]="item.badgeClass">
+          {{ item.badge }}
+        </span>
+      </span>
+    </a>
 
-<a *ngIf="!item.navCap && !item.external && !item.twoLines && canAccess(item)"
-   mat-list-item
-   (click)="onItemSelected(item)"
-   [ngClass]="{
-     'mat-toolbar mat-primary activeMenu': item.route
-       ? router.isActive(item.route, true)
-       : false
-   }"
-   class="menu-list-item">
-  <i-tabler class="routeIcon" [name]="item.iconName" matListItemIcon></i-tabler>
-  <span class="hide-menu">{{ item.displayName }}</span>
-  <span *ngIf="item.children" class="ml-auto">
-    <i-tabler name="chevron-down" class="arrow-icon" [ngClass]="{ 'rotate': expanded }"></i-tabler>
-  </span>
-</a>
+    <!-- Parent Menu Item with Children -->
+    <div *ngIf="hasChildren" class="menu-item-parent">
+      <ng-container *ngIf="item.route; else noRoute">
+        <a [routerLink]="item.route"
+           class="menu-item"
+           (click)="onItemClick($event)"
+           [attr.aria-expanded]="expanded"
+           [attr.aria-haspopup]="true">
+          <span class="menu-item__icon" *ngIf="item.iconName">
+            <i-tabler [name]="item.iconName" class="icon"></i-tabler>
+          </span>
+          <span class="menu-item__text">
+            {{ item.displayName }}
+          </span>
+          <span class="menu-item__toggle" aria-hidden="true">
+            <i-tabler name="chevron-down" class="toggle-icon" [class.rotated]="expanded"></i-tabler>
+          </span>
+        </a>
+      </ng-container>
+      
+      <ng-template #noRoute>
+        <button type="button" 
+                class="menu-item"
+                (click)="onItemClick($event)"
+                [attr.aria-expanded]="expanded"
+                [attr.aria-controls]="'submenu-' + (item.displayName || '').toLowerCase()">
+          <span class="menu-item__icon" *ngIf="item.iconName">
+            <i-tabler [name]="item.iconName" class="icon"></i-tabler>
+          </span>
+          <span class="menu-item__text">
+            {{ item.displayName }}
+          </span>
+          <span class="menu-item__toggle" aria-hidden="true">
+            <i-tabler name="chevron-down" class="toggle-icon" [class.rotated]="expanded"></i-tabler>
+          </span>
+        </button>
+      </ng-template>
 
-<mat-nav-list *ngIf="expanded && item.children" class="sub-menu">
-  <app-nav-item *ngFor="let child of item.children" [item]="child" [depth]="depth + 1"></app-nav-item>
-</mat-nav-list>
+      <!-- Submenu -->
+      <div class="sub-menu" 
+           [class.expanded]="expanded"
+           [id]="'submenu-' + (item.displayName || '').toLowerCase()"
+           [attr.aria-hidden]="!expanded"
+           role="menu">
+        <div class="sub-menu__inner">
+          <app-nav-item 
+            *ngFor="let child of item.children"
+            [item]="child" 
+            [depth]="depth + 1"
+            [isMobileView]="isMobileView"
+            (linkClick)="linkClick.emit()">
+          </app-nav-item>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

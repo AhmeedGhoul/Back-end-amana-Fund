@@ -1,97 +1,88 @@
-import {
-  Component,
-  Input,
-  OnChanges,
-  Output,
-  EventEmitter,
-  ChangeDetectorRef,
-} from '@angular/core';
-import { NavItem } from './nav-item';
-import {Router, RouterModule} from '@angular/router';
-import { NavService } from '../../../../services/nav.service';
-import { MaterialModule } from 'src/app/material.module';
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { TablerIconComponent, TablerIconsModule } from 'angular-tabler-icons';
-import { AuthService } from '../../../../pages/authentication/side-login/login-choice/auth.service';
-import { MatExpansionPanel } from '@angular/material/expansion';
+import { TablerIconsModule } from 'angular-tabler-icons';
+import { MaterialModule } from 'src/app/material.module';
+import { NavItem } from './nav-item';
 
 @Component({
   selector: 'app-nav-item',
   standalone: true,
-  imports: [MaterialModule, CommonModule, TablerIconsModule,RouterModule ],
+  imports: [
+    CommonModule, 
+    RouterModule,
+    TablerIconsModule,
+    MaterialModule
+  ],
   templateUrl: './nav-item.component.html',
-  styles: [`
-    .arrow-icon {
-      transition: transform 0.3s ease;
-    }
-    .rotate {
-      transform: rotate(180deg);
-    }
-    .sub-menu {
-      margin-left: 20px;
-    }
-    .menu-list-item {
-      padding: 8px 16px;
-    }
-    .mat-list-item {
-      border-radius: 8px;
-      margin: 4px 0;
-    }
-    .mat-list-item:hover {
-      background-color: rgba(0, 0, 0, 0.04);
-    }
-  `]
+  styleUrls: ['./nav-item.component.scss']
 })
-export class AppNavItemComponent implements OnChanges {
-  @Output() toggleMobileLink: any = new EventEmitter<void>();
-  @Output() notify: EventEmitter<boolean> = new EventEmitter<boolean>();
+export class AppNavItemComponent implements OnInit {
+  @Input() item: NavItem = {
+    displayName: '',
+    iconName: '',
+    route: '',
+    children: []
+  } as NavItem;
+  
+  @Input() depth: number = 0;
+  @Input() isMobileView: boolean = false;
+  @Output() linkClick = new EventEmitter<void>();
+  
+  expanded: boolean = false;
 
-  //@HostBinding('attr.aria-expanded') ariaExpanded = this.expanded;
-  @Input() item: NavItem | any;
-  @Input() depth: any;
-  expanded = false;
+  constructor(private router: Router) { }
 
-  constructor(
-    private authService: AuthService,
-    public navService: NavService,
-    public router: Router,
-    private cdr: ChangeDetectorRef
-  ) {
-    if (this.depth === undefined) {
-      this.depth = 0;
+  ngOnInit(): void {
+    // Initialize expanded state for parent items
+    if (this.hasChildren) {
+      this.expanded = this.item.expanded || false;
     }
   }
-
-  ngOnChanges() {
-    this.navService.currentUrl.subscribe((url: string) => { });
+  
+  /**
+   * Check if the item has children
+   */
+  get hasChildren(): boolean {
+    return Array.isArray(this.item?.children) && this.item.children.length > 0;
   }
-
-  onItemSelected(item: NavItem) {
-    if (item.children && !item.route) {
+  
+  /**
+   * Toggle submenu expansion
+   */
+  toggleExpand(): void {
+    if (this.hasChildren) {
       this.expanded = !this.expanded;
-      this.cdr.detectChanges();
-    } else {
-      this.router.navigate([item.route]);
-      //scroll
-      window.scroll({
-        top: 0,
-        left: 0,
-        behavior: 'smooth',
-      });
     }
   }
-  canAccess(item: NavItem): boolean {
-    const userRoles = this.authService.getCurrentUser()?.roles || [];
-    const normalized = userRoles.map(r => r.replace('ROLE_', ''));
-    return !item.roles || item.roles.some(role => normalized.includes(role));
-  }
 
 
-  onSubItemSelected(item: NavItem) {
-    this.router.navigate([item.route]);
+  /**
+   * Handle item click event
+   * @param event Mouse event
+   */
+  onItemClick(event: Event): void {
+    // Skip processing for section headers
+    if (this.item.navCap) {
+      return;
+    }
+
+    if (this.hasChildren) {
+      // Toggle submenu for parent items
+      event.preventDefault();
+      this.toggleExpand();
+    } else {
+      // Emit link click event for regular items
+      this.linkClick.emit();
+    }
+    // Stop propagation to prevent multiple events
+    event.stopPropagation();
   }
-  onExpansionChange(event: boolean) {
-    this.expanded = event;
-    this.cdr.detectChanges();
+  
+  /**
+   * Track by function for ngFor
+   */
+  trackByFn(index: number, item: NavItem): string {
+    return item.route ? (Array.isArray(item.route) ? item.route.join('/') : item.route) : `${index}`;
   }
 }

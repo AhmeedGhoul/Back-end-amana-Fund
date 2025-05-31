@@ -1,45 +1,66 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core';
-import { BrandingComponent } from './branding.component';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { TablerIconsModule } from 'angular-tabler-icons';
 import { MaterialModule } from 'src/app/material.module';
-import { RouterModule } from '@angular/router';
-import {NgForOf, NgIf} from "@angular/common";
+import { NavItem } from './nav-item/nav-item';
+import { AppNavItemComponent } from './nav-item/nav-item.component';
+import { BrandingComponent } from './branding.component';
 import { navItems } from './sidebar-data';
-import { AuthService } from '../../../pages/authentication/side-login/login-choice/auth.service';
-import {NavItem} from "./nav-item/nav-item";
-import {AppNavItemComponent} from "./nav-item/nav-item.component";
+
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [TablerIconsModule, MaterialModule, RouterModule, BrandingComponent, NgIf, AppNavItemComponent, NgForOf],
+  imports: [
+    CommonModule, 
+    RouterModule,
+    TablerIconsModule,
+    MaterialModule,
+    AppNavItemComponent,
+    BrandingComponent
+  ],
   templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
-  constructor(private authService: AuthService) {
-  }
-
-  @Input() showToggle = true;
+  @Input() isMobileView: boolean = false;
+  @Input() isCollapsed: boolean = false;
+  
   @Output() toggleMobileNav = new EventEmitter<void>();
   @Output() toggleCollapsed = new EventEmitter<void>();
-  navItems = navItems;
-  rolesReady = false;
-  filteredNavItems: NavItem[] = [];
-
-  ngOnInit(): void {
-    setTimeout(() => {
-      const roles = this.authService.getCurrentUser()?.roles || [];
-      const normalizedRoles = roles.map(r => r.replace('ROLE_', ''));
-      this.filteredNavItems = navItems.filter(item => {
-        return !item.roles || item.roles.some(role => normalizedRoles.includes(role));
-      });
-      this.rolesReady = true;
-    }, 50);
+  @Output() linkClicked = new EventEmitter<void>();
+  
+  navItems: NavItem[] = [];
+  
+  constructor() {
+    // Initialize with empty array to ensure it's always defined
+    this.navItems = [];
+  }
+  
+  ngOnInit() {
+    // Make sure to handle potential undefined navItems
+    if (navItems && Array.isArray(navItems)) {
+      this.navItems = [...navItems];
+    }
+  }
+  
+  /**
+   * Handle navigation item click
+   * Emits the linkClicked event and closes the mobile menu if needed
+   */
+  onNavItemClick(): void {
+    this.linkClicked.emit();
+    
+    // Close mobile menu after navigation
+    if (this.isMobileView) {
+      this.toggleMobileNav.emit();
+    }
+  }
+  
+  trackByFn(index: number, item: NavItem): string | number {
+    if (item.route) {
+      return Array.isArray(item.route) ? item.route.join('/') : item.route;
+    }
+    return index;
   }
 }

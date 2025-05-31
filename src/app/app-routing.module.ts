@@ -5,9 +5,30 @@ import { BlankComponent } from './layouts/blank/blank.component';
 import { AuthGuard } from './pages/authentication/guards/auth.guard';
 
 const routes: Routes = [
+  // Auth routes (no sidebar)
+  {
+    path: '',
+    component: BlankComponent,
+    children: [
+      {
+        path: '',
+        redirectTo: 'authentication/login',
+        pathMatch: 'full',
+      },
+      {
+        path: 'authentication',
+        loadChildren: () =>
+          import('./pages/authentication/authentication.routes').then(
+            (m) => m.AuthenticationRoutes
+          ),
+      },
+    ],
+  },
+  // Main application routes (with sidebar)
   {
     path: '',
     component: FullComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',
@@ -24,7 +45,7 @@ const routes: Routes = [
         path: 'admin',
         loadChildren: () =>
           import('./pages/admin/admin.routes').then(
-            (m) => m.UiComponentsRoutes
+            (m) => m.AdminRoutes
           ),
         canActivate: [AuthGuard],
       },

@@ -1,0 +1,205 @@
+// Using local theming variables instead of direct import
+@use '@angular/material' as mat;
+
+// Custom theme variables
+@include mat.core();
+
+$primary: mat.define-palette(mat.$indigo-palette);
+$accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$warn: mat.define-palette(mat.$red-palette);
+$theme: mat.define-light-theme((
+  color: (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0
+));
+
+// Apply theme to the component
+@include mat.all-component-themes($theme);
+
+// Custom styles
+
+.request-card {
+  position: relative;
+  min-height: 500px;
+  overflow: hidden;
+  
+  .mat-card-header {
+    padding: 16px 24px 0;
+    margin-bottom: 16px;
+    
+    .mat-card-title {
+      font-size: 20px;
+      font-weight: 500;
+    }
+    
+    .mat-card-subtitle {
+      margin-bottom: 0;
+    }
+  }
+  
+  .filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 0 16px;
+    
+    .filter-field {
+      flex: 1 1 200px;
+      min-width: 200px;
+    }
+    
+    .filter-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+      
+      button {
+        mat-icon {
+          margin-right: 4px;
+        }
+      }
+    }
+  }
+  
+  .loading-shade {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    min-height: 300px;
+    
+    table {
+      width: 100%;
+      
+      .mat-row {
+        cursor: pointer;
+        transition: background-color 0.2s;
+        
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.04);
+        }
+        
+        &.selected {
+          background-color: rgba(63, 81, 181, 0.1);
+        }
+      }
+      
+      .product-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        
+        &.product-jam3eya {
+          background-color: #e3f2fd;
+          color: #1565c0;
+        }
+        
+        &.product-epargne {
+          background-color: #e8f5e9;
+          color: #2e7d32;
+        }
+        
+        &.product-epargne_zeket {
+          background-color: #f3e5f5;
+          color: #7b1fa2;
+        }
+      }
+      
+      .document-cell {
+        display: flex;
+        align-items: center;
+        
+        .document-icon {
+          margin-right: 8px;
+          color: #757575;
+        }
+        
+        .document-name {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+      
+      .time-ago {
+        font-size: 12px;
+        color: #757575;
+        margin-top: 2px;
+      }
+      
+      .actions-cell {
+        white-space: nowrap;
+        
+        .mat-icon {
+          color: #757575;
+        }
+        
+        .delete-option {
+          color: #f44336;
+          
+          .mat-icon {
+            color: inherit;
+          }
+        }
+      }
+    }
+  }
+  
+  .no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+    text-align: center;
+    color: #757575;
+    
+    mat-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      margin-bottom: 16px;
+      color: #e0e0e0;
+    }
+    
+    p {
+      margin: 8px 0 16px;
+      font-size: 16px;
+    }
+  }
+  
+  mat-paginator {
+    margin-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+  }
+  
+  .add-fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 100;
+    
+    @media (max-width: 599px) {
+      bottom: 16px;
+      right: 16px;
+    }
+  }
+}

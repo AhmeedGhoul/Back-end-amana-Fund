@@ -2,8 +2,11 @@ import { Component, Input } from '@angular/core';
 import { AgencyComponent } from './agency/agency.component';
 import { RequestComponent } from './request/request.component';
 import { Agency } from './agency/agency.model';  // Update with your correct path
-import { Request } from './request/request.model';
-import {JsonPipe, NgIf} from "@angular/common";  // Update with your correct path
+import { Request as RequestModel } from './request/request.model';
+import {JsonPipe, NgIf} from "@angular/common";
+
+// Alias to match component's Request type
+type Request = RequestModel;
 
 @Component({
   selector: 'app-agency-page',
@@ -24,7 +27,7 @@ export class AgencyPageComponent {
     this.selectedAgency = agency;
   }
 
-  onRequestSelectionChanged(request: Request) {
+  onRequestSelectionChanged(request: Request | null) {
     this.selectedRequest = request;
   }
 }

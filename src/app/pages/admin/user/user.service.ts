@@ -20,10 +20,20 @@ export class UserService {
   }
   deleteUser(user: User): Observable<void> {
     const token = localStorage.getItem('authToken');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    const userId = user.id; // assuming 'id' is the unique identifier for a user
+    if (!token) {
+      return new Observable(subscriber => {
+        subscriber.error('No authentication token found');
+      });
+    }
 
-    return this.http.delete<void>(`/api/v1/auth/Delete/${userId}`, { headers });
+    const headers = new HttpHeaders()
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+
+    return this.http.delete<void>(`${this.apiUrl}/Delete/${user.id}`, { 
+      headers,
+      responseType: 'text' as 'json'  // Handle text response
+    });
   }
 
   // In your user.service.ts
@@ -53,12 +63,14 @@ export class UserService {
   }
 
   // Generate User Report
-  generateUserReport(directoryPath?: string, fileName?: string): Observable<void> {
-    const params = new HttpParams()
-      .set('directoryPath', directoryPath || '')
-      .set('fileName', fileName || 'user_report');
-
-    return this.http.get<void>(`${this.apiUrl}/generateUserReport`, { params });
+  generateUserReport(): Observable<Blob> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    
+    return this.http.get(`${this.apiUrl}/generateUserReport`, { 
+      headers,
+      responseType: 'blob' 
+    });
   }
   registerUser(user: any): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/register`, user);
@@ -68,6 +80,28 @@ export class UserService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     return this.http.put<void>(`${this.apiUrl}/Modify`, user, { headers });
+  }
+
+  toggleUserStatus(userId: number, enabled: boolean): Observable<void> {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      return new Observable(subscriber => {
+        subscriber.error('No authentication token found');
+      });
+    }
+
+    const headers = new HttpHeaders()
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    
+    return this.http.put<void>(
+      `${this.apiUrl}/toggle-status/${userId}`,
+      { enabled },
+      { 
+        headers,
+        responseType: 'text' as 'json'  // Handle text response
+      }
+    );
   }
   changePassword(userId: number, newPassword: string, oldPassword: string): Observable<void> {
     const token = localStorage.getItem('authToken');

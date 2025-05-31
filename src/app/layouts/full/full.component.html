@@ -1,47 +1,48 @@
-<mat-sidenav-container class="mainWrapper blue_theme  light-theme" autosize autoFocus dir="ltr">
-  <!-- ============================================================== -->
-  <!-- Vertical Sidebar -->
-  <!-- ============================================================== -->
+<div class="app-container" [class.sidebar-collapsed]="isCollapsed" [class.mobile-view]="isMobileView">
+  <!-- Sidebar Backdrop (for mobile) -->
+  <div class="sidebar-backdrop" 
+       *ngIf="isMobileView && !isCollapsed" 
+       (click)="sidenav.toggle()">
+  </div>
 
-  <mat-sidenav #leftsidenav [mode]="isOver ? 'over' : 'side'" [opened]="!isOver"
-    (openedChange)="onSidenavOpenedChange($event)" (closedStart)="onSidenavClosedStart()" class="sidebarNav">
-    <div class="flex-layout">
-      <app-sidebar (toggleMobileNav)="sidenav.toggle()" [showToggle]="isOver"></app-sidebar>
-      <ng-scrollbar class="position-relative" style="height: 100%">
-        <mat-nav-list class="sidebar-list">
-          <app-nav-item
-            *ngFor="let item of navItems; trackBy: trackItem"
-            [item]="item"
-            (notify)="sidenav.toggle()">
-          </app-nav-item>
-        </mat-nav-list>
+  <!-- Sidebar Container -->
+  <mat-sidenav-container class="sidenav-container">
+    <!-- Sidebar -->
+    <mat-sidenav #leftsidenav
+                 [mode]="isMobileView ? 'over' : 'side'"
+                 [opened]="!isCollapsed"
+                 [fixedInViewport]="isMobileView"
+                 [fixedTopGap]="0"
+                 [fixedBottomGap]="0"
+                 (openedChange)="onSidenavOpenedChange($event)"
+                 (closedStart)="onSidenavClosedStart()"
+                 class="sidebar">
+      
+      <app-sidebar 
+        [isMobileView]="isMobileView"
+        [isCollapsed]="isCollapsed"
+        (toggleMobileNav)="sidenav.toggle()"
+        (toggleCollapsed)="toggleCollapsed()"
+        (linkClicked)="onLinkClick()">
+      </app-sidebar>
+      
+    </mat-sidenav>
 
-      </ng-scrollbar>
+    <!-- Main Content -->
+    <mat-sidenav-content class="main-content">
+      <!-- Header -->
+      <app-header 
+        [isMobileView]="isMobileView"
+        [isCollapsed]="isCollapsed"
+        (toggleCollapsed)="toggleCollapsed()"
+        (toggleMobileNav)="sidenav.toggle()">
+      </app-header>
 
-    </div>
-  </mat-sidenav>
-
-
-
-  <!-- ============================================================== -->
-  <!-- Main Content -->
-  <!-- ============================================================== -->
-  <mat-sidenav-content class="contentWrapper" #content>
-    <!-- ============================================================== -->
-    <!-- VerticalHeader -->
-    <!-- ============================================================== -->
-
-    <app-header [showToggle]="!isOver" (toggleCollapsed)="toggleCollapsed()"
-      (toggleMobileNav)="sidenav.toggle()"></app-header>
-
-
-    <main class="pageWrapper maxWidth">
-        <!-- ============================================================== -->
-        <!-- Outlet -->
-        <!-- ============================================================== -->
-      <app-loader></app-loader>
-      <router-outlet></router-outlet>
+      <!-- Page Content -->
+      <main class="page-content">
+        <app-loader></app-loader>
+        <router-outlet></router-outlet>
       </main>
-  </mat-sidenav-content>
-
-</mat-sidenav-container>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

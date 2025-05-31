@@ -1,12 +1,34 @@
-<div class="d-flex align-items-center justify-content-between">
-  <app-branding></app-branding>
+<div class="sidebar-container" [class.collapsed]="isCollapsed" [class.mobile-view]="isMobileView">
+  <div class="sidebar-content">
+    <!-- Branding -->
+    <div class="sidebar-header">
+      <app-branding></app-branding>
+      <button *ngIf="isMobileView" mat-icon-button (click)="toggleMobileNav.emit()" class="mobile-close-btn">
+        <i-tabler name="x"></i-tabler>
+      </button>
+    </div>
 
-  <a *ngIf="showToggle"
-     href="javascript:void(0)"
-     (click)="toggleMobileNav.emit()"
-     class="d-flex justify-content-center icon-40 align-items-center mat-body-1">
-    <i-tabler name="x" class="icon-20 d-flex"></i-tabler>
-  </a>
+    <!-- Navigation -->
+    <nav class="nav-section">
+      <ul class="nav-items">
+        <ng-container *ngFor="let item of navItems; trackBy: trackByFn">
+          <li>
+            <app-nav-item 
+              [item]="item" 
+              [depth]="0"
+              [isMobileView]="isMobileView"
+              (linkClick)="onNavItemClick()">
+            </app-nav-item>
+          </li>
+        </ng-container>
+      </ul>
+    </nav>
+
+    <!-- Collapse Toggle (Desktop) -->
+    <div *ngIf="!isMobileView" class="sidebar-footer">
+      <button mat-icon-button (click)="toggleCollapsed.emit()" class="collapse-btn" aria-label="Toggle sidebar">
+        <i-tabler [name]="isCollapsed ? 'chevron-right' : 'chevron-left'"></i-tabler>
+      </button>
+    </div>
+  </div>
 </div>
-
-
