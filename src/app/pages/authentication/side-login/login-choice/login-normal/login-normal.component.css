@@ -261,8 +261,25 @@ button[mat-flat-button]:active:not([disabled]) {
 }
 
 /* Logo styling */
+.text-center {
+  text-align: center;
+  margin: 0 auto 1rem; /* Reduced from 2rem to 1rem */
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.text-center a {
+  display: inline-block;
+  text-align: center;
+}
+
 .text-center img {
   transition: transform 0.3s ease;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
 }
 
 .text-center img:hover {

@@ -280,17 +280,10 @@ button[mat-flat-button].verify-btn:active:not([disabled]) {
 
 /* Typography */
 .auth-title {
-  font-size: 28px;
-  font-weight: 700;
-  margin: 24px 0 8px;
+  font-size: 24px;
+  font-weight: 600;
   color: #333;
-  text-align: center;
-}
-
-.auth-subtitle {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 24px;
+  margin: 0 0 8px 0;
   text-align: center;
 }
 
@@ -302,8 +295,29 @@ button[mat-flat-button].verify-btn:active:not([disabled]) {
 }
 
 /* Logo styling */
+.text-center {
+  text-align: center;
+  margin: 0 auto 1rem;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.text-center a {
+  display: inline-block;
+  text-align: center;
+}
+
 .text-center img {
   transition: transform 0.3s ease;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.text-center img:hover {
+  transform: scale(1.05);
 }
 
 .text-center img:hover {
