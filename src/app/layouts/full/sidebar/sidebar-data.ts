@@ -6,7 +6,7 @@ export const navItems: NavItem[] = [
   },
   {
     displayName: 'Dashboard',
-    iconName: 'dashboard',
+    iconName: 'layout-dashboard',
     route: '/dashboard'
   },
   {
@@ -14,18 +14,23 @@ export const navItems: NavItem[] = [
   },
   {
     displayName: 'Users',
-    iconName: 'user', 
+    iconName: 'user',
     route: '/admin/user',
   },
   {
     displayName: 'Accounts',
-    iconName: 'wallet', 
+    iconName: 'wallet',
     route: '/ui-components/chips',
   },
   {
     displayName: 'Contracts',
-    iconName: 'file-text', 
+    iconName: 'file-text',
     route: '/ui-components/lists',
+  },
+  {
+    displayName: 'Sinistres',
+    iconName: 'alert-triangle', // changed from 'danger' to valid warning icon
+    route: '/ui-components/tooltips',
   },
   {
     displayName: 'Policies',
@@ -54,15 +59,11 @@ export const navItems: NavItem[] = [
       }
     ]
   },
+  
   {
     displayName: 'Credit Pools',
     iconName: 'receipt', // changed from 'credit' to valid financial icon
     route: '/ui-components/menu',
-  },
-  {
-    displayName: 'Sinistres',
-    iconName: 'alert-triangle', // changed from 'danger' to valid warning icon
-    route: '/ui-components/tooltips',
   },
   {
     displayName: 'Agencies',
