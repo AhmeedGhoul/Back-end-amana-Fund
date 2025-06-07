@@ -27,15 +27,8 @@ export class PersonService {
 
   constructor(private http: HttpClient) { }
 
-  addPerson(personDTO: PersonDTO): Observable<any> {
-    return this.http.post(`${this.apiUrl}/add_personG`, personDTO);
-  }
-
-  addPersonWithFile(formData: FormData): Observable<any> {
-    return this.http.post(`${this.apiUrl}/add_personG_with_file`, formData, {
-      reportProgress: true,
-      observe: 'events'
-    });
+  addPerson(formData: FormData): Observable<Person> {
+    return this.http.post<Person>(`${this.apiUrl}/add_personG`, formData);
   }
 
   getPaginatedPersons(page: number, size: number, sortBy: string, direction: string): Observable<any> {
@@ -61,22 +54,8 @@ export class PersonService {
     return this.http.put(`${this.apiUrl}/${id}/deactivate`, {});
   }
 
-  updatePerson(person: Person): Observable<any> {
-    // Convert Person to PersonDTO format
-    const personDTO = {
-      idGarantie: person.idGarantie,
-      name: person.name,
-      lastName: person.lastName,
-      cin: person.cin,
-      email: person.email,
-      age: person.age,
-      revenue: person.revenue,
-      active: person.active,
-      documents: person.documents,
-      policeId: person.policeId
-    };
-    
-    return this.http.put(`${this.apiUrl}/update_person`, personDTO);
+  updatePerson(formData: FormData): Observable<any> {
+    return this.http.put(`${this.apiUrl}/update_person`, formData);
   }
 
   searchPersonByCIN(cin: string): Observable<Person[]> {

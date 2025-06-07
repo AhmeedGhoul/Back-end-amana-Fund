@@ -93,22 +93,24 @@
         </mat-form-field>
       </div>
 
-      <!-- Documents -->
-      <div class="form-field-wrapper">
-        <div class="file-input-container">
-          <label class="file-label">PDF Document</label>
-          <input type="file" 
-                 (change)="onFileSelected($event)"
-                 accept=".pdf"
-                 class="file-input"
-                 [class.is-invalid]="formControls['documents'].touched && formControls['documents'].invalid">
-          <div class="file-error" *ngIf="formControls['documents'].hasError('required')">Please upload a PDF document</div>
-          <div class="file-error" *ngIf="formControls['documents'].touched && !formControls['documents'].hasError('required') && !isValidFileType">Please upload a PDF file only</div>
-        </div>
-        <div *ngIf="selectedFilePath" class="file-info">
-          Selected file: {{selectedFilePath}}
-        </div>
-      </div>
+            <!-- PDF Upload -->
+<!-- File Upload -->
+<div class="form-field-wrapper">
+  <div class="file-input-container">
+    <label class="file-label">PDF Document</label>
+    <input type="file"
+           (change)="onFileSelected($event)"
+           accept=".pdf"
+           class="file-input"
+           [class.is-invalid]="formControls['documents'].touched && formControls['documents'].invalid">
+    <mat-error *ngIf="formControls['documents'].hasError('required')">Please upload a PDF document</mat-error>
+    <mat-error *ngIf="formControls['documents'].touched && !formControls['documents'].hasError('required') && !isValidFileType">Please upload a PDF file only</mat-error>
+  </div>
+  <div *ngIf="selectedFileName" class="file-info">
+    Selected file: {{selectedFileName}}
+  </div>
+</div>
+
 
       <!-- Police ID -->
       <div>
@@ -125,6 +127,7 @@
       </div>
 
       <!-- Submit Buttons -->
+
       <div class="buttons-container" style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 1rem;">
         <button mat-button type="button" (click)="resetForm()">Reset</button>
         <button mat-raised-button color="primary" type="submit" [disabled]="loading || !personForm.valid">

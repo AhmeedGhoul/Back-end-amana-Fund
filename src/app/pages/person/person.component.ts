@@ -68,6 +68,8 @@ export class PersonComponent implements OnInit {
   isSubmitting = false;
   error = '';
   selectedFilePath: string | null = null;
+  selectedFile: File | null = null;
+  selectedFileName: string | null = null;
   uploadProgress = 0;
   showProgress = false;
   isValidFileType = true;
@@ -147,7 +149,8 @@ export class PersonComponent implements OnInit {
     const file: File | null = target.files?.[0] || null;
 
     if (!file) {
-      this.selectedFilePath = null;
+      this.selectedFile = null;
+      this.selectedFileName = null;
       this.isValidFileType = true;
       return;
     }
@@ -159,15 +162,18 @@ export class PersonComponent implements OnInit {
         panelClass: ['mat-toolbar', 'mat-warn']
       });
       this.isValidFileType = false;
+      this.selectedFile = null;
+      this.selectedFileName = null;
       return;
     }
 
-    this.selectedFilePath = file.name;
+    this.selectedFile = file;
+    this.selectedFileName = file.name;
+    this.isValidFileType = true;
     this.personForm.patchValue({
       documents: file.name,
       filePath: file.name
     });
-    this.files = [file];
   }
 
   onSubmit(): void {
@@ -208,7 +214,28 @@ export class PersonComponent implements OnInit {
 
   private updatePerson(person: Person): void {
     this.isSubmitting = true;
-    this.personService.updatePerson(person).subscribe({
+
+    // Build the DTO for update (adapt as needed)
+    const personDTO: any = {
+      idGarantie: person.idGarantie,
+      name: person.name,
+      lastName: person.lastName,
+      cin: person.cin,
+      email: person.email,
+      age: person.age,
+      revenue: person.revenue,
+      active: person.active,
+      documents: person.documents,
+      policeId: person.policeId
+    };
+
+    const formData = new FormData();
+    formData.append('person', new Blob([JSON.stringify(personDTO)], { type: 'application/json' }));
+    if (this.selectedFile) {
+      formData.append('file', this.selectedFile, this.selectedFile.name);
+    }
+
+    this.personService.updatePerson(formData).subscribe({
       next: () => {
         this.snackBar.open('Person updated successfully', 'Close', {
           duration: 3000,
@@ -224,15 +251,18 @@ export class PersonComponent implements OnInit {
   }
 
   private addPerson(person: Person): void {
-    if (!this.selectedFilePath) {
-      this.snackBar.open('Please select a PDF file', 'Close', {
-        duration: 3000,
-        panelClass: ['mat-toolbar', 'mat-warn']
-      });
+    this.submitted = true;
+  
+    if (!this.selectedFile) {
+      this.snackBar.open('Please select a PDF file', 'Close', { duration: 3000 });
       return;
     }
-
-    // Create a PersonDTO object with file path
+  
+    if (!this.isValidFileType) {
+      this.snackBar.open('Only PDF files are allowed', 'Close', { duration: 3000 });
+      return;
+    }
+  
     const personDTO: PersonDTO = {
       idGarantie: person.idGarantie || undefined,
       name: person.name,
@@ -242,31 +272,35 @@ export class PersonComponent implements OnInit {
       age: person.age,
       revenue: person.revenue,
       active: person.active,
-      documents: this.selectedFilePath,
+      documents: '', // Will be overwritten by backend
       policeId: person.policeId,
-      filePath: this.selectedFilePath
+      filePath: ''
     };
-
+  
+    const formData = new FormData();
+    formData.append('person', new Blob([JSON.stringify(personDTO)], { type: 'application/json' }));
+    formData.append('file', this.selectedFile, this.selectedFile.name);
+  
     this.isSubmitting = true;
-    this.personService.addPerson(personDTO).subscribe({
+    this.personService.addPerson(formData).subscribe({
       next: () => {
-        this.snackBar.open('Person added successfully!', 'Close', {
-          duration: 3000,
-          panelClass: ['mat-toolbar', 'mat-primary']
-        });
+        this.snackBar.open('Person added successfully!', 'Close', { duration: 3000 });
         this.router.navigate(['/person/list']);
       },
-      error: (error: any) => {
-        this.error = 'Failed to add person. Please try again.';
+      error: () => {
+        this.snackBar.open('Failed to add person. Please try again.', 'Close', { duration: 3000 });
         this.isSubmitting = false;
       }
     });
   }
+  
 
   resetForm(): void {
     this.personForm.reset();
     this.submitted = false;
     this.loading = false;
+    this.selectedFile = null;
+    this.selectedFileName = null;
     this.selectedFilePath = null;
     this.isValidFileType = true;
     this.uploadProgress = 0;
