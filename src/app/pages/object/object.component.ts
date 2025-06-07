@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ObjectG, TypeObject, getTypeObjectValues, PoliceOption } from './object.model';
@@ -43,22 +44,62 @@ import { Router } from '@angular/router';
   ]
 })
 export class ObjectComponent implements OnInit {
+  // ...existing properties...
+
+  sanitizedPdfUrls: { [key: number]: SafeResourceUrl } = {};
+
+  getPdfUrl(id: number): string {
+    return `${this.objectService['apiUrl']}/${id}/document`;
+  }
+
+  getSanitizedPdfUrl(id: number): SafeResourceUrl {
+    if (!this.sanitizedPdfUrls[id]) {
+      this.sanitizedPdfUrls[id] = this.sanitizer.bypassSecurityTrustResourceUrl(this.getPdfUrl(id));
+    }
+    return this.sanitizedPdfUrls[id];
+  }
+
+  togglePdf(element: any): void {
+    this.expandedObjectId = this.expandedObjectId === element.idGarantie ? null : element.idGarantie;
+  }
+
+  selectedFile: File | null = null;
   objectForm: FormGroup;
   isEditing = false;
   editObjectId: number | undefined;
-  dataSource: ObjectG[] = [];
+  dataSource: any[] = [];
   displayedColumns: string[] = ['ownershipCertifNumber', 'estimatedValue', 'type', 'documents', 'active', 'actions'];
+  pdfDetailColumns: string[] = ['pdfDetail'];
+  expandedObjectId: number | null = null; // Track which object's PDF is expanded
+
+  isPdfDetailRow = (index: number, row: any) => row && row.pdfDetail === true;
+
+  getDataWithPdfDetailRows(data: any[]) {
+    return data.reduce((acc, item) => {
+      acc.push(item);
+      acc.push({ pdfDetail: true, idGarantie: item.idGarantie, documents: item.documents });
+      return acc;
+    }, []);
+  }
   loading = false;
   typeObjectValues = getTypeObjectValues();
   policeOptions: PoliceOption[] = [];
   selectedPoliceId: number | undefined;
+
+  // Pagination
+  totalItems = 0;
+  pageSize = 5;
+  currentPage = 0;
+  sortBy = 'ownershipCertifNumber';
+  direction = 'asc';
 
   constructor(
     private formBuilder: FormBuilder,
     private objectService: ObjectService,
     private policeService: PoliceService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private sanitizer: DomSanitizer
   ) {
     this.loadPoliceOptions();
   }
@@ -95,9 +136,10 @@ export class ObjectComponent implements OnInit {
 
   loadObjects(): void {
     this.loading = true;
-    this.objectService.getAllObjects().subscribe({
-      next: (objects) => {
-        this.dataSource = objects;
+    this.objectService.getPaginatedObjects(this.currentPage, this.pageSize, this.sortBy, this.direction).subscribe({
+      next: (page) => {
+        this.dataSource = this.getDataWithPdfDetailRows(page.content);
+        this.totalItems = page.totalElements;
         this.loading = false;
       },
       error: (error) => {
@@ -105,6 +147,12 @@ export class ObjectComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  onPageChange(event: any): void {
+    this.pageSize = event.pageSize;
+    this.currentPage = event.pageIndex;
+    this.loadObjects();
   }
 
   onSubmit(): void {
@@ -124,9 +172,22 @@ export class ObjectComponent implements OnInit {
     }
   }
 
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+      this.objectForm.patchValue({ documents: this.selectedFile.name });
+    }
+  }
+
   addObject(object: ObjectG): void {
     this.loading = true;
-    this.objectService.addObject(object).subscribe({
+    const formData = new FormData();
+    formData.append('object', new Blob([JSON.stringify(object)], { type: 'application/json' }));
+    if (this.selectedFile) {
+      formData.append('file', this.selectedFile);
+    }
+    this.objectService.addObjectWithFile(formData).subscribe({
       next: (response) => {
         this.dataSource.push(response);
         this.resetForm();
@@ -148,16 +209,27 @@ export class ObjectComponent implements OnInit {
   }
 
   updateObject(object: ObjectG): void {
-    this.objectService.updateObject(object).subscribe({
+    this.loading = true;
+    this.objectService.updateObjectWithFile(object, this.selectedFile ?? undefined).subscribe({
       next: (updatedObject) => {
         const index = this.dataSource.findIndex(obj => obj.idGarantie === updatedObject.idGarantie);
         if (index !== -1) {
           this.dataSource[index] = updatedObject;
         }
         this.resetForm();
+        this.loading = false;
+        this.snackBar.open('Object updated successfully', 'Close', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
       },
       error: (error) => {
         console.error('Error updating object:', error);
+        this.loading = false;
+        this.snackBar.open('Error updating object', 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
       }
     });
   }
@@ -168,8 +240,6 @@ export class ObjectComponent implements OnInit {
     this.objectForm.patchValue({
       ownershipCertifNumber: object.ownershipCertifNumber,
       estimatedValue: object.estimatedValue,
-      type: object.type,
-      documents: object.documents
     });
   }
 
