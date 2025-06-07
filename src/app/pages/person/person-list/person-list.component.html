@@ -81,6 +81,24 @@
 
     <table mat-table [dataSource]="dataSource" matSort>
 
+      <!-- Expanded Detail Row -->
+      <ng-container matColumnDef="expandedDetail">
+        <td mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns.length">
+          <ng-container *ngIf="expandedPersonId === row.idGarantie && row.detailRow">
+            <ng-container *ngIf="row.documents">
+              <object [data]="getPdfUrl(row)" type="application/pdf" width="100%" height="500px">
+                <iframe [src]="getPdfUrl(row)" width="100%" height="500px">
+                  This browser does not support PDFs. <a [href]="getPdfUrl(row)">Download PDF</a>
+                </iframe>
+              </object>
+            </ng-container>
+            <ng-container *ngIf="!row.documents">
+              <span>No PDF document available.</span>
+            </ng-container>
+          </ng-container>
+        </td>
+      </ng-container>
+
       <!-- Name Column -->
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
@@ -130,7 +148,11 @@
       <!-- Documents Column -->
       <ng-container matColumnDef="documents">
         <th mat-header-cell *matHeaderCellDef>Documents</th>
-        <td mat-cell *matCellDef="let element">{{element.documents}}</td>
+        <td mat-cell *matCellDef="let element">
+          <button mat-stroked-button color="accent" (click)="togglePdf(element)">
+            {{ expandedPersonId === element.idGarantie ? 'Hide' : 'Show PDF' }}
+          </button>
+        </td>
       </ng-container>
 
       <!-- Actions Column -->
@@ -153,6 +175,7 @@
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail']; when: isExpansionDetailRow" class="pdf-row"></tr>
     </table>
 
     <mat-paginator

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PersonService } from '../../../services/person.service';
 import { Person } from '../person.model';
 import { CommonModule } from '@angular/common';
@@ -39,6 +40,8 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./person-list.component.scss']
 })
 export class PersonListComponent implements OnInit {
+  expandedPersonId: number | null = null; // Track which person's PDF is expanded
+
   displayedColumns: string[] = ['name', 'lastName', 'cin', 'email', 'age', 'revenue', 'active', 'documents', 'actions'];
   dataSource: any[] = [];
   totalItems: number = 0;
@@ -55,7 +58,8 @@ export class PersonListComponent implements OnInit {
     private snackBar: MatSnackBar,
     public dialog: MatDialog,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private sanitizer: DomSanitizer
   ) {
     // Clear search results when component initializes
     this.searchResults = null;
@@ -65,10 +69,20 @@ export class PersonListComponent implements OnInit {
     this.loadPersons();
   }
 
+  isExpansionDetailRow = (index: number, row: any) => row.hasOwnProperty('detailRow');
+
+  getDataWithDetailRows(data: any[]) {
+    return data.reduce((acc, item) => {
+      acc.push(item);
+      acc.push({ detailRow: true, idGarantie: item.idGarantie, documents: item.documents });
+      return acc;
+    }, []);
+  }
+
   loadPersons(): void {
     this.personService.getPaginatedPersons(this.currentPage, this.pageSize, this.sortField, this.sortDirection).subscribe({
       next: (response) => {
-        this.dataSource = response.content;
+        this.dataSource = this.getDataWithDetailRows(response.content);
         this.totalItems = response.totalElements;
       },
       error: (error) => {
@@ -205,4 +219,14 @@ export class PersonListComponent implements OnInit {
   navigateToPerson(id: number): void {
     this.router.navigate(['../person', id], { relativeTo: this.route });
   }
-}
+
+  togglePdf(person: any): void {
+    this.expandedPersonId = this.expandedPersonId === person.idGarantie ? null : person.idGarantie;
+    console.log('Toggled PDF for:', person, 'expandedPersonId:', this.expandedPersonId);
+  }
+
+  getPdfUrl(person: any): SafeResourceUrl {
+    const url = `http://localhost:8088/api/v1/person/${person.idGarantie}/document`;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
+  }
