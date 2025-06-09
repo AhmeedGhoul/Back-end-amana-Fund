@@ -34,6 +34,116 @@ export class StatisticsComponent implements OnInit {
     }]
   };
 
+  // Chart data for age distribution
+  public ageChartData: ChartData<'pie'> = {
+    labels: ['18-25', '26-35', '36-45', '46-55', '56+'],
+    datasets: [{
+      data: [15, 35, 25, 15, 10], // Sample data - replace with actual age groups
+      backgroundColor: [
+        '#4e73df', // Primary
+        '#1cc88a', // Success
+        '#f6c23e', // Warning
+        '#e74a3b', // Danger
+        '#858796'  // Secondary
+      ],
+      borderColor: 'transparent'
+    }]
+  };
+
+  public ageChartOptions: any = {
+    maintainAspectRatio: false,
+    cutout: '65%',
+    plugins: {
+      legend: {
+        position: 'right' as const,
+        labels: {
+          color: '#495057',
+          font: {
+            size: 14
+          },
+          padding: 20
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: (context: any) => {
+            const label = context.label || '';
+            const value = context.raw || 0;
+            const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
+            const percentage = Math.round((value / total) * 100);
+            return `${label}: ${percentage}% (${value} people)`;
+          }
+        },
+        titleFont: {
+          size: 16,
+          weight: 'bold'
+        },
+        bodyFont: {
+          size: 14
+        },
+        padding: 12,
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        displayColors: false
+      }
+    }
+  };
+
+  // Chart data for object types
+  public objectTypeChartData: ChartData<'pie'> = {
+    labels: ['Animals', 'House', 'Land'],
+    datasets: [{
+      data: [35, 40, 25], // Sample data - replace with actual data from your service
+      backgroundColor: [
+        '#FF6384', // Red for Animals
+        '#36A2EB', // Blue for House
+        '#4BC0C0'  // Teal for Land
+      ],
+      borderWidth: 1
+    }]
+  };
+
+  public objectTypeChartOptions: any = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'right' as const,
+        labels: {
+          color: '#495057',
+          font: {
+            size: 14
+          },
+          padding: 20
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: (context: any) => {
+            const label = context.label || '';
+            const value = context.raw || 0;
+            const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
+            const percentage = Math.round((value / total) * 100);
+            return `${label}: ${percentage}% (${value} items)`;
+          }
+        },
+        titleFont: {
+          size: 16,
+          weight: 'bold'
+        },
+        bodyFont: {
+          size: 14
+        },
+        padding: 12,
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        displayColors: false
+      }
+    }
+  };
+
   private updateChartData(amountByStartDate: Map<Date, number>) {
     const dates = Array.from(amountByStartDate.keys()).map(date => date.toLocaleDateString());
     const amounts = Array.from(amountByStartDate.values());
@@ -41,6 +151,7 @@ export class StatisticsComponent implements OnInit {
     this.chartData.labels = dates;
     this.chartData.datasets[0].data = amounts;
   }
+
   public chartOptions = {
     responsive: true,
     plugins: {
